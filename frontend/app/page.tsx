@@ -53,20 +53,28 @@ function isFiniteNumber(value: number | null | undefined): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function toFiniteNumbers(values: unknown[]): number[] {
+  return values.map((value) => Number(value)).filter(Number.isFinite);
+}
+
 function describeDistribution(distribution: NonNullable<Contributor["distribution"]>) {
-  const restAverage = average(distribution.rest_values);
-  const trainAverage = average(distribution.train_values);
-  const currentText = isFiniteNumber(distribution.current_value)
-    ? `Current value ${distribution.current_value.toFixed(1)}.`
+  const restValues = toFiniteNumbers(distribution.rest_values);
+  const trainValues = toFiniteNumbers(distribution.train_values);
+  const currentValue = Number(distribution.current_value);
+  const hasCurrentValue = Number.isFinite(currentValue);
+  const restAverage = average(restValues);
+  const trainAverage = average(trainValues);
+  const currentText = hasCurrentValue
+    ? `Current value ${currentValue.toFixed(1)}.`
     : "Current value unavailable.";
   const restText =
     restAverage === null
       ? "No rest-day samples available."
-      : `Rest average ${restAverage.toFixed(1)} across ${distribution.rest_values.length} days.`;
+      : `Rest average ${restAverage.toFixed(1)} across ${restValues.length} days.`;
   const trainText =
     trainAverage === null
       ? "No training-day samples available."
-      : `Train average ${trainAverage.toFixed(1)} across ${distribution.train_values.length} days.`;
+      : `Train average ${trainAverage.toFixed(1)} across ${trainValues.length} days.`;
 
   return {
     visible: `${currentText} ${restText} ${trainText}`,
@@ -84,10 +92,14 @@ function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
     return null;
   }
 
+  const restValues = toFiniteNumbers(distribution.rest_values);
+  const trainValues = toFiniteNumbers(distribution.train_values);
+  const currentValue = Number(distribution.current_value);
+  const hasCurrentValue = Number.isFinite(currentValue);
   const values = [
-    ...distribution.rest_values,
-    ...distribution.train_values,
-    ...(isFiniteNumber(distribution.current_value) ? [distribution.current_value] : []),
+    ...restValues,
+    ...trainValues,
+    ...(hasCurrentValue ? [currentValue] : []),
   ];
 
   if (values.length === 0) {
@@ -122,13 +134,13 @@ function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
     });
   };
 
-  addValues(distribution.rest_values, "restCount");
-  addValues(distribution.train_values, "trainCount");
+  addValues(restValues, "restCount");
+  addValues(trainValues, "trainCount");
 
   return {
     points,
-    currentPosition: isFiniteNumber(distribution.current_value)
-      ? Math.max(0, Math.min(100, ((distribution.current_value - min) / range) * 100))
+    currentPosition: hasCurrentValue
+      ? Math.max(0, Math.min(100, ((currentValue - min) / range) * 100))
       : null,
     maxCount: Math.max(1, ...points.flatMap((point) => [point.restCount, point.trainCount])),
   };
