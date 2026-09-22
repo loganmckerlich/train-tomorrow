@@ -41,6 +41,14 @@ function contributorBarWidth(score: number): string {
   return `${Math.max(10, Math.min(100, Math.round(Math.abs(score) * 100)))}%`;
 }
 
+function average(values: number[]): number | null {
+  if (values.length === 0) {
+    return null;
+  }
+
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
 type HistogramPoint = {
   restCount: number;
   trainCount: number;
@@ -174,11 +182,11 @@ export default async function Home() {
                   <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
                     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
                       <span className="inline-flex items-center gap-1">
-                        <span className="h-2 w-2 rounded-full bg-amber-500/70" />
+                        <span className="h-2.5 w-3 rounded-sm border border-amber-600 bg-amber-100" />
                         rest
                       </span>
                       <span className="inline-flex items-center gap-1">
-                        <span className="h-2 w-2 rounded-full bg-sky-500/70" />
+                        <span className="h-2.5 w-1.5 rounded-sm bg-sky-500" />
                         train
                       </span>
                       <span className="inline-flex items-center gap-1">
@@ -186,6 +194,12 @@ export default async function Home() {
                         value {distribution.current_value.toFixed(1)}
                       </span>
                     </div>
+                    <p className="mt-2 text-xs text-slate-500">
+                      Rest avg {average(distribution.rest_values)?.toFixed(1) ?? "—"} across{" "}
+                      {distribution.rest_values.length} days; train avg{" "}
+                      {average(distribution.train_values)?.toFixed(1) ?? "—"} across{" "}
+                      {distribution.train_values.length} days.
+                    </p>
                     <div className="relative mt-3 h-32">
                       <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
                         {histogram.points.map((point, index) => {
@@ -196,20 +210,21 @@ export default async function Home() {
                           return (
                             <g key={`${item.feature}-${x}`}>
                               <rect
-                                x={x + 1}
+                                x={x + 0.5}
                                 y={100 - restHeight}
-                                width={Math.max(width - 2, 1)}
+                                width={Math.max(width - 1, 1)}
                                 height={restHeight}
                                 rx="1"
-                                className="fill-amber-500/60"
+                                className="fill-amber-100 stroke-amber-600"
+                                strokeWidth="0.5"
                               />
                               <rect
-                                x={x + 1}
+                                x={x + width * 0.25}
                                 y={100 - trainHeight}
-                                width={Math.max(width - 2, 1)}
+                                width={Math.max(width * 0.5, 1)}
                                 height={trainHeight}
                                 rx="1"
-                                className="fill-sky-500/60"
+                                className="fill-sky-500"
                               />
                             </g>
                           );
