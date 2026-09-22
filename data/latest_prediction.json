@@ -1,0 +1,8 @@
+{
+  "prediction_date": "1970-01-01",
+  "will_train_tomorrow": false,
+  "train_probability": 0.0,
+  "predicted_workload_tss": null,
+  "top_contributors": [],
+  "challenge_blurb": "No prediction yet — run the daily pipeline to generate today's challenge."
+}
