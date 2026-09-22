@@ -1,27 +1,27 @@
 {
-  "date": "2026-09-22",
+  "date": "2026-09-23",
   "will_train": true,
-  "probability": 0.9216,
-  "predicted_effort": 34.11,
+  "probability": 0.7984,
+  "predicted_effort": 30.3,
   "top_contributors": [
     {
+      "feature": "moving_time_chronic_28",
+      "signed_contribution": -0.6007461547851562,
+      "direction": "hurting",
+      "phrase": "your training volume base over the past month"
+    },
+    {
       "feature": "forecast_temp_high",
-      "signed_contribution": 0.6750982999801636,
+      "signed_contribution": 0.599550187587738,
       "direction": "helping",
       "phrase": "the daytime temperature forecast"
     },
     {
       "feature": "day_of_week",
-      "signed_contribution": 0.6453019976615906,
+      "signed_contribution": 0.3940829038619995,
       "direction": "helping",
       "phrase": "your usual day-of-week rhythm"
-    },
-    {
-      "feature": "moving_time_chronic_28",
-      "signed_contribution": -0.48318493366241455,
-      "direction": "hurting",
-      "phrase": "your training volume base over the past month"
     }
   ],
-  "blurb": "Model says likely session (92%). Credit the daytime temperature forecast. Watch out for your training volume base over the past month. Target: ~34 relative-effort points."
+  "blurb": "Model says likely session (80%). Credit the daytime temperature forecast. Watch out for your training volume base over the past month. Target: ~30 relative-effort points."
 }
