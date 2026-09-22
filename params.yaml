@@ -1,0 +1,4 @@
+blurb:
+  # Polish the templated blurb with Gemini (requires GEMINI_API_KEY). Falls back to the
+  # template blurb automatically if disabled, the key is missing, or the API call fails.
+  use_llm: true

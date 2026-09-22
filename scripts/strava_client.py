@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import math
 import os
 import shutil
 import subprocess
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 import pandas as pd
@@ -11,6 +12,7 @@ import requests
 
 STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token"
 STRAVA_ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
+EARTH_RADIUS_MILES = 3958.8
 
 
 def exchange_refresh_token() -> dict[str, Any]:
@@ -91,6 +93,8 @@ def fetch_recent_activities(access_token: str, days_back: int = 90) -> pd.DataFr
             if relative_effort is None:
                 relative_effort = activity.get("relative_effort")
 
+            start_latlng = activity.get("start_latlng") or []
+
             records.append(
                 {
                     "date": start_dt.date().isoformat(),
@@ -103,11 +107,16 @@ def fetch_recent_activities(access_token: str, days_back: int = 90) -> pd.DataFr
                         if activity.get("average_watts") is not None
                         else float("nan")
                     ),
+                    "start_lat": float(start_latlng[0]) if len(start_latlng) == 2 else float("nan"),
+                    "start_lng": float(start_latlng[1]) if len(start_latlng) == 2 else float("nan"),
                 }
             )
         page += 1
 
-    columns = ["date", "type", "moving_time", "distance", "relative_effort", "average_watts"]
+    #TODO proper logging
+    print(f"Fetched {len(records)} activities from Strava. Used {page-1} pages to get {days_back} days")
+
+    columns = ["date", "type", "moving_time", "distance", "relative_effort", "average_watts", "start_lat", "start_lng"]
     return pd.DataFrame(records, columns=columns)
 
 
@@ -117,3 +126,32 @@ def fetch_activities_dataframe(days_back: int = 90) -> pd.DataFrame:
     if not isinstance(access_token, str) or not access_token:
         raise RuntimeError("Strava OAuth response did not include access_token")
     return fetch_recent_activities(access_token=access_token, days_back=days_back)
+
+
+def _haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp = math.radians(lat2 - lat1)
+    dl = math.radians(lon2 - lon1)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * EARTH_RADIUS_MILES * math.asin(math.sqrt(a))
+
+
+def out_of_range_dates(
+    activities: pd.DataFrame, home_lat: float, home_lon: float, radius_miles: float = 50.0
+) -> set[date]:
+    """Dates whose GPS-tagged activities all started more than radius_miles from home coordinates.
+
+    Days with no GPS-tagged activity (rest days, indoor trainer rides) are left out of the
+    result and treated as in-range, since there's no location signal to say otherwise.
+    """
+    located = activities.dropna(subset=["start_lat", "start_lng"]).copy()
+    if located.empty:
+        return set()
+
+    located["date"] = pd.to_datetime(located["date"], errors="coerce").dt.date
+    located = located.dropna(subset=["date"])
+    distance = located.apply(
+        lambda row: _haversine_miles(row["start_lat"], row["start_lng"], home_lat, home_lon), axis=1
+    )
+    nearby_dates = set(located.loc[distance <= radius_miles, "date"])
+    return set(located["date"]) - nearby_dates

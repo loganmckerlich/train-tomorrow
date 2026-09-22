@@ -7,6 +7,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import xgboost as xgb
+from sklearn.metrics import precision_recall_fscore_support
 
 from features import FEATURE_COLUMNS
 
@@ -16,8 +17,8 @@ REGRESSOR_MODEL_PATH = "regressor.json"
 
 @dataclass
 class TrainedModels:
-    classifier: xgb.Booster
-    regressor: xgb.Booster
+    classifier: xgb.XGBClassifier
+    regressor: xgb.XGBRegressor
 
 
 def _time_split(df: pd.DataFrame, frac: float = 0.8) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -41,8 +42,66 @@ def _binary_auc(y_true: np.ndarray, y_score: np.ndarray) -> float:
     return (rank_sum_pos - (n_pos * (n_pos + 1) / 2)) / (n_pos * n_neg)
 
 
-def _dmatrix(frame: pd.DataFrame, label: pd.Series | None = None) -> xgb.DMatrix:
-    return xgb.DMatrix(frame[FEATURE_COLUMNS], label=label, feature_names=FEATURE_COLUMNS)
+def _recency_weights(as_of_dates: pd.Series, half_life_days: float = 180.0) -> np.ndarray:
+    """Exponentially downweight older rows so training tracks current habits, not stale regimes.
+
+    Training frequency can drift a lot over a multi-year history (season, injury, life changes);
+    weighting by recency keeps the model responsive to how you train *now* rather than an average
+    over behavior that no longer applies.
+    """
+    dates = pd.to_datetime(as_of_dates)
+    age_days = (dates.max() - dates).dt.days.to_numpy()
+    return np.power(0.5, age_days / half_life_days)
+
+
+def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5) -> pd.DataFrame:
+    """Expanding-window backtest across multiple test windows, not just one 80/20 split.
+
+    A single holdout can look better or worse than reality purely because of which season/period
+    landed in the test slice. This retrains on an expanding window and evaluates on the next chunk
+    each fold, so you can see whether classifier AUC is stable or swings a lot fold-to-fold.
+    """
+    ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
+    n = len(ordered)
+    fold_edges = np.linspace(int(n * 0.5), n, n_folds + 1).astype(int)
+
+    rows: list[dict[str, Any]] = []
+    for fold in range(n_folds):
+        train_end = fold_edges[fold]
+        test_end = fold_edges[fold + 1]
+        train = ordered.iloc[:train_end]
+        test = ordered.iloc[train_end:test_end]
+        if test.empty or train["will_train_tomorrow"].nunique() < 2:
+            continue
+
+        clf = xgb.XGBClassifier(
+            objective="binary:logistic",
+            eval_metric="logloss",
+            eta=0.05,
+            max_depth=3,
+            subsample=0.9,
+            colsample_bytree=0.9,
+            n_estimators=300,
+            random_state=42,
+        )
+        clf.fit(train[FEATURE_COLUMNS], train["will_train_tomorrow"], sample_weight=_recency_weights(train["as_of_date"]))
+        probs = clf.predict_proba(test[FEATURE_COLUMNS])[:, 1]
+        y_test = test["will_train_tomorrow"].to_numpy()
+        preds = (probs >= 0.5).astype(int)
+
+        rows.append(
+            {
+                "fold": fold,
+                "n_train": len(train),
+                "n_test": len(test),
+                "positive_rate": float(y_test.mean()),
+                "auc": _binary_auc(y_test, probs),
+                "accuracy": float((preds == y_test).mean()),
+                "baseline_accuracy": float(max(y_test.mean(), 1 - y_test.mean())),
+            }
+        )
+
+    return pd.DataFrame(rows)
 
 
 def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedModels:
@@ -52,28 +111,31 @@ def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedMode
     y_train = clf_train["will_train_tomorrow"]
     y_test = clf_test["will_train_tomorrow"]
 
-    classifier = xgb.train(
-        params={
-            "objective": "binary:logistic",
-            "eval_metric": "logloss",
-            "eta": 0.05,
-            "max_depth": 4,
-            "subsample": 0.9,
-            "colsample_bytree": 0.9,
-            "seed": 42,
-        },
-        dtrain=_dmatrix(clf_train, y_train),
-        num_boost_round=250,
+    classifier = xgb.XGBClassifier(
+        objective="binary:logistic",
+        eval_metric="logloss",
+        eta=0.05,
+        max_depth=3,
+        subsample=0.9,
+        colsample_bytree=0.9,
+        n_estimators=300,
+        random_state=42,
     )
+    classifier.fit(clf_train[FEATURE_COLUMNS], y_train, sample_weight=_recency_weights(clf_train["as_of_date"]))
 
-    probs = classifier.predict(_dmatrix(clf_test))
+    probs = classifier.predict_proba(clf_test[FEATURE_COLUMNS])[:, 1]
     preds = (probs >= 0.5).astype(int)
     accuracy = float((preds == y_test.to_numpy()).mean())
+    baseline_accuracy = float(max(y_test.mean(), 1 - y_test.mean()))
     auc = _binary_auc(y_test.to_numpy(), probs)
-    print(f"[model] classifier_accuracy={accuracy:.3f}")
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        y_test.to_numpy(), preds, average="binary", zero_division=0
+    )
+    print(f"[model] classifier_accuracy={accuracy:.3f} (baseline={baseline_accuracy:.3f})")
     print(f"[model] classifier_auc={auc:.3f}" if not np.isnan(auc) else "[model] classifier_auc=nan")
+    print(f"[model] classifier_precision={precision:.3f} recall={recall:.3f} f1={f1:.3f}")
 
-    reg_rows = ordered[(ordered["will_train_tomorrow"] == 1) & ordered["next_day_relative_effort"].notna()].copy()
+    reg_rows = ordered[ordered["will_train_tomorrow"] == 1].copy() # only predict effort when there is an effort, Binary model runs first
     if len(reg_rows) < 3:
         raise ValueError("Need at least 3 positive-label rows to train the effort regressor")
 
@@ -81,20 +143,18 @@ def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedMode
     yr_train = reg_train["next_day_relative_effort"]
     yr_test = reg_test["next_day_relative_effort"]
 
-    regressor = xgb.train(
-        params={
-            "objective": "reg:squarederror",
-            "eta": 0.05,
-            "max_depth": 4,
-            "subsample": 0.9,
-            "colsample_bytree": 0.9,
-            "seed": 42,
-        },
-        dtrain=_dmatrix(reg_train, yr_train),
-        num_boost_round=300,
+    regressor = xgb.XGBRegressor(
+        objective="reg:absoluteerror",  # optimize MAE directly, robust to the long-tail effort outliers
+        eta=0.05,
+        max_depth=3,
+        subsample=0.9,
+        colsample_bytree=0.9,
+        n_estimators=300,
+        random_state=42,
     )
+    regressor.fit(reg_train[FEATURE_COLUMNS], yr_train, sample_weight=_recency_weights(reg_train["as_of_date"]))
 
-    reg_preds = regressor.predict(_dmatrix(reg_test))
+    reg_preds = regressor.predict(reg_test[FEATURE_COLUMNS])
     mae = float(np.mean(np.abs(reg_preds - yr_test.to_numpy())))
     print(f"[model] regressor_mae={mae:.3f}")
 
@@ -106,18 +166,37 @@ def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedMode
 
 
 def load_models(model_dir: Path) -> TrainedModels:
-    classifier = xgb.Booster()
-    regressor = xgb.Booster()
+    classifier = xgb.XGBClassifier()
+    regressor = xgb.XGBRegressor()
     classifier.load_model(str(model_dir / CLASSIFIER_MODEL_PATH))
     regressor.load_model(str(model_dir / REGRESSOR_MODEL_PATH))
     return TrainedModels(classifier=classifier, regressor=regressor)
 
 
+def evaluate_models(models: TrainedModels, dataset: pd.DataFrame) -> dict[str, np.ndarray]:
+    """Reproduce the same time-based test split used during training, for notebook analysis."""
+    ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
+
+    _, clf_test = _time_split(ordered)
+    probs = models.classifier.predict_proba(clf_test[FEATURE_COLUMNS])[:, 1]
+
+    reg_rows = ordered[ordered["will_train_tomorrow"] == 1].copy()
+    _, reg_test = _time_split(reg_rows)
+    reg_preds = models.regressor.predict(reg_test[FEATURE_COLUMNS])
+
+    return {
+        "y_test": clf_test["will_train_tomorrow"].to_numpy(),
+        "probs": probs,
+        "reg_true": reg_test["next_day_relative_effort"].to_numpy(),
+        "reg_pred": reg_preds,
+    }
+
+
 def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> dict[str, Any]:
-    matrix = _dmatrix(tomorrow_features)
-    probability = float(models.classifier.predict(matrix)[0])
+    features = tomorrow_features[FEATURE_COLUMNS]
+    probability = float(models.classifier.predict_proba(features)[0, 1])
     will_train = probability >= 0.5
-    predicted_effort = float(models.regressor.predict(matrix)[0]) if will_train else None
+    predicted_effort = float(models.regressor.predict(features)[0]) if will_train else None
     return {
         "will_train": bool(will_train),
         "probability": probability,
@@ -125,6 +204,7 @@ def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> 
     }
 
 
-def feature_contributions(model: xgb.Booster, feature_row: pd.DataFrame) -> dict[str, float]:
-    contribs = model.predict(_dmatrix(feature_row), pred_contribs=True)[0]
+def feature_contributions(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, float]:
+    matrix = xgb.DMatrix(feature_row[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
+    contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
     return {name: float(value) for name, value in zip(FEATURE_COLUMNS, contribs[:-1], strict=True)}

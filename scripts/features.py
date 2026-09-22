@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import Any
 
 import numpy as np
@@ -13,9 +13,21 @@ FEATURE_COLUMNS = [
     "atl_ctl_ratio",
     "days_since_last_hard",
     "streak_length",
+    "trained_today",
+    "trained_hard_today",
+    "trained_days_2",
+    "trained_both_days_2",
+    "trained_days_7",
+    "trained_days_30",
+    "moving_time_acute_7",
+    "moving_time_chronic_28",
+    "today_relative_effort",
+    "dow_train_rate",
+    "month_train_rate",
     "day_of_week",
     "month",
     "season",
+    "days_since_last_long_ride",
     "forecast_temp_high",
     "forecast_temp_low",
     "forecast_precip_probability",
@@ -41,7 +53,12 @@ def _season_from_month(month: int) -> int:
     return 3
 
 
-def _daily_activity_frame(activities: pd.DataFrame) -> pd.DataFrame:
+def _daily_activity_frame(activities: pd.DataFrame, as_of_day: date | None = None) -> pd.DataFrame:
+    """Build a full daily frame through as_of_day (default: yesterday), not just the last logged activity.
+
+    Without this, resting for a day or two with nothing logged in Strava would silently shrink the
+    frame to end at the last active day, making "tomorrow" predictions land on an already-past date.
+    """
     if activities.empty:
         raise ValueError("No activities returned from Strava for the configured lookback window")
 
@@ -64,22 +81,52 @@ def _daily_activity_frame(activities: pd.DataFrame) -> pd.DataFrame:
         .sort_index()
     )
 
-    full_index = pd.date_range(start=daily.index.min(), end=daily.index.max(), freq="D").date
+    end_day = max(daily.index.max(), as_of_day) if as_of_day is not None else daily.index.max()
+    full_index = pd.date_range(start=daily.index.min(), end=end_day, freq="D").date
     daily = daily.reindex(full_index, fill_value=0.0)
     daily.index.name = "date"
     daily["trained_today"] = (daily["relative_effort"] > 0).astype(int)
     return daily
 
 
-def _compute_state_features(daily: pd.DataFrame, hard_threshold: float) -> pd.DataFrame:
+def _same_weekday_rate(state: pd.DataFrame) -> pd.Series:
+    """Causal training rate for each date's weekday, using only strictly earlier same-weekday dates."""
+    weekday = pd.Series([d.weekday() for d in state.index], index=state.index)
+    rate = pd.Series(index=state.index, dtype=float)
+    for _, idx in weekday.groupby(weekday).groups.items():
+        rate.loc[idx] = state.loc[idx, "trained_today"].shift(1).expanding().mean()
+    return rate.fillna(0.5)
+
+
+def _same_month_rate(state: pd.DataFrame) -> pd.Series:
+    """Causal training rate for each date's month (across years), capturing seasonal training windows."""
+    month = pd.Series([d.month for d in state.index], index=state.index)
+    rate = pd.Series(index=state.index, dtype=float)
+    for _, idx in month.groupby(month).groups.items():
+        rate.loc[idx] = state.loc[idx, "trained_today"].shift(1).expanding().mean()
+    return rate.fillna(0.5)
+
+
+def _compute_state_features(daily: pd.DataFrame, hard_threshold: float, long_threshold: float) -> pd.DataFrame:
     state = daily.copy()
     state["acute_load_7"] = state["relative_effort"].ewm(span=7, adjust=False).mean()
     state["chronic_load_28"] = state["relative_effort"].ewm(span=28, adjust=False).mean()
     state["atl_ctl_ratio"] = state["acute_load_7"] / state["chronic_load_28"].replace(0, np.nan)
     state["atl_ctl_ratio"] = state["atl_ctl_ratio"].replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    state["trained_days_2"] = state["trained_today"].rolling(2, min_periods=1).sum()
+    state["trained_both_days_2"] = (state["trained_days_2"] == 2).astype(int)
+    state["trained_hard_today"] = (state["relative_effort"] >= hard_threshold).astype(int)
+    state["trained_days_7"] = state["trained_today"].rolling(7, min_periods=1).sum()
+    state["trained_days_30"] = state["trained_today"].rolling(30, min_periods=1).sum()
+    state["moving_time_acute_7"] = state["moving_time"].ewm(span=7, adjust=False).mean()
+    state["moving_time_chronic_28"] = state["moving_time"].ewm(span=28, adjust=False).mean()
+    state["same_weekday_rate"] = _same_weekday_rate(state)
+    state["same_month_rate"] = _same_month_rate(state)
 
     last_hard: Any = None
+    last_long: Any = None
     hard_days: list[int] = []
+    long_days: list[int] = []
     streak: list[int] = []
     running_streak = 0
 
@@ -88,6 +135,10 @@ def _compute_state_features(daily: pd.DataFrame, hard_threshold: float) -> pd.Da
             last_hard = day
         hard_days.append((day - last_hard).days if last_hard is not None else 999)
 
+        if row["distance"] >= long_threshold and row["distance"] > 0:
+            last_long = day
+        long_days.append((day - last_long).days if last_long is not None else 999)
+
         if row["trained_today"] == 1:
             running_streak += 1
         else:
@@ -95,22 +146,35 @@ def _compute_state_features(daily: pd.DataFrame, hard_threshold: float) -> pd.Da
         streak.append(running_streak)
 
     state["days_since_last_hard"] = hard_days
+    state["days_since_last_long_ride"] = long_days
     state["streak_length"] = streak
     return state
 
 
-def prepare_datasets(activities: pd.DataFrame, tomorrow_weather: dict[str, Any]) -> PreparedData:
+def prepare_datasets(
+    activities: pd.DataFrame,
+    tomorrow_weather: dict[str, Any],
+    historical_weather: pd.DataFrame | None = None,
+    run_date: date | None = None,
+) -> PreparedData:
     """Build leakage-safe historical labels and tomorrow's feature row.
 
-    Historical rows intentionally leave forecast-weather fields as NaN because this pipeline
-    does not yet persist a daily archived forecast feed. Using observed weather hindsight here
-    would leak information unavailable at prediction time.
+    historical_weather, when provided, is a DataFrame indexed by date with columns
+    temp_high/temp_low/precip_probability/wind_speed (see weather_client.fetch_historical_weather).
+    Dates missing from it fall back to NaN.
+
+    run_date defaults to today. The daily frame is built through yesterday (run_date - 1 day) so a
+    recent rest day with nothing logged in Strava doesn't shrink the frame and land "tomorrow"'s
+    prediction on an already-past date.
     """
 
-    daily = _daily_activity_frame(activities)
+    yesterday = (run_date or date.today()) - timedelta(days=1)
+    daily = _daily_activity_frame(activities, as_of_day=yesterday)
     nonzero_effort = daily.loc[daily["relative_effort"] > 0, "relative_effort"]
-    hard_threshold = float(nonzero_effort.quantile(0.75)) if not nonzero_effort.empty else 0.0
-    state = _compute_state_features(daily, hard_threshold)
+    hard_threshold = float(nonzero_effort.quantile(0.6)) if not nonzero_effort.empty else 0.0
+    nonzero_distance = daily.loc[daily["distance"] > 0, "distance"]
+    long_threshold = float(nonzero_distance.quantile(0.75)) if not nonzero_distance.empty else 0.0
+    state = _compute_state_features(daily, hard_threshold, long_threshold)
 
     rows: list[dict[str, Any]] = []
     all_days = list(state.index)
@@ -119,6 +183,16 @@ def prepare_datasets(activities: pd.DataFrame, tomorrow_weather: dict[str, Any])
         next_day = all_days[pos + 1]
         next_row = state.loc[next_day]
         today_row = state.loc[as_of_day]
+
+        if historical_weather is not None and next_day in historical_weather.index:
+            weather_row = historical_weather.loc[next_day]
+            forecast_temp_high = float(weather_row["temp_high"])
+            forecast_temp_low = float(weather_row["temp_low"])
+            forecast_precip_probability = float(weather_row["precip_probability"])
+            forecast_wind_speed = float(weather_row["wind_speed"])
+        else:
+            forecast_temp_high = forecast_temp_low = np.nan
+            forecast_precip_probability = forecast_wind_speed = np.nan
 
         rows.append(
             {
@@ -129,19 +203,30 @@ def prepare_datasets(activities: pd.DataFrame, tomorrow_weather: dict[str, Any])
                 "atl_ctl_ratio": float(today_row["atl_ctl_ratio"]),
                 "days_since_last_hard": int(today_row["days_since_last_hard"]),
                 "streak_length": int(today_row["streak_length"]),
+                "trained_today": int(today_row["trained_today"]),
+                "trained_hard_today": int(today_row["trained_hard_today"]),
+                "trained_days_2": float(today_row["trained_days_2"]),
+                "trained_both_days_2": int(today_row["trained_both_days_2"]),
+                "trained_days_7": float(today_row["trained_days_7"]),
+                "trained_days_30": float(today_row["trained_days_30"]),
+                "moving_time_acute_7": float(today_row["moving_time_acute_7"]),
+                "moving_time_chronic_28": float(today_row["moving_time_chronic_28"]),
+                "today_relative_effort": float(today_row["relative_effort"]),
+                "dow_train_rate": float(state.loc[next_day, "same_weekday_rate"]),
+                "month_train_rate": float(state.loc[next_day, "same_month_rate"]),
                 "day_of_week": next_day.weekday(),
                 "month": next_day.month,
                 "season": _season_from_month(next_day.month),
-                "forecast_temp_high": np.nan,
-                "forecast_temp_low": np.nan,
-                "forecast_precip_probability": np.nan,
-                "forecast_wind_speed": np.nan,
+                "days_since_last_long_ride": int(today_row["days_since_last_long_ride"]),
+                "forecast_temp_high": forecast_temp_high,
+                "forecast_temp_low": forecast_temp_low,
+                "forecast_precip_probability": forecast_precip_probability,
+                "forecast_wind_speed": forecast_wind_speed,
                 "will_train_tomorrow": int(next_row["trained_today"]),
-                "next_day_relative_effort": (
-                    float(next_row["relative_effort"]) if next_row["trained_today"] == 1 else np.nan
-                ),
+                "next_day_relative_effort": float(next_row["relative_effort"]),
             }
         )
+
 
     historical = pd.DataFrame(rows)
     if historical.empty:
@@ -150,6 +235,10 @@ def prepare_datasets(activities: pd.DataFrame, tomorrow_weather: dict[str, Any])
     most_recent_day = all_days[-1]
     target_day = most_recent_day + timedelta(days=1)
     recent = state.loc[most_recent_day]
+    target_dow_mask = [d.weekday() == target_day.weekday() for d in state.index]
+    target_dow_rate = float(state.loc[target_dow_mask, "trained_today"].mean()) if any(target_dow_mask) else 0.5
+    target_month_mask = [d.month == target_day.month for d in state.index]
+    target_month_rate = float(state.loc[target_month_mask, "trained_today"].mean()) if any(target_month_mask) else 0.5
     tomorrow_features = pd.DataFrame(
         [
             {
@@ -160,9 +249,21 @@ def prepare_datasets(activities: pd.DataFrame, tomorrow_weather: dict[str, Any])
                 "atl_ctl_ratio": float(recent["atl_ctl_ratio"]),
                 "days_since_last_hard": int(recent["days_since_last_hard"]),
                 "streak_length": int(recent["streak_length"]),
+                "trained_today": int(recent["trained_today"]),
+                "trained_hard_today": int(recent["trained_hard_today"]),
+                "trained_days_2": float(recent["trained_days_2"]),
+                "trained_both_days_2": int(recent["trained_both_days_2"]),
+                "trained_days_7": float(recent["trained_days_7"]),
+                "trained_days_30": float(recent["trained_days_30"]),
+                "moving_time_acute_7": float(recent["moving_time_acute_7"]),
+                "moving_time_chronic_28": float(recent["moving_time_chronic_28"]),
+                "today_relative_effort": float(recent["relative_effort"]),
+                "dow_train_rate": target_dow_rate,
+                "month_train_rate": target_month_rate,
                 "day_of_week": target_day.weekday(),
                 "month": target_day.month,
                 "season": _season_from_month(target_day.month),
+                "days_since_last_long_ride": int(recent["days_since_last_long_ride"]),
                 "forecast_temp_high": float(tomorrow_weather["temp_high"]),
                 "forecast_temp_low": float(tomorrow_weather["temp_low"]),
                 "forecast_precip_probability": float(tomorrow_weather["precip_probability"]),

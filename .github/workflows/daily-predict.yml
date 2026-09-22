@@ -30,6 +30,7 @@ jobs:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FORECAST_LAT: ${{ vars.FORECAST_LAT }}
           FORECAST_LON: ${{ vars.FORECAST_LON }}
           GH_TOKEN: ${{ github.token }}
