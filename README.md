@@ -85,6 +85,7 @@ export NEXT_PUBLIC_PREDICTION_URL="https://raw.githubusercontent.com/loganmckerl
 ## GitHub Actions
 
 `.github/workflows/daily-predict.yml` runs daily and on manual dispatch.
+The workflow job targets the `production - predictions` environment, so configure the listed secrets/variables there.
 
 Required repository secrets:
 
