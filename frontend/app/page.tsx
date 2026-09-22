@@ -53,6 +53,27 @@ function isFiniteNumber(value: number | null | undefined): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function describeDistribution(distribution: NonNullable<Contributor["distribution"]>) {
+  const restAverage = average(distribution.rest_values);
+  const trainAverage = average(distribution.train_values);
+  const currentText = isFiniteNumber(distribution.current_value)
+    ? `Current value ${distribution.current_value.toFixed(1)}.`
+    : "Current value unavailable.";
+  const restText =
+    restAverage === null
+      ? "No rest-day samples available."
+      : `Rest average ${restAverage.toFixed(1)} across ${distribution.rest_values.length} days.`;
+  const trainText =
+    trainAverage === null
+      ? "No training-day samples available."
+      : `Train average ${trainAverage.toFixed(1)} across ${distribution.train_values.length} days.`;
+
+  return {
+    visible: `${currentText} ${restText} ${trainText}`,
+    accessible: `${currentText} ${restText} ${trainText}`,
+  };
+}
+
 type HistogramPoint = {
   restCount: number;
   trainCount: number;
@@ -73,8 +94,16 @@ function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
     return null;
   }
 
-  let min = Math.min(...values);
-  let max = Math.max(...values);
+  let min = values[0];
+  let max = values[0];
+  for (const value of values) {
+    if (value < min) {
+      min = value;
+    }
+    if (value > max) {
+      max = value;
+    }
+  }
   if (min === max) {
     min -= 0.5;
     max += 0.5;
@@ -183,6 +212,7 @@ export default async function Home() {
                 if (!histogram) {
                   return null;
                 }
+                const summary = describeDistribution(distribution);
 
                 return (
                   <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -200,12 +230,8 @@ export default async function Home() {
                         value {isFiniteNumber(distribution.current_value) ? distribution.current_value.toFixed(1) : "n/a"}
                       </span>
                     </div>
-                    <p className="mt-2 text-xs text-slate-500">
-                      Rest avg {average(distribution.rest_values)?.toFixed(1) ?? "—"} across{" "}
-                      {distribution.rest_values.length} days; train avg{" "}
-                      {average(distribution.train_values)?.toFixed(1) ?? "—"} across{" "}
-                      {distribution.train_values.length} days.
-                    </p>
+                    <p className="mt-2 text-xs text-slate-500">{summary.visible}</p>
+                    <p className="sr-only">{summary.accessible}</p>
                     <div className="relative mt-3 h-32">
                       <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
                         {histogram.points.map((point, index) => {
