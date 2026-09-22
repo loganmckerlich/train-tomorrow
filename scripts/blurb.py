@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 import os
 import random
 from datetime import date
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 PHRASE_BANK: dict[str, str] = {
     "acute_load_7": "recent training load in your legs",
@@ -29,6 +32,7 @@ PHRASE_BANK: dict[str, str] = {
     "forecast_temp_high": "the daytime temperature forecast",
     "forecast_temp_low": "the overnight low",
     "forecast_precip_probability": "rain in the forecast",
+    "forecast_rain_expected": "whether rain is expected at all",
     "forecast_wind_speed": "the wind forecast",
 }
 
@@ -114,6 +118,7 @@ def generate_blurb_llm(
     top_contributors: list[dict[str, Any]],
     fallback_blurb: str,
     tone: str = "sassy",
+    gemini_model: str = "gemini-3.6-flash",
 ) -> str:
     """Have Gemini write the summary directly from the raw prediction data (no template scaffold).
 
@@ -135,10 +140,10 @@ def generate_blurb_llm(
             tone=tone,
         )
         client = genai.Client(api_key=api_key)
-        chat = client.chats.create(model="gemini-3.6-flash")
+        chat = client.chats.create(model=gemini_model)
         response = chat.send_message(prompt)
         polished = (response.text or "").strip()
         return polished or fallback_blurb
     except Exception as e:
-        print(f"Error generating blurb with LLM: {e}")
+        logger.warning("Error generating blurb with LLM: %s", e)
         return fallback_blurb

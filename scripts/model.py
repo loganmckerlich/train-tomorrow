@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,17 @@ from features import FEATURE_COLUMNS
 
 CLASSIFIER_MODEL_PATH = "classifier.json"
 REGRESSOR_MODEL_PATH = "regressor.json"
+
+DEFAULT_XGB_PARAMS: dict[str, Any] = {
+    "eta": 0.05,
+    "max_depth": 3,
+    "subsample": 0.9,
+    "colsample_bytree": 0.9,
+    "n_estimators": 300,
+    "random_state": 42,
+}
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -54,7 +66,7 @@ def _recency_weights(as_of_dates: pd.Series, half_life_days: float = 180.0) -> n
     return np.power(0.5, age_days / half_life_days)
 
 
-def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5) -> pd.DataFrame:
+def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5, xgb_params: dict[str, Any] | None = None) -> pd.DataFrame:
     """Expanding-window backtest across multiple test windows, not just one 80/20 split.
 
     A single holdout can look better or worse than reality purely because of which season/period
@@ -64,6 +76,7 @@ def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5) -> pd.DataFra
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
     n = len(ordered)
     fold_edges = np.linspace(int(n * 0.5), n, n_folds + 1).astype(int)
+    merged_xgb_params = {**DEFAULT_XGB_PARAMS, **(xgb_params or {})}
 
     rows: list[dict[str, Any]] = []
     for fold in range(n_folds):
@@ -74,16 +87,7 @@ def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5) -> pd.DataFra
         if test.empty or train["will_train_tomorrow"].nunique() < 2:
             continue
 
-        clf = xgb.XGBClassifier(
-            objective="binary:logistic",
-            eval_metric="logloss",
-            eta=0.05,
-            max_depth=3,
-            subsample=0.9,
-            colsample_bytree=0.9,
-            n_estimators=300,
-            random_state=42,
-        )
+        clf = xgb.XGBClassifier(objective="binary:logistic", eval_metric="logloss", **merged_xgb_params)
         clf.fit(train[FEATURE_COLUMNS], train["will_train_tomorrow"], sample_weight=_recency_weights(train["as_of_date"]))
         probs = clf.predict_proba(test[FEATURE_COLUMNS])[:, 1]
         y_test = test["will_train_tomorrow"].to_numpy()
@@ -104,24 +108,24 @@ def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5) -> pd.DataFra
     return pd.DataFrame(rows)
 
 
-def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedModels:
+def train_and_save_models(
+    dataset: pd.DataFrame,
+    model_dir: Path,
+    split_frac: float = 0.8,
+    half_life_days: float = 180.0,
+    xgb_params: dict[str, Any] | None = None,
+) -> TrainedModels:
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
+    merged_xgb_params = {**DEFAULT_XGB_PARAMS, **(xgb_params or {})}
 
-    clf_train, clf_test = _time_split(ordered)
+    clf_train, clf_test = _time_split(ordered, frac=split_frac)
     y_train = clf_train["will_train_tomorrow"]
     y_test = clf_test["will_train_tomorrow"]
 
-    classifier = xgb.XGBClassifier(
-        objective="binary:logistic",
-        eval_metric="logloss",
-        eta=0.05,
-        max_depth=3,
-        subsample=0.9,
-        colsample_bytree=0.9,
-        n_estimators=300,
-        random_state=42,
+    classifier = xgb.XGBClassifier(objective="binary:logistic", eval_metric="logloss", **merged_xgb_params)
+    classifier.fit(
+        clf_train[FEATURE_COLUMNS], y_train, sample_weight=_recency_weights(clf_train["as_of_date"], half_life_days)
     )
-    classifier.fit(clf_train[FEATURE_COLUMNS], y_train, sample_weight=_recency_weights(clf_train["as_of_date"]))
 
     probs = classifier.predict_proba(clf_test[FEATURE_COLUMNS])[:, 1]
     preds = (probs >= 0.5).astype(int)
@@ -131,32 +135,45 @@ def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedMode
     precision, recall, f1, _ = precision_recall_fscore_support(
         y_test.to_numpy(), preds, average="binary", zero_division=0
     )
-    print(f"[model] classifier_accuracy={accuracy:.3f} (baseline={baseline_accuracy:.3f})")
-    print(f"[model] classifier_auc={auc:.3f}" if not np.isnan(auc) else "[model] classifier_auc=nan")
-    print(f"[model] classifier_precision={precision:.3f} recall={recall:.3f} f1={f1:.3f}")
+    logger.info("classifier_accuracy=%.3f (baseline=%.3f)", accuracy, baseline_accuracy)
+    logger.info("classifier_auc=%s", f"{auc:.3f}" if not np.isnan(auc) else "nan")
+    logger.info("classifier_precision=%.3f recall=%.3f f1=%.3f", precision, recall, f1)
+
+    # Metrics above reflect the held-out split; refit on all rows so the saved model also learns
+    # from the newest data instead of only ever seeing it as an evaluation set.
+    logger.info("refitting classifier on full dataset (n=%d) before saving", len(ordered))
+    classifier.fit(
+        ordered[FEATURE_COLUMNS],
+        ordered["will_train_tomorrow"],
+        sample_weight=_recency_weights(ordered["as_of_date"], half_life_days),
+    )
 
     reg_rows = ordered[ordered["will_train_tomorrow"] == 1].copy() # only predict effort when there is an effort, Binary model runs first
     if len(reg_rows) < 3:
         raise ValueError("Need at least 3 positive-label rows to train the effort regressor")
 
-    reg_train, reg_test = _time_split(reg_rows)
+    reg_train, reg_test = _time_split(reg_rows, frac=split_frac)
     yr_train = reg_train["next_day_relative_effort"]
     yr_test = reg_test["next_day_relative_effort"]
 
     regressor = xgb.XGBRegressor(
         objective="reg:absoluteerror",  # optimize MAE directly, robust to the long-tail effort outliers
-        eta=0.05,
-        max_depth=3,
-        subsample=0.9,
-        colsample_bytree=0.9,
-        n_estimators=300,
-        random_state=42,
+        **merged_xgb_params,
     )
-    regressor.fit(reg_train[FEATURE_COLUMNS], yr_train, sample_weight=_recency_weights(reg_train["as_of_date"]))
+    regressor.fit(
+        reg_train[FEATURE_COLUMNS], yr_train, sample_weight=_recency_weights(reg_train["as_of_date"], half_life_days)
+    )
 
     reg_preds = regressor.predict(reg_test[FEATURE_COLUMNS])
     mae = float(np.mean(np.abs(reg_preds - yr_test.to_numpy())))
-    print(f"[model] regressor_mae={mae:.3f}")
+    logger.info("regressor_mae=%.3f", mae)
+
+    logger.info("refitting regressor on full positive-label dataset (n=%d) before saving", len(reg_rows))
+    regressor.fit(
+        reg_rows[FEATURE_COLUMNS],
+        reg_rows["next_day_relative_effort"],
+        sample_weight=_recency_weights(reg_rows["as_of_date"], half_life_days),
+    )
 
     model_dir.mkdir(parents=True, exist_ok=True)
     classifier.save_model(str(model_dir / CLASSIFIER_MODEL_PATH))

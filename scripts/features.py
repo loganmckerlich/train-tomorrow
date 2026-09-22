@@ -31,6 +31,7 @@ FEATURE_COLUMNS = [
     "forecast_temp_high",
     "forecast_temp_low",
     "forecast_precip_probability",
+    "forecast_rain_expected",
     "forecast_wind_speed",
 ]
 
@@ -156,6 +157,8 @@ def prepare_datasets(
     tomorrow_weather: dict[str, Any],
     historical_weather: pd.DataFrame | None = None,
     run_date: date | None = None,
+    hard_effort_quantile: float = 0.6,
+    long_ride_quantile: float = 0.75,
 ) -> PreparedData:
     """Build leakage-safe historical labels and tomorrow's feature row.
 
@@ -171,9 +174,9 @@ def prepare_datasets(
     yesterday = (run_date or date.today()) - timedelta(days=1)
     daily = _daily_activity_frame(activities, as_of_day=yesterday)
     nonzero_effort = daily.loc[daily["relative_effort"] > 0, "relative_effort"]
-    hard_threshold = float(nonzero_effort.quantile(0.6)) if not nonzero_effort.empty else 0.0
+    hard_threshold = float(nonzero_effort.quantile(hard_effort_quantile)) if not nonzero_effort.empty else 0.0
     nonzero_distance = daily.loc[daily["distance"] > 0, "distance"]
-    long_threshold = float(nonzero_distance.quantile(0.75)) if not nonzero_distance.empty else 0.0
+    long_threshold = float(nonzero_distance.quantile(long_ride_quantile)) if not nonzero_distance.empty else 0.0
     state = _compute_state_features(daily, hard_threshold, long_threshold)
 
     rows: list[dict[str, Any]] = []
@@ -221,6 +224,7 @@ def prepare_datasets(
                 "forecast_temp_high": forecast_temp_high,
                 "forecast_temp_low": forecast_temp_low,
                 "forecast_precip_probability": forecast_precip_probability,
+                "forecast_rain_expected": int(forecast_precip_probability > 0) if not np.isnan(forecast_precip_probability) else 0,
                 "forecast_wind_speed": forecast_wind_speed,
                 "will_train_tomorrow": int(next_row["trained_today"]),
                 "next_day_relative_effort": float(next_row["relative_effort"]),
@@ -267,6 +271,7 @@ def prepare_datasets(
                 "forecast_temp_high": float(tomorrow_weather["temp_high"]),
                 "forecast_temp_low": float(tomorrow_weather["temp_low"]),
                 "forecast_precip_probability": float(tomorrow_weather["precip_probability"]),
+                "forecast_rain_expected": int(float(tomorrow_weather["precip_probability"]) > 0),
                 "forecast_wind_speed": float(tomorrow_weather["wind_speed"]),
             }
         ]

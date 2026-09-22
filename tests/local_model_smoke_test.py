@@ -1,13 +1,19 @@
 from __future__ import annotations
 
+import logging
+import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))  # allow importing sibling scripts modules
 
 import pandas as pd
 
 from blurb import generate_blurb, summarize_top_contributors
 from features import prepare_datasets
 from model import feature_contributions, predict_tomorrow, train_and_save_models
+
+logger = logging.getLogger(__name__)
 
 
 def _synthetic_activities(days: int = 120) -> pd.DataFrame:
@@ -52,16 +58,18 @@ def main() -> None:
         top_contributors=top_contributors,
     )
 
-    print("Local modeling smoke test passed.")
-    print(
+    logger.info("Local modeling smoke test passed.")
+    logger.info(
+        "%s",
         {
             "probability": round(float(prediction["probability"]), 4),
             "predicted_effort": prediction["predicted_effort"],
             "top_contributor": top_contributors[0]["feature"] if top_contributors else None,
             "blurb_preview": blurb,
-        }
+        },
     )
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     main()

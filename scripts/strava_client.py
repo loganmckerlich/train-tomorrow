@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import math
 import os
 import shutil
@@ -13,6 +14,8 @@ import requests
 STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token"
 STRAVA_ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
 EARTH_RADIUS_MILES = 3958.8
+
+logger = logging.getLogger(__name__)
 
 
 def exchange_refresh_token() -> dict[str, Any]:
@@ -49,7 +52,7 @@ def update_refresh_token_secret(new_refresh_token: str) -> None:
     gh_token = os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN")
     gh_path = shutil.which("gh")
     if not repo or not gh_token or not gh_path:
-        print("[strava] Skipping STRAVA_REFRESH_TOKEN rotation (gh/repo/token unavailable).")
+        logger.warning("Skipping STRAVA_REFRESH_TOKEN rotation (gh/repo/token unavailable).")
         return
 
     env = os.environ.copy()
@@ -57,9 +60,9 @@ def update_refresh_token_secret(new_refresh_token: str) -> None:
     cmd = [gh_path, "secret", "set", "STRAVA_REFRESH_TOKEN", "--repo", repo, "--body", new_refresh_token]
     try:
         subprocess.run(cmd, check=True, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        print("[strava] Rotated STRAVA_REFRESH_TOKEN secret.")
+        logger.info("Rotated STRAVA_REFRESH_TOKEN secret.")
     except subprocess.CalledProcessError as exc:
-        print(f"[strava] Failed to rotate STRAVA_REFRESH_TOKEN secret: {exc.stderr.strip()}")
+        logger.error("Failed to rotate STRAVA_REFRESH_TOKEN secret: %s", exc.stderr.strip())
 
 
 def fetch_recent_activities(access_token: str, days_back: int = 90) -> pd.DataFrame:
@@ -113,8 +116,7 @@ def fetch_recent_activities(access_token: str, days_back: int = 90) -> pd.DataFr
             )
         page += 1
 
-    #TODO proper logging
-    print(f"Fetched {len(records)} activities from Strava. Used {page-1} pages to get {days_back} days")
+    logger.info("Fetched %d activities from Strava. Used %d pages to get %d days", len(records), page - 1, days_back)
 
     columns = ["date", "type", "moving_time", "distance", "relative_effort", "average_watts", "start_lat", "start_lng"]
     return pd.DataFrame(records, columns=columns)
