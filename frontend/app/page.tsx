@@ -6,7 +6,7 @@ type Contributor = {
   direction: "helping" | "hurting";
   phrase: string;
   distribution?: {
-    current_value: number;
+    current_value: number | null;
     train_values: number[];
     rest_values: number[];
   };
@@ -49,6 +49,10 @@ function average(values: number[]): number | null {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
+function isFiniteNumber(value: number | null | undefined): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
 type HistogramPoint = {
   restCount: number;
   trainCount: number;
@@ -62,8 +66,8 @@ function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
   const values = [
     ...distribution.rest_values,
     ...distribution.train_values,
-    distribution.current_value,
-  ].filter(Number.isFinite);
+    ...(isFiniteNumber(distribution.current_value) ? [distribution.current_value] : []),
+  ];
 
   if (values.length === 0) {
     return null;
@@ -94,7 +98,9 @@ function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
 
   return {
     points,
-    currentPosition: Math.max(0, Math.min(100, ((distribution.current_value - min) / range) * 100)),
+    currentPosition: isFiniteNumber(distribution.current_value)
+      ? Math.max(0, Math.min(100, ((distribution.current_value - min) / range) * 100))
+      : null,
     maxCount: Math.max(1, ...points.flatMap((point) => [point.restCount, point.trainCount])),
   };
 }
@@ -191,7 +197,7 @@ export default async function Home() {
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <span className="h-3 w-px bg-slate-900" />
-                        value {distribution.current_value.toFixed(1)}
+                        value {isFiniteNumber(distribution.current_value) ? distribution.current_value.toFixed(1) : "n/a"}
                       </span>
                     </div>
                     <p className="mt-2 text-xs text-slate-500">
@@ -229,14 +235,16 @@ export default async function Home() {
                             </g>
                           );
                         })}
-                        <line
-                          x1={histogram.currentPosition}
-                          x2={histogram.currentPosition}
-                          y1="0"
-                          y2="100"
-                          className="stroke-slate-900"
-                          strokeWidth="1.5"
-                        />
+                        {histogram.currentPosition !== null ? (
+                          <line
+                            x1={histogram.currentPosition}
+                            x2={histogram.currentPosition}
+                            y1="0"
+                            y2="100"
+                            className="stroke-slate-900"
+                            strokeWidth="1.5"
+                          />
+                        ) : null}
                       </svg>
                     </div>
                   </div>

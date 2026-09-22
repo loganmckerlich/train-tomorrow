@@ -62,7 +62,7 @@ def main() -> None:
     assert top_contributors
     for contributor in top_contributors:
         distribution = contributor["distribution"]
-        assert isinstance(distribution["current_value"], float)
+        assert distribution["current_value"] is None or isinstance(distribution["current_value"], float)
         assert distribution["train_values"]
         assert distribution["rest_values"]
 
