@@ -229,71 +229,76 @@ export default async function Home() {
                 const summary = describeDistribution(distribution);
 
                 return (
-                  <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
-                      <span className="inline-flex items-center gap-1">
-                        <span className="h-2.5 w-3 rounded-sm border border-amber-600 bg-amber-100" />
-                        rest
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <span className="h-2.5 w-1.5 rounded-sm bg-sky-500" />
-                        train
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <span className="h-3 w-px bg-slate-900" />
-                        value {isFiniteNumber(distribution.current_value) ? distribution.current_value.toFixed(1) : "n/a"}
-                      </span>
+                  <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <summary className="cursor-pointer text-xs font-medium text-slate-700">
+                      Show distribution histogram
+                    </summary>
+                    <div className="mt-3">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+                        <span className="inline-flex items-center gap-1">
+                          <span className="h-2.5 w-3 rounded-sm border border-amber-600 bg-amber-100" />
+                          rest
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <span className="h-2.5 w-1.5 rounded-sm bg-sky-500" />
+                          train
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <span className="h-3 w-px bg-slate-900" />
+                          value {isFiniteNumber(distribution.current_value) ? distribution.current_value.toFixed(1) : "n/a"}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-xs text-slate-500">{summary.visible}</p>
+                      <p className="sr-only">{summary.accessible}</p>
+                      <div className="relative mt-3 h-32">
+                        <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
+                          {histogram.points.map((point, index) => {
+                            const x = (index * 100) / histogram.points.length;
+                            const width = 100 / histogram.points.length;
+                            const restHeight = (point.restCount / histogram.maxCount) * 100;
+                            const trainHeight = (point.trainCount / histogram.maxCount) * 100;
+                            return (
+                              <g key={`${item.feature}-${x}`}>
+                                <rect
+                                  x={x}
+                                  y={100 - restHeight}
+                                  width={Math.max(width, 1)}
+                                  height={restHeight}
+                                  rx="1"
+                                  className="fill-amber-500"
+                                  fillOpacity="0.28"
+                                />
+                                <rect
+                                  x={x + width * 0.25}
+                                  y={100 - trainHeight}
+                                  width={Math.max(width * 0.5, 1)}
+                                  height={trainHeight}
+                                  rx="1"
+                                  className="fill-sky-500"
+                                  fillOpacity="0.5"
+                                />
+                              </g>
+                            );
+                          })}
+                          {histogram.currentPosition !== null ? (
+                            <line
+                              x1={histogram.currentPosition}
+                              x2={histogram.currentPosition}
+                              y1="0"
+                              y2="100"
+                              className="stroke-slate-900"
+                              strokeWidth="1.5"
+                            />
+                          ) : null}
+                        </svg>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
+                        <span>{histogram.min.toFixed(1)}</span>
+                        <span>feature value</span>
+                        <span>{histogram.max.toFixed(1)}</span>
+                      </div>
                     </div>
-                    <p className="mt-2 text-xs text-slate-500">{summary.visible}</p>
-                    <p className="sr-only">{summary.accessible}</p>
-                    <div className="relative mt-3 h-32">
-                      <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
-                        {histogram.points.map((point, index) => {
-                          const x = (index * 100) / histogram.points.length;
-                          const width = 100 / histogram.points.length;
-                          const restHeight = (point.restCount / histogram.maxCount) * 100;
-                          const trainHeight = (point.trainCount / histogram.maxCount) * 100;
-                          return (
-                            <g key={`${item.feature}-${x}`}>
-                              <rect
-                                x={x}
-                                y={100 - restHeight}
-                                width={Math.max(width, 1)}
-                                height={restHeight}
-                                rx="1"
-                                className="fill-amber-500"
-                                fillOpacity="0.28"
-                              />
-                              <rect
-                                x={x + width * 0.25}
-                                y={100 - trainHeight}
-                                width={Math.max(width * 0.5, 1)}
-                                height={trainHeight}
-                                rx="1"
-                                className="fill-sky-500"
-                                fillOpacity="0.5"
-                              />
-                            </g>
-                          );
-                        })}
-                        {histogram.currentPosition !== null ? (
-                          <line
-                            x1={histogram.currentPosition}
-                            x2={histogram.currentPosition}
-                            y1="0"
-                            y2="100"
-                            className="stroke-slate-900"
-                            strokeWidth="1.5"
-                          />
-                        ) : null}
-                      </svg>
-                    </div>
-                    <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
-                      <span>{histogram.min.toFixed(1)}</span>
-                      <span>feature value</span>
-                      <span>{histogram.max.toFixed(1)}</span>
-                    </div>
-                  </div>
+                  </details>
                 );
               })()}
             </li>
