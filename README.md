@@ -57,6 +57,17 @@ export FORECAST_LON=-122.4194
 python scripts/run_daily.py
 ```
 
+## Local modeling exploration
+
+```bash
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+python scripts/local_model_smoke_test.py
+jupyter lab scripts/modeling_exploration.ipynb
+```
+
+The smoke test uses synthetic activities and writes temporary model artifacts only.
+
 ## Frontend setup
 
 ```bash
