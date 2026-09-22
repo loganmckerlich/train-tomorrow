@@ -225,3 +225,27 @@ def feature_contributions(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dic
     matrix = xgb.DMatrix(feature_row[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
     contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
     return {name: float(value) for name, value in zip(FEATURE_COLUMNS, contribs[:-1], strict=True)}
+
+
+def attach_feature_distributions(
+    top_contributors: list[dict[str, Any]], historical: pd.DataFrame, feature_row: pd.DataFrame
+) -> list[dict[str, Any]]:
+    current = feature_row.iloc[0]
+    train_mask = historical["will_train_tomorrow"] == 1
+    rest_mask = historical["will_train_tomorrow"] == 0
+
+    enriched: list[dict[str, Any]] = []
+    for contributor in top_contributors:
+        feature = contributor["feature"]
+        values = pd.to_numeric(historical[feature], errors="coerce")
+        enriched.append(
+            {
+                **contributor,
+                "distribution": {
+                    "current_value": round(float(current[feature]), 4),
+                    "train_values": [round(float(value), 4) for value in values[train_mask].dropna().tolist()],
+                    "rest_values": [round(float(value), 4) for value in values[rest_mask].dropna().tolist()],
+                },
+            }
+        )
+    return enriched
