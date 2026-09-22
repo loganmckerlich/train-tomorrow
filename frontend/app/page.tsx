@@ -5,6 +5,11 @@ type Contributor = {
   signed_contribution: number;
   direction: "helping" | "hurting";
   phrase: string;
+  distribution?: {
+    current_value: number | null;
+    train_values: number[];
+    rest_values: number[];
+  };
 };
 
 type PredictionPayload = {
@@ -34,6 +39,99 @@ async function getPrediction(): Promise<PredictionPayload | null> {
 
 function contributorBarWidth(score: number): string {
   return `${Math.max(10, Math.min(100, Math.round(Math.abs(score) * 100)))}%`;
+}
+
+function average(values: number[]): number | null {
+  if (values.length === 0) {
+    return null;
+  }
+
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function isFiniteNumber(value: number | null | undefined): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function describeDistribution(distribution: NonNullable<Contributor["distribution"]>) {
+  const restAverage = average(distribution.rest_values);
+  const trainAverage = average(distribution.train_values);
+  const currentText = isFiniteNumber(distribution.current_value)
+    ? `Current value ${distribution.current_value.toFixed(1)}.`
+    : "Current value unavailable.";
+  const restText =
+    restAverage === null
+      ? "No rest-day samples available."
+      : `Rest average ${restAverage.toFixed(1)} across ${distribution.rest_values.length} days.`;
+  const trainText =
+    trainAverage === null
+      ? "No training-day samples available."
+      : `Train average ${trainAverage.toFixed(1)} across ${distribution.train_values.length} days.`;
+
+  return {
+    visible: `${currentText} ${restText} ${trainText}`,
+    accessible: `${currentText} ${restText} ${trainText}`,
+  };
+}
+
+type HistogramPoint = {
+  restCount: number;
+  trainCount: number;
+};
+
+function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
+  if (!distribution) {
+    return null;
+  }
+
+  const values = [
+    ...distribution.rest_values,
+    ...distribution.train_values,
+    ...(isFiniteNumber(distribution.current_value) ? [distribution.current_value] : []),
+  ];
+
+  if (values.length === 0) {
+    return null;
+  }
+
+  let min = values[0];
+  let max = values[0];
+  for (const value of values) {
+    if (value < min) {
+      min = value;
+    }
+    if (value > max) {
+      max = value;
+    }
+  }
+  if (min === max) {
+    min -= 0.5;
+    max += 0.5;
+  }
+
+  const range = max - min;
+  const points: HistogramPoint[] = Array.from({ length: bins }, () => ({ restCount: 0, trainCount: 0 }));
+  const addValues = (sample: number[], key: keyof HistogramPoint) => {
+    sample.forEach((value) => {
+      if (!Number.isFinite(value)) {
+        return;
+      }
+      const position = (value - min) / range;
+      const index = Math.min(bins - 1, Math.max(0, Math.floor(position * bins)));
+      points[index][key] += 1;
+    });
+  };
+
+  addValues(distribution.rest_values, "restCount");
+  addValues(distribution.train_values, "trainCount");
+
+  return {
+    points,
+    currentPosition: isFiniteNumber(distribution.current_value)
+      ? Math.max(0, Math.min(100, ((distribution.current_value - min) / range) * 100))
+      : null,
+    maxCount: Math.max(1, ...points.flatMap((point) => [point.restCount, point.trainCount])),
+  };
 }
 
 export default async function Home() {
@@ -104,6 +202,80 @@ export default async function Home() {
                   style={{ width: contributorBarWidth(item.signed_contribution) }}
                 />
               </div>
+              {(() => {
+                const distribution = item.distribution;
+                if (!distribution) {
+                  return null;
+                }
+
+                const histogram = buildHistogram(distribution);
+                if (!histogram) {
+                  return null;
+                }
+                const summary = describeDistribution(distribution);
+
+                return (
+                  <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+                      <span className="inline-flex items-center gap-1">
+                        <span className="h-2.5 w-3 rounded-sm border border-amber-600 bg-amber-100" />
+                        rest
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <span className="h-2.5 w-1.5 rounded-sm bg-sky-500" />
+                        train
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <span className="h-3 w-px bg-slate-900" />
+                        value {isFiniteNumber(distribution.current_value) ? distribution.current_value.toFixed(1) : "n/a"}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-xs text-slate-500">{summary.visible}</p>
+                    <p className="sr-only">{summary.accessible}</p>
+                    <div className="relative mt-3 h-32">
+                      <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
+                        {histogram.points.map((point, index) => {
+                          const x = (index * 100) / histogram.points.length;
+                          const width = 100 / histogram.points.length;
+                          const restHeight = (point.restCount / histogram.maxCount) * 100;
+                          const trainHeight = (point.trainCount / histogram.maxCount) * 100;
+                          return (
+                            <g key={`${item.feature}-${x}`}>
+                              <rect
+                                x={x + 0.5}
+                                y={100 - restHeight}
+                                width={Math.max(width - 1, 1)}
+                                height={restHeight}
+                                rx="1"
+                                className="fill-amber-100 stroke-amber-600"
+                                strokeWidth="0.5"
+                              />
+                              <rect
+                                x={x + width * 0.25}
+                                y={100 - trainHeight}
+                                width={Math.max(width * 0.5, 1)}
+                                height={trainHeight}
+                                rx="1"
+                                className="fill-sky-500"
+                              />
+                            </g>
+                          );
+                        })}
+                        {histogram.currentPosition !== null ? (
+                          <line
+                            x1={histogram.currentPosition}
+                            x2={histogram.currentPosition}
+                            y1="0"
+                            y2="100"
+                            className="stroke-slate-900"
+                            strokeWidth="1.5"
+                          />
+                        ) : null}
+                      </svg>
+                    </div>
+                  </div>
+                );
+              })()}
             </li>
           ))}
         </ul>

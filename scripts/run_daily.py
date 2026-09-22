@@ -10,7 +10,7 @@ import yaml
 
 from blurb import generate_blurb, generate_blurb_llm, summarize_top_contributors
 from features import prepare_datasets
-from model import feature_contributions, predict_tomorrow, train_and_save_models
+from model import attach_feature_distributions, feature_contributions, predict_tomorrow, train_and_save_models
 from predictions_log import backfill_outcomes, load_entries, save_entries, upsert_entry
 from strava_client import fetch_activities_dataframe, out_of_range_dates
 from weather_client import DEFAULT_LAT, DEFAULT_LON, fetch_historical_weather, fetch_tomorrow_forecast
@@ -73,6 +73,7 @@ def run_pipeline() -> dict[str, object]:
     prediction = predict_tomorrow(models, prepared.tomorrow_features)
     contribs = feature_contributions(models.classifier, prepared.tomorrow_features)
     top_contributors = summarize_top_contributors(contribs, top_n=blurb_params.get("top_contributors", 3))
+    top_contributors = attach_feature_distributions(top_contributors, prepared.historical, prepared.tomorrow_features)
     blurb = generate_blurb(
         will_train=prediction["will_train"],
         probability=prediction["probability"],

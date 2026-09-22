@@ -11,7 +11,7 @@ import pandas as pd
 
 from blurb import generate_blurb, summarize_top_contributors
 from features import prepare_datasets
-from model import feature_contributions, predict_tomorrow, train_and_save_models
+from model import attach_feature_distributions, feature_contributions, predict_tomorrow, train_and_save_models
 
 logger = logging.getLogger(__name__)
 
@@ -51,12 +51,20 @@ def main() -> None:
         contributions = feature_contributions(models.classifier, prepared.tomorrow_features)
 
     top_contributors = summarize_top_contributors(contributions, top_n=3)
+    top_contributors = attach_feature_distributions(top_contributors, prepared.historical, prepared.tomorrow_features)
     blurb = generate_blurb(
         will_train=prediction["will_train"],
         probability=prediction["probability"],
         predicted_effort=prediction["predicted_effort"],
         top_contributors=top_contributors,
     )
+
+    assert top_contributors
+    for contributor in top_contributors:
+        distribution = contributor["distribution"]
+        assert distribution["current_value"] is None or isinstance(distribution["current_value"], float)
+        assert distribution["train_values"]
+        assert distribution["rest_values"]
 
     logger.info("Local modeling smoke test passed.")
     logger.info(
