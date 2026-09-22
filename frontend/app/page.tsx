@@ -139,6 +139,8 @@ function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
 
   return {
     points,
+    min,
+    max,
     currentPosition: hasCurrentValue
       ? Math.max(0, Math.min(100, ((currentValue - min) / range) * 100))
       : null,
@@ -254,13 +256,13 @@ export default async function Home() {
                           return (
                             <g key={`${item.feature}-${x}`}>
                               <rect
-                                x={x + 0.5}
+                                x={x}
                                 y={100 - restHeight}
-                                width={Math.max(width - 1, 1)}
+                                width={Math.max(width, 1)}
                                 height={restHeight}
                                 rx="1"
-                                className="fill-amber-100 stroke-amber-600"
-                                strokeWidth="0.5"
+                                className="fill-amber-500"
+                                fillOpacity="0.28"
                               />
                               <rect
                                 x={x + width * 0.25}
@@ -269,6 +271,7 @@ export default async function Home() {
                                 height={trainHeight}
                                 rx="1"
                                 className="fill-sky-500"
+                                fillOpacity="0.5"
                               />
                             </g>
                           );
@@ -284,6 +287,11 @@ export default async function Home() {
                           />
                         ) : null}
                       </svg>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
+                      <span>{histogram.min.toFixed(1)}</span>
+                      <span>feature value</span>
+                      <span>{histogram.max.toFixed(1)}</span>
                     </div>
                   </div>
                 );
