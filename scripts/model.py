@@ -16,8 +16,8 @@ REGRESSOR_MODEL_PATH = "regressor.json"
 
 @dataclass
 class TrainedModels:
-    classifier: xgb.XGBClassifier
-    regressor: xgb.XGBRegressor
+    classifier: xgb.Booster
+    regressor: xgb.Booster
 
 
 def _time_split(df: pd.DataFrame, frac: float = 0.8) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -41,28 +41,32 @@ def _binary_auc(y_true: np.ndarray, y_score: np.ndarray) -> float:
     return (rank_sum_pos - (n_pos * (n_pos + 1) / 2)) / (n_pos * n_neg)
 
 
+def _dmatrix(frame: pd.DataFrame, label: pd.Series | None = None) -> xgb.DMatrix:
+    return xgb.DMatrix(frame[FEATURE_COLUMNS], label=label, feature_names=FEATURE_COLUMNS)
+
+
 def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedModels:
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
 
     clf_train, clf_test = _time_split(ordered)
-    X_train = clf_train[FEATURE_COLUMNS]
     y_train = clf_train["will_train_tomorrow"]
-    X_test = clf_test[FEATURE_COLUMNS]
     y_test = clf_test["will_train_tomorrow"]
 
-    classifier = xgb.XGBClassifier(
-        n_estimators=250,
-        learning_rate=0.05,
-        max_depth=4,
-        subsample=0.9,
-        colsample_bytree=0.9,
-        objective="binary:logistic",
-        eval_metric="logloss",
-        random_state=42,
+    classifier = xgb.train(
+        params={
+            "objective": "binary:logistic",
+            "eval_metric": "logloss",
+            "eta": 0.05,
+            "max_depth": 4,
+            "subsample": 0.9,
+            "colsample_bytree": 0.9,
+            "seed": 42,
+        },
+        dtrain=_dmatrix(clf_train, y_train),
+        num_boost_round=250,
     )
-    classifier.fit(X_train, y_train)
 
-    probs = classifier.predict_proba(X_test)[:, 1]
+    probs = classifier.predict(_dmatrix(clf_test))
     preds = (probs >= 0.5).astype(int)
     accuracy = float((preds == y_test.to_numpy()).mean())
     auc = _binary_auc(y_test.to_numpy(), probs)
@@ -74,23 +78,23 @@ def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedMode
         raise ValueError("Need at least 3 positive-label rows to train the effort regressor")
 
     reg_train, reg_test = _time_split(reg_rows)
-    Xr_train = reg_train[FEATURE_COLUMNS]
     yr_train = reg_train["next_day_relative_effort"]
-    Xr_test = reg_test[FEATURE_COLUMNS]
     yr_test = reg_test["next_day_relative_effort"]
 
-    regressor = xgb.XGBRegressor(
-        n_estimators=300,
-        learning_rate=0.05,
-        max_depth=4,
-        subsample=0.9,
-        colsample_bytree=0.9,
-        objective="reg:squarederror",
-        random_state=42,
+    regressor = xgb.train(
+        params={
+            "objective": "reg:squarederror",
+            "eta": 0.05,
+            "max_depth": 4,
+            "subsample": 0.9,
+            "colsample_bytree": 0.9,
+            "seed": 42,
+        },
+        dtrain=_dmatrix(reg_train, yr_train),
+        num_boost_round=300,
     )
-    regressor.fit(Xr_train, yr_train)
 
-    reg_preds = regressor.predict(Xr_test)
+    reg_preds = regressor.predict(_dmatrix(reg_test))
     mae = float(np.mean(np.abs(reg_preds - yr_test.to_numpy())))
     print(f"[model] regressor_mae={mae:.3f}")
 
@@ -102,18 +106,18 @@ def train_and_save_models(dataset: pd.DataFrame, model_dir: Path) -> TrainedMode
 
 
 def load_models(model_dir: Path) -> TrainedModels:
-    classifier = xgb.XGBClassifier()
-    regressor = xgb.XGBRegressor()
+    classifier = xgb.Booster()
+    regressor = xgb.Booster()
     classifier.load_model(str(model_dir / CLASSIFIER_MODEL_PATH))
     regressor.load_model(str(model_dir / REGRESSOR_MODEL_PATH))
     return TrainedModels(classifier=classifier, regressor=regressor)
 
 
 def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> dict[str, Any]:
-    X = tomorrow_features[FEATURE_COLUMNS]
-    probability = float(models.classifier.predict_proba(X)[0, 1])
+    matrix = _dmatrix(tomorrow_features)
+    probability = float(models.classifier.predict(matrix)[0])
     will_train = probability >= 0.5
-    predicted_effort = float(models.regressor.predict(X)[0]) if will_train else None
+    predicted_effort = float(models.regressor.predict(matrix)[0]) if will_train else None
     return {
         "will_train": bool(will_train),
         "probability": probability,
@@ -121,9 +125,6 @@ def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> 
     }
 
 
-def feature_contributions(model: xgb.XGBClassifier, feature_row: pd.DataFrame) -> dict[str, float]:
-    X = feature_row[FEATURE_COLUMNS]
-    dmatrix = xgb.DMatrix(X, feature_names=FEATURE_COLUMNS)
-    contribs = model.get_booster().predict(dmatrix, pred_contribs=True)[0]
-    # Last item is the bias term.
+def feature_contributions(model: xgb.Booster, feature_row: pd.DataFrame) -> dict[str, float]:
+    contribs = model.predict(_dmatrix(feature_row), pred_contribs=True)[0]
     return {name: float(value) for name, value in zip(FEATURE_COLUMNS, contribs[:-1], strict=True)}
