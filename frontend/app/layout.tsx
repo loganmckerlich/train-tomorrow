@@ -1,9 +1,15 @@
-import type { ReactNode } from "react";
+import type { Metadata } from "next";
+import "./globals.css";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export const metadata: Metadata = {
+  title: "train tomorrow",
+  description: "Daily training likelihood and effort forecast",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className="h-full antialiased">
+      <body className="min-h-full bg-slate-50 text-slate-900">{children}</body>
     </html>
   );
 }

@@ -2,7 +2,8 @@ name: Daily Prediction
 
 on:
   schedule:
-    - cron: "0 5 * * *"
+    # 13:00 UTC = 06:00 PST / 05:00 PDT (early morning Pacific)
+    - cron: "0 13 * * *"
   workflow_dispatch:
 
 permissions:
@@ -11,6 +12,7 @@ permissions:
 jobs:
   daily-predict:
     runs-on: ubuntu-latest
+    environment: "production - predictions"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -25,14 +27,19 @@ jobs:
 
       - name: Run daily prediction script
         env:
-          STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }}
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-        run: python scripts/daily_predict.py
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          FORECAST_LAT: ${{ vars.FORECAST_LAT }}
+          FORECAST_LON: ${{ vars.FORECAST_LON }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/run_daily.py
 
       - name: Commit latest prediction JSON
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/latest_prediction.json
+          git add data/latest.json
           git diff --cached --quiet || git commit -m "chore(data): refresh daily prediction"
           git push

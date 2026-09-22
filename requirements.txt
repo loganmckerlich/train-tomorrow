@@ -1,3 +1,5 @@
-pandas
-numpy
-xgboost
+pandas~=2.2
+numpy~=2.1
+xgboost~=2.1
+requests~=2.32
+PyGithub~=2.4

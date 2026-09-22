@@ -1,56 +1,74 @@
 # train-tomorrow
 
-A personal fitness-tech side project that refreshes daily and answers:
+Daily pipeline that predicts:
 
-1. **Will I train tomorrow?** (binary classification)
-2. **If so, how hard?** (conditional workload/TSS regression)
+1. **Will I train tomorrow?** (binary)
+2. **If so, how hard?** (relative-effort regression)
 
-It also generates a short, upbeat challenge blurb based on top model contributors.
+It also generates a short Strava-style blurb using top XGBoost feature contributions.
 
-## v1 architecture (single user)
+## Architecture
 
 ```text
-Strava API + Weather API
+Strava OAuth refresh-token exchange
+        +
+Open-Meteo tomorrow forecast
         |
         v
-scripts/daily_predict.py
-  - feature engineering
-  - XGBoost classifier (train/no-train)
-  - XGBoost regressor (conditional workload)
-  - pred_contribs-based contributors + phrase mapping
-  - template blurb generation
+scripts/run_daily.py
+  - feature engineering + leakage-safe labels
+  - XGBoost classifier/regressor training
+  - pred_contribs extraction (no shap package)
+  - blurb generation
         |
         v
-data/latest_prediction.json  <-- committed daily by GitHub Actions
+data/latest.json + models/*.json
         |
         v
-frontend (Next.js on Vercel)
-  - renders prediction, challenge, blurb
+frontend (Next.js + Tailwind)
 ```
 
 ## Repository layout
 
-- `/scripts` – prediction pipeline + feature engineering/model stubs
-- `/models` – serialized model artifacts
-- `/data` – latest prediction JSON output
-- `/frontend` – Next.js frontend for Vercel deployment
-- `/.github/workflows` – scheduled daily prediction workflow
-- `requirements.txt` – Python dependencies for the prediction pipeline
+- `/scripts/strava_client.py` – refresh-token exchange, optional secret rotation, activity pull
+- `/scripts/weather_client.py` – tomorrow forecast from Open-Meteo
+- `/scripts/features.py` – rolling-load features + labeled dataset prep
+- `/scripts/model.py` – train/score XGBoost models + feature contributions
+- `/scripts/blurb.py` – phrase bank + template blurb generation
+- `/scripts/run_daily.py` – end-to-end orchestration
+- `/data/latest.json` – latest prediction payload
+- `/models` – serialized classifier/regressor
+- `/frontend` – Next.js app
 
-## Local setup
-
-### Python pipeline
+## Python setup
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-export STRAVA_ACCESS_TOKEN=your_token
-export WEATHER_API_KEY=your_key
-python scripts/daily_predict.py
+
+export STRAVA_CLIENT_ID=...
+export STRAVA_CLIENT_SECRET=...
+export STRAVA_REFRESH_TOKEN=...
+# optional location override for weather forecast:
+export FORECAST_LAT=37.7749
+export FORECAST_LON=-122.4194
+
+python scripts/run_daily.py
 ```
 
-### Frontend
+## Local modeling exploration
+
+```bash
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+python scripts/local_model_smoke_test.py
+jupyter lab scripts/modeling_exploration.ipynb
+```
+
+The smoke test uses synthetic activities and writes temporary model artifacts only.
+
+## Frontend setup
 
 ```bash
 cd frontend
@@ -58,16 +76,28 @@ npm install
 npm run dev
 ```
 
+Optional override for frontend data source:
+
+```bash
+export NEXT_PUBLIC_PREDICTION_URL="https://raw.githubusercontent.com/loganmckerlich/train-tomorrow/master/data/latest.json"
+```
+
 ## GitHub Actions
 
-`.github/workflows/daily-predict.yml` runs once daily (`cron`) and on manual dispatch. It expects:
+`.github/workflows/daily-predict.yml` runs daily and on manual dispatch.
+The workflow job targets the `production - predictions` environment, so configure the listed secrets/variables there.
 
-- `STRAVA_ACCESS_TOKEN`
-- `WEATHER_API_KEY`
+Required repository secrets:
 
-as repository secrets.
+- `STRAVA_CLIENT_ID`
+- `STRAVA_CLIENT_SECRET`
+- `STRAVA_REFRESH_TOKEN`
 
-## Notes
+Optional repository/environment variables:
 
-- v1 intentionally avoids the standalone `shap` package and uses XGBoost `pred_contribs=True` for feature attribution.
-- Core prediction logic is isolated in `compute_prediction_for_user()` for easier migration to per-user batch jobs later.
+- `FORECAST_LAT`
+- `FORECAST_LON`
+
+Notes:
+- Open-Meteo does not require an API key.
+- If Strava rotates refresh tokens, the workflow attempts to update `STRAVA_REFRESH_TOKEN` via `gh secret set` using `${{ github.token }}`.
