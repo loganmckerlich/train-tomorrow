@@ -1,1 +1,27 @@
-{"date": "2026-09-22", "will_train": true, "probability": 0.78, "predicted_effort": 43.58, "top_contributors": [{"feature": "trained_days_30", "signed_contribution": 0.4916921555995941, "direction": "helping", "phrase": "your training frequency over the past month"}, {"feature": "today_relative_effort", "signed_contribution": -0.31427720189094543, "direction": "hurting", "phrase": "how hard today's session was"}, {"feature": "day_of_week", "signed_contribution": 0.28911781311035156, "direction": "helping", "phrase": "your usual day-of-week rhythm"}, {"feature": "forecast_wind_speed", "signed_contribution": -0.2220132201910019, "direction": "hurting", "phrase": "the wind forecast"}, {"feature": "chronic_load_28", "signed_contribution": 0.20582523941993713, "direction": "helping", "phrase": "longer-term fitness base"}, {"feature": "acute_load_7", "signed_contribution": 0.20569579303264618, "direction": "helping", "phrase": "recent training load in your legs"}, {"feature": "atl_ctl_ratio", "signed_contribution": 0.1944759041070938, "direction": "helping", "phrase": "how peaky your load balance looks"}, {"feature": "month", "signed_contribution": -0.18864506483078003, "direction": "hurting", "phrase": "the time of year"}, {"feature": "days_since_last_hard", "signed_contribution": 0.17339341342449188, "direction": "helping", "phrase": "time since your last hard effort"}, {"feature": "season", "signed_contribution": -0.16327135264873505, "direction": "hurting", "phrase": "seasonal daylight vibes"}, {"feature": "moving_time_acute_7", "signed_contribution": 0.1497776359319687, "direction": "helping", "phrase": "your recent training volume"}], "blurb": "**The Verdict:** \nClear your schedule\u2014you\u2019re training tomorrow. The model gives you a **78% chance** of lacing up, expecting a modest, easy-ish session around **43.6 relative-effort units**. \n\n**Why you're getting out the door:**\n* **You\u2019re a creature of habit:** Your relentless consistency over the past month (your top driver) and your predictable day-of-week routine mean your brain is basically on autopilot. \n* **The engine is primed:** Your solid fitness base and recent load are pulling their weight to keep you moving.\n\n**What you\u2019ll try to use as an excuse:**\n* **\"Today was hard\":** Today\u2019s grueling effort is making your legs act dramatic and dragging down your motivation. \n* **A little wind:** The breeze in the forecast is trying to give you a reason to stay on the couch. \n\n**Bottom line?** Your habits are officially stronger than your excuses. See you out there."}
+{
+  "date": "2026-09-22",
+  "will_train": true,
+  "probability": 0.9216,
+  "predicted_effort": 34.11,
+  "top_contributors": [
+    {
+      "feature": "forecast_temp_high",
+      "signed_contribution": 0.6750982999801636,
+      "direction": "helping",
+      "phrase": "the daytime temperature forecast"
+    },
+    {
+      "feature": "day_of_week",
+      "signed_contribution": 0.6453019976615906,
+      "direction": "helping",
+      "phrase": "your usual day-of-week rhythm"
+    },
+    {
+      "feature": "moving_time_chronic_28",
+      "signed_contribution": -0.48318493366241455,
+      "direction": "hurting",
+      "phrase": "your training volume base over the past month"
+    }
+  ],
+  "blurb": "Model says likely session (92%). Credit the daytime temperature forecast. Watch out for your training volume base over the past month. Target: ~34 relative-effort points."
+}
