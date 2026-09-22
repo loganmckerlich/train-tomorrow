@@ -3,7 +3,7 @@ blurb:
   # template blurb automatically if disabled, the key is missing, or the API call fails.
   use_llm: true
   tone: sassy
-  gemini_model: gemini-2.5-flash 
+  gemini_model: gemini-3.6-flash 
   # how many top feature contributors to surface in the blurb
   top_contributors: 10
 
