@@ -187,7 +187,7 @@ export default async function Home() {
                       </span>
                     </div>
                     <div className="relative mt-3 h-32">
-                      <svg viewBox="0 0 100 100" className="h-full w-full">
+                      <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
                         {histogram.points.map((point, index) => {
                           const x = (index * 100) / histogram.points.length;
                           const width = 100 / histogram.points.length;
