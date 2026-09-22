@@ -1,0 +1,28 @@
+blurb:
+  # Polish the templated blurb with Gemini (requires GEMINI_API_KEY). Falls back to the
+  # template blurb automatically if disabled, the key is missing, or the API call fails.
+  use_llm: true
+  tone: sassy
+  gemini_model: gemini-3.6-flash
+  # how many top feature contributors to surface in the blurb
+  top_contributors: 3
+
+strava:
+  # how many days of activity history to pull from Strava on each run
+  days_back: 730
+
+model:
+  # nonzero-effort/distance quantile above which a day counts as "hard"/"long" for streak features
+  hard_effort_quantile: 0.6
+  long_ride_quantile: 0.75
+  # exponential recency-weighting half-life (days): downweights old rows so training tracks current habits
+  recency_half_life_days: 180
+  # fraction of time-ordered rows used for training vs. the held-out test split
+  train_test_split_frac: 0.8
+  xgboost:
+    eta: 0.05
+    max_depth: 3
+    subsample: 0.9
+    colsample_bytree: 0.9
+    n_estimators: 300
+    random_state: 42

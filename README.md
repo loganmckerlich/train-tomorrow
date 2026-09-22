@@ -36,6 +36,8 @@ frontend (Next.js + Tailwind)
 - `/scripts/model.py` – train/score XGBoost models + feature contributions
 - `/scripts/blurb.py` – phrase bank + template blurb generation
 - `/scripts/run_daily.py` – end-to-end orchestration
+- `/tests` – smoke tests for the modeling + predictions-log pipeline
+- `/notebooks` – local exploration notebooks
 - `/data/latest.json` – latest prediction payload
 - `/models` – serialized classifier/regressor
 - `/frontend` – Next.js app
@@ -62,8 +64,8 @@ python scripts/run_daily.py
 ```bash
 source .venv/bin/activate
 pip install -r requirements-dev.txt
-python scripts/local_model_smoke_test.py
-jupyter lab scripts/modeling_exploration.ipynb
+python tests/local_model_smoke_test.py
+jupyter lab notebooks/modeling_exploration.ipynb
 ```
 
 The smoke test uses synthetic activities and writes temporary model artifacts only.
