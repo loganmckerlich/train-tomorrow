@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import random
+import time
 from datetime import date
 from typing import Any
 
@@ -119,11 +120,12 @@ def generate_blurb_llm(
     fallback_blurb: str,
     tone: str = "sassy",
     gemini_model: str = "gemini-3.6-flash",
+    max_retries: int = 3,
 ) -> str:
     """Have Gemini write the summary directly from the raw prediction data (no template scaffold).
 
     Falls back to fallback_blurb (the templated generate_blurb output) if GEMINI_API_KEY is
-    missing or the API call fails, so the daily pipeline never breaks on an LLM issue.
+    missing or the API call fails after retries, so the daily pipeline never breaks on an LLM issue.
     """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
@@ -140,10 +142,32 @@ def generate_blurb_llm(
             tone=tone,
         )
         client = genai.Client(api_key=api_key)
-        chat = client.chats.create(model=gemini_model)
-        response = chat.send_message(prompt)
-        polished = (response.text or "").strip()
-        return polished or fallback_blurb
+        total_attempts = max(1, max_retries)
+        for attempt in range(total_attempts):
+            try:
+                response = client.models.generate_content(
+                    model=gemini_model,
+                    contents=prompt,
+                )
+                polished = (response.text or "").strip()
+                if polished:
+                    return polished
+                break
+            except Exception as e:
+                error_text = str(e).upper()
+                if ("503" in error_text or "UNAVAILABLE" in error_text) and attempt < total_attempts - 1:
+                    wait = 2 ** attempt
+                    logger.warning(
+                        "Gemini overloaded (attempt %d/%d), retrying in %ds",
+                        attempt + 1,
+                        total_attempts,
+                        wait,
+                    )
+                    time.sleep(wait)
+                    continue
+                logger.warning("Error generating blurb with LLM: %s", e)
+                break
+        return fallback_blurb
     except Exception as e:
         logger.warning("Error generating blurb with LLM: %s", e)
         return fallback_blurb
