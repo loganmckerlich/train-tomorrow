@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))  # allow importing sibling scripts modules
 
-from predictions_log import backfill_outcomes, load_entries, save_entries, upsert_entry
+from predictions_log import backfill_outcomes, build_calibration_summary, load_entries, save_entries, upsert_entry
 
 import pandas as pd
 
@@ -50,6 +50,14 @@ def main() -> None:
 
     already_resolved = next(entry for entry in entries if entry["date"] == "2026-01-01")
     assert already_resolved["checked_at"] == "2026-01-02T00:00:00+00:00"  # untouched, not overwritten
+
+    calibration = build_calibration_summary(entries)
+    assert calibration["total_samples"] == 2
+    assert sum(bucket["sample_size"] for bucket in calibration["buckets"]) == 2
+    low_bucket = next(bucket for bucket in calibration["buckets"] if bucket["lower_bound"] == 0.2)
+    high_bucket = next(bucket for bucket in calibration["buckets"] if bucket["lower_bound"] == 0.9)
+    assert low_bucket["actual_rate"] == 1.0
+    assert high_bucket["predicted_rate"] == 0.9
 
     payload = {
         "date": "2026-01-04",

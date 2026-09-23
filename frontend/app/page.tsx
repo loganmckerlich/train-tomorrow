@@ -33,12 +33,40 @@ type Contributor = {
   plot?: ContinuousPlot | CategoricalPlot;
 };
 
+type WaterfallStep = {
+  feature: string;
+  signed_contribution: number;
+  direction: "helping" | "hurting";
+  phrase: string;
+};
+
+type WaterfallSummary = {
+  baseline_probability: number;
+  final_probability: number;
+  steps: WaterfallStep[];
+};
+
+type CalibrationBucket = {
+  lower_bound: number;
+  upper_bound: number;
+  predicted_rate: number | null;
+  actual_rate: number | null;
+  sample_size: number;
+};
+
+type CalibrationSummary = {
+  total_samples: number;
+  buckets: CalibrationBucket[];
+};
+
 type PredictionPayload = {
   date: string;
   will_train: boolean;
   probability: number;
   predicted_effort: number | null;
   top_contributors: Contributor[];
+  waterfall?: WaterfallSummary;
+  calibration?: CalibrationSummary;
   blurb: string;
 };
 
@@ -58,8 +86,9 @@ async function getPrediction(): Promise<PredictionPayload | null> {
   return (await response.json()) as PredictionPayload;
 }
 
-function contributorBarWidth(score: number): string {
-  return `${Math.max(10, Math.min(100, Math.round(Math.abs(score) * 100)))}%`;
+function contributorBarWidth(score: number, maxMagnitude: number): string {
+  const ratio = maxMagnitude <= 0 ? 0 : Math.abs(score) / maxMagnitude;
+  return `${Math.max(10, Math.min(100, Math.round(ratio * 100)))}%`;
 }
 
 function isFiniteNumber(value: number | null | undefined): value is number {
@@ -68,6 +97,32 @@ function isFiniteNumber(value: number | null | undefined): value is number {
 
 function formatSigned(value: number | null, digits = 2): string {
   return isFiniteNumber(value) ? `${value >= 0 ? "+" : ""}${value.toFixed(digits)}` : "n/a";
+}
+
+function formatPercent(value: number | null, digits = 0): string {
+  return isFiniteNumber(value) ? `${(value * 100).toFixed(digits)}%` : "n/a";
+}
+
+function clampProbability(probability: number): number {
+  return Math.max(1e-6, Math.min(1 - 1e-6, probability));
+}
+
+function logit(probability: number): number {
+  const bounded = clampProbability(probability);
+  return Math.log(bounded / (1 - bounded));
+}
+
+function sigmoid(value: number): number {
+  return 1 / (1 + Math.exp(-value));
+}
+
+function contributionPoints(shapValue: number, probability: number): number {
+  const boundedProbability = clampProbability(probability);
+  return (boundedProbability - sigmoid(logit(boundedProbability) - shapValue)) * 100;
+}
+
+function formatContributionPoints(value: number | null, digits = 1): string {
+  return isFiniteNumber(value) ? `${value >= 0 ? "+" : ""}${value.toFixed(digits)} points` : "n/a";
 }
 
 function paddedExtent(values: number[], fallbackPadding = 0.5): [number, number] | null {
@@ -100,20 +155,30 @@ function scale(value: number, domain: [number, number], range: [number, number])
   return rangeMin + ((value - domainMin) / (domainMax - domainMin)) * (rangeMax - rangeMin);
 }
 
-function ContinuousFeaturePlot({ feature, plot }: { feature: string; plot: ContinuousPlot }) {
+function ContinuousFeaturePlot({
+  feature,
+  plot,
+  probability,
+}: {
+  feature: string;
+  plot: ContinuousPlot;
+  probability: number;
+}) {
   const historicalPoints = plot.points.filter(
     (point) => Number.isFinite(point.feature_value) && Number.isFinite(point.shap_value),
   );
   const currentVisible = isFiniteNumber(plot.current_value) && isFiniteNumber(plot.current_shap);
   const currentValue = currentVisible ? plot.current_value : null;
   const currentShap = currentVisible ? plot.current_shap : null;
+  const currentPoints = currentShap === null ? null : contributionPoints(currentShap, probability);
   const xExtent = paddedExtent([
     ...historicalPoints.map((point) => point.feature_value),
     ...(currentValue === null ? [] : [currentValue]),
   ]);
+  const historicalEffects = historicalPoints.map((point) => contributionPoints(point.shap_value, probability));
   const yExtent = paddedExtent([
-    ...historicalPoints.map((point) => point.shap_value),
-    ...(currentShap === null ? [0] : [currentShap, 0]),
+    ...historicalEffects,
+    ...(currentPoints === null ? [0] : [currentPoints, 0]),
   ]);
 
   if (!xExtent || !yExtent) {
@@ -122,7 +187,7 @@ function ContinuousFeaturePlot({ feature, plot }: { feature: string; plot: Conti
 
   const zeroY = scale(0, yExtent, [90, 10]);
   const historicalCount = historicalPoints.length;
-  const summary = `Historical days: ${historicalCount}. Feature values ranged from ${xExtent[0].toFixed(1)} to ${xExtent[1].toFixed(1)}. SHAP contributions ranged from ${yExtent[0].toFixed(2)} to ${yExtent[1].toFixed(2)}.`;
+  const summary = `Historical days: ${historicalCount}. Feature values ranged from ${xExtent[0].toFixed(1)} to ${xExtent[1].toFixed(1)}. Approximate model effect ranged from ${formatContributionPoints(yExtent[0])} to ${formatContributionPoints(yExtent[1])}.`;
   const idBase = `${feature}-continuous-plot`;
 
   return (
@@ -133,11 +198,14 @@ function ContinuousFeaturePlot({ feature, plot }: { feature: string; plot: Conti
       aria-describedby={`${idBase}-today ${idBase}-summary`}
     >
       <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
-        SHAP contribution vs. feature value. Above 0 pushes toward training; below 0 pushes away.
+        Approximate training-probability lift vs. feature value. Above 0 pushes toward training; below 0 pushes away.
       </figcaption>
       <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
-        Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)}, SHAP{" "}
-        {formatSigned(currentShap)}.
+        Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)}, about{" "}
+        <span title={currentShap === null ? undefined : `Raw SHAP ${formatSigned(currentShap, 4)} log-odds`}>
+          {formatContributionPoints(currentPoints)}
+        </span>
+        .
       </p>
       <p id={`${idBase}-summary`} className="mt-1 text-xs text-slate-500">
         {summary}
@@ -153,24 +221,33 @@ function ContinuousFeaturePlot({ feature, plot }: { feature: string; plot: Conti
             strokeDasharray="4 3"
             strokeWidth="1"
           />
-          {historicalPoints.map((point, index) => (
-            <circle
-              key={`${point.feature_value}-${point.shap_value}-${index}`}
-              cx={scale(point.feature_value, xExtent, [8, 96])}
-              cy={scale(point.shap_value, yExtent, [90, 10])}
-              r="1.9"
-              className="fill-slate-500"
-              fillOpacity="0.45"
-            />
-          ))}
-          {currentValue !== null && currentShap !== null ? (
+          {historicalPoints.map((point, index) => {
+            const effectPoints = contributionPoints(point.shap_value, probability);
+            return (
+              <circle
+                key={`${point.feature_value}-${point.shap_value}-${index}`}
+                cx={scale(point.feature_value, xExtent, [8, 96])}
+                cy={scale(effectPoints, yExtent, [90, 10])}
+                r="1.9"
+                className="fill-slate-500"
+                fillOpacity="0.45"
+              >
+                <title>
+                  {`Approx. ${formatContributionPoints(effectPoints)} (raw SHAP ${formatSigned(point.shap_value, 4)})`}
+                </title>
+              </circle>
+            );
+          })}
+          {currentValue !== null && currentShap !== null && currentPoints !== null ? (
             <circle
               cx={scale(currentValue, xExtent, [8, 96])}
-              cy={scale(currentShap, yExtent, [90, 10])}
+              cy={scale(currentPoints, yExtent, [90, 10])}
               r="3.4"
               className="fill-amber-400 stroke-slate-900"
               strokeWidth="1.5"
-            />
+            >
+              <title>{`Today: ${formatContributionPoints(currentPoints)} (raw SHAP ${formatSigned(currentShap, 4)})`}</title>
+            </circle>
           ) : null}
         </svg>
       </div>
@@ -180,18 +257,29 @@ function ContinuousFeaturePlot({ feature, plot }: { feature: string; plot: Conti
         <span>{xExtent[1].toFixed(1)}</span>
       </div>
       <p className="mt-1 text-center text-[11px] text-slate-500">
-        SHAP range {yExtent[0].toFixed(2)} to {yExtent[1].toFixed(2)}
+        Approx. effect range {formatContributionPoints(yExtent[0])} to {formatContributionPoints(yExtent[1])}
       </p>
     </figure>
   );
 }
 
-function CategoricalFeaturePlot({ feature, plot }: { feature: string; plot: CategoricalPlot }) {
+function CategoricalFeaturePlot({
+  feature,
+  plot,
+  probability,
+}: {
+  feature: string;
+  plot: CategoricalPlot;
+  probability: number;
+}) {
   if (plot.categories.length === 0) {
     return null;
   }
 
-  const yExtent = paddedExtent([...plot.categories.map((category) => category.mean_shap), 0]);
+  const categoryEffects = plot.categories.map((category) =>
+    contributionPoints(category.mean_shap, probability),
+  );
+  const yExtent = paddedExtent([...categoryEffects, 0]);
   if (!yExtent) {
     return null;
   }
@@ -209,18 +297,23 @@ function CategoricalFeaturePlot({ feature, plot }: { feature: string; plot: Cate
       aria-describedby={`${idBase}-today ${idBase}-values`}
     >
       <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
-        Mean SHAP contribution by category. Above 0 pushes toward training; below 0 pushes away.
+        Approximate mean training-probability lift by category. Above 0 pushes toward training; below 0 pushes away.
       </figcaption>
       <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
         Today&apos;s category: {currentLabel}.
       </p>
       <ul id={`${idBase}-values`} className="mt-1 space-y-1 text-xs text-slate-500">
-        {plot.categories.map((category) => (
-          <li key={`summary-${category.value}`}>
-            {category.label}: {formatSigned(category.mean_shap)}
-            {category.value === plot.current_value ? " (today)" : ""}
-          </li>
-        ))}
+        {plot.categories.map((category) => {
+          const effectPoints = contributionPoints(category.mean_shap, probability);
+          return (
+            <li key={`summary-${category.value}`}>
+              <span title={`Raw SHAP ${formatSigned(category.mean_shap, 4)} log-odds`}>
+                {category.label}: {formatContributionPoints(effectPoints)}
+              </span>
+              {category.value === plot.current_value ? " (today)" : ""}
+            </li>
+          );
+        })}
       </ul>
       <div className="mt-3 rounded-lg border border-slate-200 bg-white p-2">
         <svg viewBox="0 0 100 100" className="h-36 w-full" aria-hidden="true">
@@ -235,7 +328,8 @@ function CategoricalFeaturePlot({ feature, plot }: { feature: string; plot: Cate
           />
           {plot.categories.map((category, index) => {
             const x = 8 + index * barWidth + barWidth * 0.15;
-            const y = scale(category.mean_shap, yExtent, [90, 10]);
+            const effectPoints = contributionPoints(category.mean_shap, probability);
+            const y = scale(effectPoints, yExtent, [90, 10]);
             const isToday = category.value === plot.current_value;
             return (
               <rect
@@ -248,29 +342,222 @@ function CategoricalFeaturePlot({ feature, plot }: { feature: string; plot: Cate
                 className={isToday ? "fill-amber-400 stroke-slate-900" : "fill-slate-500"}
                 fillOpacity={isToday ? 1 : 0.55}
                 strokeWidth={isToday ? "1.2" : "0"}
-              />
+              >
+                <title>
+                  {`${category.label}: ${formatContributionPoints(effectPoints)} (raw SHAP ${formatSigned(category.mean_shap, 4)})`}
+                </title>
+              </rect>
             );
           })}
         </svg>
       </div>
+      <p className="mt-1 text-center text-[11px] text-slate-500">
+        Approx. effect range {formatContributionPoints(yExtent[0])} to {formatContributionPoints(yExtent[1])}
+      </p>
     </figure>
   );
 }
 
-function FeaturePlot({ contributor }: { contributor: Contributor }) {
+function FeaturePlot({ contributor, probability }: { contributor: Contributor; probability: number }) {
   if (!contributor.plot) {
     return null;
   }
 
   return (
     <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-      <summary className="cursor-pointer text-xs font-medium text-slate-700">Show model effect plot</summary>
+      <summary className="cursor-pointer text-xs font-medium text-slate-700">
+        Show model effect plot
+      </summary>
       {contributor.plot.kind === "continuous" ? (
-        <ContinuousFeaturePlot feature={contributor.feature} plot={contributor.plot} />
+        <ContinuousFeaturePlot
+          feature={contributor.feature}
+          plot={contributor.plot}
+          probability={probability}
+        />
       ) : (
-        <CategoricalFeaturePlot feature={contributor.feature} plot={contributor.plot} />
+        <CategoricalFeaturePlot
+          feature={contributor.feature}
+          plot={contributor.plot}
+          probability={probability}
+        />
       )}
     </details>
+  );
+}
+
+function WaterfallPlot({ waterfall }: { waterfall: WaterfallSummary }) {
+  if (waterfall.steps.length === 0) {
+    return null;
+  }
+
+  const segments = waterfall.steps.reduce<{
+    items: Array<
+      WaterfallStep & {
+        startProbability: number;
+        endProbability: number;
+        deltaPoints: number;
+      }
+    >;
+    runningLogOdds: number;
+  }>(
+    (state, step) => {
+      const startProbability = sigmoid(state.runningLogOdds);
+      const nextLogOdds = state.runningLogOdds + step.signed_contribution;
+      const endProbability = sigmoid(nextLogOdds);
+      return {
+        runningLogOdds: nextLogOdds,
+        items: [
+          ...state.items,
+          {
+            ...step,
+            startProbability,
+            endProbability,
+            deltaPoints: (endProbability - startProbability) * 100,
+          },
+        ],
+      };
+    },
+    { items: [], runningLogOdds: logit(waterfall.baseline_probability) },
+  ).items;
+  const chartHeight = 16 + segments.length * 12;
+
+  return (
+    <figure className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <figcaption className="text-sm font-medium text-slate-800">How the model got here</figcaption>
+      <p className="mt-1 text-xs text-slate-500">
+        Starts from the model&apos;s average day ({formatPercent(waterfall.baseline_probability)})
+        and walks through today&apos;s biggest pushes to land at{" "}
+        {formatPercent(waterfall.final_probability)}.
+      </p>
+      <div className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
+        <svg
+          viewBox={`0 0 100 ${chartHeight}`}
+          className="w-full"
+          style={{ height: `${Math.max(180, segments.length * 28)}px` }}
+          aria-hidden="true"
+        >
+          {segments.map((segment, index) => {
+            const y = 10 + index * 12;
+            const startX = scale(segment.startProbability, [0, 1], [8, 96]);
+            const endX = scale(segment.endProbability, [0, 1], [8, 96]);
+            return (
+              <g key={`${segment.feature}-${index}`}>
+                <line
+                  x1={startX}
+                  x2={endX}
+                  y1={y}
+                  y2={y}
+                  className={segment.direction === "helping" ? "stroke-emerald-500" : "stroke-rose-500"}
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                />
+                <circle cx={startX} cy={y} r="1.5" className="fill-white stroke-slate-400" strokeWidth="0.8" />
+                <circle cx={endX} cy={y} r="1.8" className="fill-slate-900" />
+              </g>
+            );
+          })}
+        </svg>
+        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+          <span>0%</span>
+          <span>train probability</span>
+          <span>100%</span>
+        </div>
+      </div>
+      <ol className="mt-4 space-y-2">
+        {segments.map((segment, index) => (
+          <li key={`${segment.feature}-summary-${index}`} className="flex items-start justify-between gap-4 text-sm">
+            <span className="text-slate-700">{segment.phrase}</span>
+            <span
+              className={
+                segment.direction === "helping"
+                  ? "text-right font-medium text-emerald-600"
+                  : "text-right font-medium text-rose-600"
+              }
+              title={`Raw SHAP ${formatSigned(segment.signed_contribution, 4)} log-odds`}
+            >
+              {formatContributionPoints(segment.deltaPoints)} → {formatPercent(segment.endProbability)}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </figure>
+  );
+}
+
+function CalibrationPlot({ calibration }: { calibration: CalibrationSummary }) {
+  const populatedBuckets = calibration.buckets.filter(
+    (bucket) =>
+      bucket.sample_size > 0 &&
+      isFiniteNumber(bucket.predicted_rate) &&
+      isFiniteNumber(bucket.actual_rate),
+  );
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-900">Calibration / track record</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            When the model says X% likely, how often did I actually train?
+          </p>
+        </div>
+        <p className="text-sm text-slate-500">{calibration.total_samples} resolved historical predictions</p>
+      </div>
+
+      <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <svg viewBox="0 0 100 100" className="h-48 w-full" aria-hidden="true">
+          <line x1="8" y1="92" x2="96" y2="92" className="stroke-slate-300" strokeWidth="1" />
+          <line x1="8" y1="92" x2="8" y2="10" className="stroke-slate-300" strokeWidth="1" />
+          <line x1="8" y1="92" x2="96" y2="10" className="stroke-slate-400" strokeDasharray="4 3" strokeWidth="1" />
+          {populatedBuckets.map((bucket) => {
+            const predictedRate = bucket.predicted_rate as number;
+            const actualRate = bucket.actual_rate as number;
+            return (
+              <circle
+                key={`${bucket.lower_bound}-${bucket.upper_bound}`}
+                cx={scale(predictedRate, [0, 1], [8, 96])}
+                cy={scale(actualRate, [0, 1], [92, 10])}
+                r={Math.min(4.5, 2 + bucket.sample_size * 0.35)}
+                className="fill-amber-400 stroke-slate-900"
+                strokeWidth="1"
+              >
+                <title>
+                  {`${formatPercent(bucket.lower_bound)}–${formatPercent(bucket.upper_bound)} bucket: predicted ${formatPercent(predictedRate)}, trained ${formatPercent(actualRate)}, n=${bucket.sample_size}`}
+                </title>
+              </circle>
+            );
+          })}
+        </svg>
+        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+          <span>0% predicted</span>
+          <span>predicted train rate</span>
+          <span>100% predicted</span>
+        </div>
+        <p className="mt-1 text-center text-[11px] text-slate-500">actual train rate climbs up the chart</p>
+      </div>
+
+      <ul className="mt-4 grid gap-2 text-sm text-slate-700 sm:grid-cols-2">
+        {calibration.buckets.map((bucket) => (
+          <li key={`bucket-${bucket.lower_bound}`} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+            <p className="font-medium text-slate-800">
+              {formatPercent(bucket.lower_bound)}–{formatPercent(bucket.upper_bound)}
+            </p>
+            <p className="mt-1 text-slate-600">
+              {bucket.sample_size === 0
+                ? "No resolved days yet."
+                : `${formatPercent(bucket.predicted_rate)} predicted, ${formatPercent(bucket.actual_rate)} actually trained.`}
+            </p>
+            <p className="mt-1 text-xs text-slate-500">Sample size: {bucket.sample_size}</p>
+          </li>
+        ))}
+      </ul>
+
+      {calibration.total_samples < 20 ? (
+        <p className="mt-4 text-xs text-slate-500">
+          Still building up history — early buckets are honest but noisy until more daily predictions accumulate.
+        </p>
+      ) : null}
+    </section>
   );
 }
 
@@ -285,6 +572,11 @@ export default async function Home() {
       </main>
     );
   }
+
+  const contributionMagnitudes = prediction.top_contributors.map((item) =>
+    Math.abs(contributionPoints(item.signed_contribution, prediction.probability)),
+  );
+  const maxContributionMagnitude = Math.max(...contributionMagnitudes, 1);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-8 px-6 py-14">
@@ -317,34 +609,45 @@ export default async function Home() {
         </article>
       </section>
 
+      {prediction.calibration ? <CalibrationPlot calibration={prediction.calibration} /> : null}
+
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
+        {prediction.waterfall ? <WaterfallPlot waterfall={prediction.waterfall} /> : null}
         <ul className="mt-4 space-y-4">
-          {prediction.top_contributors.map((item) => (
-            <li key={item.feature}>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-slate-800">{item.phrase}</span>
-                <span
-                  className={
-                    item.direction === "helping"
-                      ? "font-semibold text-emerald-600"
-                      : "font-semibold text-rose-600"
-                  }
-                >
-                  {item.direction}
-                </span>
-              </div>
-              <div className="h-2 rounded-full bg-slate-200">
-                <div
-                  className={`h-2 rounded-full ${
-                    item.direction === "helping" ? "bg-emerald-500" : "bg-rose-500"
-                  }`}
-                  style={{ width: contributorBarWidth(item.signed_contribution) }}
-                />
-              </div>
-              <FeaturePlot contributor={item} />
-            </li>
-          ))}
+          {prediction.top_contributors.map((item) => {
+            const effectPoints = contributionPoints(item.signed_contribution, prediction.probability);
+            return (
+              <li key={item.feature}>
+                <div className="mb-1 flex items-center justify-between gap-4 text-sm">
+                  <span className="font-medium text-slate-800">{item.phrase}</span>
+                  <div className="text-right">
+                    <span
+                      className={
+                        item.direction === "helping"
+                          ? "font-semibold text-emerald-600"
+                          : "font-semibold text-rose-600"
+                      }
+                      title={`Raw SHAP ${formatSigned(item.signed_contribution, 4)} log-odds`}
+                    >
+                      {formatContributionPoints(effectPoints)}
+                    </span>
+                    <p className="text-xs text-slate-500">{item.direction}</p>
+                  </div>
+                </div>
+                <div className="h-2 rounded-full bg-slate-200">
+                  <div
+                    className={`h-2 rounded-full ${
+                      item.direction === "helping" ? "bg-emerald-500" : "bg-rose-500"
+                    }`}
+                    style={{ width: contributorBarWidth(effectPoints, maxContributionMagnitude) }}
+                    title={`Raw SHAP ${formatSigned(item.signed_contribution, 4)} log-odds`}
+                  />
+                </div>
+                <FeaturePlot contributor={item} probability={prediction.probability} />
+              </li>
+            );
+          })}
         </ul>
       </section>
     </main>
