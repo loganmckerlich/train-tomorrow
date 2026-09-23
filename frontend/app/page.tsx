@@ -14,12 +14,14 @@ type ContinuousPlot = {
 
 type CategoricalPoint = {
   value: number;
+  label: string;
   mean_shap: number;
 };
 
 type CategoricalPlot = {
   kind: "categorical";
   current_value: number | null;
+  current_label: string | null;
   categories: CategoricalPoint[];
 };
 
@@ -42,9 +44,6 @@ type PredictionPayload = {
 
 const DEFAULT_URL =
   "https://raw.githubusercontent.com/loganmckerlich/train-tomorrow/master/data/latest.json";
-const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const SEASON_LABELS = ["Winter", "Spring", "Summer", "Fall"];
 
 async function getPrediction(): Promise<PredictionPayload | null> {
   noStore();
@@ -101,19 +100,6 @@ function scale(value: number, domain: [number, number], range: [number, number])
   return rangeMin + ((value - domainMin) / (domainMax - domainMin)) * (rangeMax - rangeMin);
 }
 
-function formatCategoryValue(feature: string, value: number): string {
-  if (feature === "day_of_week") {
-    return DAY_LABELS[value] ?? String(value);
-  }
-  if (feature === "month") {
-    return MONTH_LABELS[value - 1] ?? String(value);
-  }
-  if (feature === "season") {
-    return SEASON_LABELS[value] ?? String(value);
-  }
-  return String(value);
-}
-
 function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
   const historicalPoints = plot.points.filter(
     (point) => Number.isFinite(point.feature_value) && Number.isFinite(point.shap_value),
@@ -135,6 +121,8 @@ function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
   }
 
   const zeroY = scale(0, yExtent, [90, 10]);
+  const historicalCount = historicalPoints.length;
+  const summary = `Historical days: ${historicalCount}. Feature values ranged from ${xExtent[0].toFixed(1)} to ${xExtent[1].toFixed(1)}. SHAP contributions ranged from ${yExtent[0].toFixed(2)} to ${yExtent[1].toFixed(2)}.`;
 
   return (
     <div className="mt-3">
@@ -145,6 +133,7 @@ function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
         Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)}, SHAP{" "}
         {formatSigned(currentShap)}.
       </p>
+      <p className="mt-1 text-xs text-slate-500">{summary}</p>
       <div className="mt-3 rounded-lg border border-slate-200 bg-white p-2">
         <svg viewBox="0 0 100 100" className="h-36 w-full" aria-hidden="true">
           <line
@@ -191,13 +180,7 @@ function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
   );
 }
 
-function CategoricalFeaturePlot({
-  feature,
-  plot,
-}: {
-  feature: string;
-  plot: CategoricalPlot;
-}) {
+function CategoricalFeaturePlot({ plot }: { plot: CategoricalPlot }) {
   if (plot.categories.length === 0) {
     return null;
   }
@@ -209,9 +192,7 @@ function CategoricalFeaturePlot({
 
   const zeroY = scale(0, yExtent, [90, 10]);
   const barWidth = 84 / plot.categories.length;
-  const currentLabel = isFiniteNumber(plot.current_value)
-    ? formatCategoryValue(feature, plot.current_value)
-    : "n/a";
+  const currentLabel = plot.current_label ?? "n/a";
 
   return (
     <div className="mt-3">
@@ -219,6 +200,14 @@ function CategoricalFeaturePlot({
         Mean SHAP contribution by category. Above 0 pushes toward training; below 0 pushes away.
       </p>
       <p className="mt-1 text-xs text-slate-500">Today&apos;s category: {currentLabel}.</p>
+      <ul className="mt-1 space-y-1 text-xs text-slate-500">
+        {plot.categories.map((category) => (
+          <li key={`summary-${category.value}`}>
+            {category.label}: {formatSigned(category.mean_shap)}
+            {category.value === plot.current_value ? " (today)" : ""}
+          </li>
+        ))}
+      </ul>
       <div className="mt-3 rounded-lg border border-slate-200 bg-white p-2">
         <svg viewBox="0 0 100 100" className="h-36 w-full" aria-hidden="true">
           <line
@@ -256,7 +245,7 @@ function CategoricalFeaturePlot({
       >
         {plot.categories.map((category) => (
           <span key={`label-${category.value}`} className="truncate text-center">
-            {formatCategoryValue(feature, category.value)}
+            {category.label}
           </span>
         ))}
       </div>
@@ -275,7 +264,7 @@ function FeaturePlot({ contributor }: { contributor: Contributor }) {
       {contributor.plot.kind === "continuous" ? (
         <ContinuousFeaturePlot plot={contributor.plot} />
       ) : (
-        <CategoricalFeaturePlot feature={contributor.feature} plot={contributor.plot} />
+        <CategoricalFeaturePlot plot={contributor.plot} />
       )}
     </details>
   );

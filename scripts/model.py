@@ -15,6 +15,9 @@ from features import FEATURE_COLUMNS
 CLASSIFIER_MODEL_PATH = "classifier.json"
 REGRESSOR_MODEL_PATH = "regressor.json"
 CATEGORICAL_FEATURES = {"day_of_week", "month", "season"}
+DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+SEASON_LABELS = ["Winter", "Spring", "Summer", "Fall"]
 
 DEFAULT_XGB_PARAMS: dict[str, Any] = {
     "eta": 0.05,
@@ -235,6 +238,18 @@ def _feature_contributions_frame(model: xgb.XGBModel, feature_rows: pd.DataFrame
     return pd.DataFrame(contribs[:, :-1], columns=FEATURE_COLUMNS, index=feature_rows.index)
 
 
+def _category_label(feature: str, value: float) -> str:
+    numeric = int(value) if float(value).is_integer() else round(float(value), 4)
+    if feature == "day_of_week":
+        return DAY_LABELS[int(numeric)] if 0 <= int(numeric) < len(DAY_LABELS) else str(numeric)
+    if feature == "month":
+        month_index = int(numeric) - 1
+        return MONTH_LABELS[month_index] if 0 <= month_index < len(MONTH_LABELS) else str(numeric)
+    if feature == "season":
+        return SEASON_LABELS[int(numeric)] if 0 <= int(numeric) < len(SEASON_LABELS) else str(numeric)
+    return str(numeric)
+
+
 def attach_feature_plots(
     model: xgb.XGBModel,
     top_contributors: list[dict[str, Any]],
@@ -262,9 +277,11 @@ def attach_feature_plots(
             plot: dict[str, Any] = {
                 "kind": "categorical",
                 "current_value": int(current_value) if not pd.isna(current_value) else None,
+                "current_label": _category_label(feature, float(current_value)) if not pd.isna(current_value) else None,
                 "categories": [
                     {
                         "value": int(value) if float(value).is_integer() else round(float(value), 4),
+                        "label": _category_label(feature, float(value)),
                         "mean_shap": round(float(mean_shap), 4),
                     }
                     for value, mean_shap in categories

@@ -71,7 +71,9 @@ def main() -> None:
             assert plot["points"]
         else:
             assert plot["current_value"] is None or isinstance(plot["current_value"], int)
+            assert plot["current_label"] is None or isinstance(plot["current_label"], str)
             assert plot["categories"]
+            assert all(isinstance(category["label"], str) for category in plot["categories"])
 
     logger.info("Local modeling smoke test passed.")
     logger.info(
