@@ -1,12 +1,2837 @@
 {
   "date": "2026-09-23",
   "will_train": true,
-  "probability": 0.886,
-  "predicted_effort": 18.24,
+  "probability": 0.9517,
+  "predicted_effort": 30.0,
   "top_contributors": [
     {
+      "feature": "forecast_temp_high",
+      "signed_contribution": 0.5938607454299927,
+      "direction": "helping",
+      "phrase": "the daytime temperature forecast",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 15.8,
+        "current_shap": 0.5939,
+        "points": [
+          {
+            "feature_value": 25.9,
+            "shap_value": -0.2733
+          },
+          {
+            "feature_value": 17.5,
+            "shap_value": 0.5118
+          },
+          {
+            "feature_value": 17.6,
+            "shap_value": 0.5414
+          },
+          {
+            "feature_value": 17.4,
+            "shap_value": 0.5475
+          },
+          {
+            "feature_value": 17.5,
+            "shap_value": 0.5357
+          },
+          {
+            "feature_value": 15.5,
+            "shap_value": 0.5851
+          },
+          {
+            "feature_value": 18.9,
+            "shap_value": 0.2227
+          },
+          {
+            "feature_value": 20.6,
+            "shap_value": -0.0029
+          },
+          {
+            "feature_value": 16.0,
+            "shap_value": 0.4984
+          },
+          {
+            "feature_value": 19.3,
+            "shap_value": -0.0504
+          },
+          {
+            "feature_value": 15.7,
+            "shap_value": 0.4709
+          },
+          {
+            "feature_value": 19.1,
+            "shap_value": -0.0939
+          },
+          {
+            "feature_value": 23.3,
+            "shap_value": 0.1762
+          },
+          {
+            "feature_value": 19.9,
+            "shap_value": -0.0941
+          },
+          {
+            "feature_value": 17.1,
+            "shap_value": 0.4444
+          },
+          {
+            "feature_value": 16.0,
+            "shap_value": 0.4378
+          },
+          {
+            "feature_value": 15.1,
+            "shap_value": 0.4834
+          },
+          {
+            "feature_value": 20.4,
+            "shap_value": -0.0216
+          },
+          {
+            "feature_value": 21.3,
+            "shap_value": 0.2025
+          },
+          {
+            "feature_value": 19.8,
+            "shap_value": -0.0654
+          },
+          {
+            "feature_value": 12.5,
+            "shap_value": -0.1732
+          },
+          {
+            "feature_value": 12.6,
+            "shap_value": -0.1436
+          },
+          {
+            "feature_value": 11.0,
+            "shap_value": 0.0261
+          },
+          {
+            "feature_value": 11.4,
+            "shap_value": -0.0805
+          },
+          {
+            "feature_value": 15.6,
+            "shap_value": 0.4811
+          },
+          {
+            "feature_value": 19.8,
+            "shap_value": -0.0736
+          },
+          {
+            "feature_value": 12.6,
+            "shap_value": -0.1857
+          },
+          {
+            "feature_value": 13.7,
+            "shap_value": -0.0309
+          },
+          {
+            "feature_value": 9.6,
+            "shap_value": -0.1961
+          },
+          {
+            "feature_value": 12.1,
+            "shap_value": 0.0131
+          },
+          {
+            "feature_value": 16.7,
+            "shap_value": 0.4801
+          },
+          {
+            "feature_value": 14.6,
+            "shap_value": 0.1306
+          },
+          {
+            "feature_value": 13.1,
+            "shap_value": -0.1542
+          },
+          {
+            "feature_value": 11.1,
+            "shap_value": 0.0401
+          },
+          {
+            "feature_value": 10.7,
+            "shap_value": 0.0685
+          },
+          {
+            "feature_value": 10.7,
+            "shap_value": 0.1285
+          },
+          {
+            "feature_value": 10.9,
+            "shap_value": 0.1523
+          },
+          {
+            "feature_value": 8.5,
+            "shap_value": -0.3667
+          },
+          {
+            "feature_value": 10.2,
+            "shap_value": -0.2512
+          },
+          {
+            "feature_value": 9.7,
+            "shap_value": -0.2402
+          },
+          {
+            "feature_value": 12.3,
+            "shap_value": -0.0507
+          },
+          {
+            "feature_value": 9.3,
+            "shap_value": -0.1906
+          },
+          {
+            "feature_value": 11.7,
+            "shap_value": -0.1313
+          },
+          {
+            "feature_value": 13.6,
+            "shap_value": -0.0693
+          },
+          {
+            "feature_value": 15.4,
+            "shap_value": 0.4717
+          },
+          {
+            "feature_value": 11.5,
+            "shap_value": -0.131
+          },
+          {
+            "feature_value": 14.1,
+            "shap_value": -0.1272
+          },
+          {
+            "feature_value": 9.8,
+            "shap_value": -0.2966
+          },
+          {
+            "feature_value": 11.2,
+            "shap_value": -0.0313
+          },
+          {
+            "feature_value": 11.8,
+            "shap_value": -0.162
+          },
+          {
+            "feature_value": 9.3,
+            "shap_value": -0.2184
+          },
+          {
+            "feature_value": 8.2,
+            "shap_value": -0.1857
+          },
+          {
+            "feature_value": 6.9,
+            "shap_value": -0.3186
+          },
+          {
+            "feature_value": 9.0,
+            "shap_value": -0.2115
+          },
+          {
+            "feature_value": 5.0,
+            "shap_value": -0.2528
+          },
+          {
+            "feature_value": 8.3,
+            "shap_value": -0.3332
+          },
+          {
+            "feature_value": 13.4,
+            "shap_value": -0.082
+          },
+          {
+            "feature_value": 11.1,
+            "shap_value": 0.1206
+          },
+          {
+            "feature_value": 13.1,
+            "shap_value": -0.0173
+          },
+          {
+            "feature_value": 9.5,
+            "shap_value": -0.1911
+          },
+          {
+            "feature_value": 7.3,
+            "shap_value": -0.2194
+          },
+          {
+            "feature_value": 7.7,
+            "shap_value": -0.2436
+          },
+          {
+            "feature_value": 7.4,
+            "shap_value": -0.2987
+          },
+          {
+            "feature_value": 7.1,
+            "shap_value": -0.2894
+          },
+          {
+            "feature_value": 5.6,
+            "shap_value": -0.1722
+          },
+          {
+            "feature_value": 7.2,
+            "shap_value": -0.288
+          },
+          {
+            "feature_value": 7.3,
+            "shap_value": -0.3504
+          },
+          {
+            "feature_value": 5.7,
+            "shap_value": -0.2324
+          },
+          {
+            "feature_value": 4.7,
+            "shap_value": -0.2608
+          },
+          {
+            "feature_value": 6.7,
+            "shap_value": -0.2849
+          },
+          {
+            "feature_value": 8.6,
+            "shap_value": -0.2791
+          },
+          {
+            "feature_value": 11.9,
+            "shap_value": -0.0376
+          },
+          {
+            "feature_value": 9.5,
+            "shap_value": -0.1931
+          },
+          {
+            "feature_value": 7.2,
+            "shap_value": -0.319
+          },
+          {
+            "feature_value": 7.3,
+            "shap_value": -0.2614
+          },
+          {
+            "feature_value": 4.2,
+            "shap_value": -0.2068
+          },
+          {
+            "feature_value": 10.4,
+            "shap_value": -0.0399
+          },
+          {
+            "feature_value": 5.6,
+            "shap_value": -0.2581
+          },
+          {
+            "feature_value": 8.9,
+            "shap_value": -0.2318
+          },
+          {
+            "feature_value": 9.6,
+            "shap_value": -0.2381
+          },
+          {
+            "feature_value": 7.8,
+            "shap_value": -0.3705
+          },
+          {
+            "feature_value": 10.9,
+            "shap_value": 0.0602
+          },
+          {
+            "feature_value": 8.4,
+            "shap_value": -0.4301
+          },
+          {
+            "feature_value": 11.2,
+            "shap_value": 0.0886
+          },
+          {
+            "feature_value": 14.2,
+            "shap_value": 0.0549
+          },
+          {
+            "feature_value": 13.3,
+            "shap_value": -0.1006
+          },
+          {
+            "feature_value": 13.1,
+            "shap_value": -0.0864
+          },
+          {
+            "feature_value": 9.6,
+            "shap_value": -0.2778
+          },
+          {
+            "feature_value": 12.1,
+            "shap_value": -0.1198
+          },
+          {
+            "feature_value": 10.8,
+            "shap_value": 0.0597
+          },
+          {
+            "feature_value": 5.3,
+            "shap_value": -0.3546
+          },
+          {
+            "feature_value": 9.4,
+            "shap_value": -0.274
+          },
+          {
+            "feature_value": 8.4,
+            "shap_value": -0.3697
+          },
+          {
+            "feature_value": 9.1,
+            "shap_value": -0.2684
+          },
+          {
+            "feature_value": 6.1,
+            "shap_value": -0.1744
+          },
+          {
+            "feature_value": 6.2,
+            "shap_value": -0.2075
+          },
+          {
+            "feature_value": 6.4,
+            "shap_value": -0.2358
+          },
+          {
+            "feature_value": 7.6,
+            "shap_value": -0.3376
+          },
+          {
+            "feature_value": 6.3,
+            "shap_value": -0.3054
+          },
+          {
+            "feature_value": 6.0,
+            "shap_value": -0.259
+          },
+          {
+            "feature_value": 8.6,
+            "shap_value": -0.253
+          },
+          {
+            "feature_value": 8.9,
+            "shap_value": -0.2513
+          },
+          {
+            "feature_value": 7.9,
+            "shap_value": -0.2782
+          },
+          {
+            "feature_value": 7.7,
+            "shap_value": -0.3791
+          },
+          {
+            "feature_value": 10.6,
+            "shap_value": 0.045
+          },
+          {
+            "feature_value": 11.3,
+            "shap_value": 0.1107
+          },
+          {
+            "feature_value": 9.7,
+            "shap_value": -0.2568
+          },
+          {
+            "feature_value": 7.7,
+            "shap_value": -0.3881
+          },
+          {
+            "feature_value": 6.3,
+            "shap_value": -0.2281
+          },
+          {
+            "feature_value": 4.0,
+            "shap_value": -0.2315
+          },
+          {
+            "feature_value": 5.1,
+            "shap_value": -0.2597
+          },
+          {
+            "feature_value": 7.5,
+            "shap_value": -0.2624
+          },
+          {
+            "feature_value": 5.7,
+            "shap_value": -0.281
+          },
+          {
+            "feature_value": 5.7,
+            "shap_value": -0.1947
+          },
+          {
+            "feature_value": 5.2,
+            "shap_value": -0.2537
+          },
+          {
+            "feature_value": 5.3,
+            "shap_value": -0.259
+          },
+          {
+            "feature_value": 6.1,
+            "shap_value": -0.2015
+          },
+          {
+            "feature_value": 6.1,
+            "shap_value": -0.1814
+          },
+          {
+            "feature_value": 6.1,
+            "shap_value": -0.2279
+          },
+          {
+            "feature_value": 5.3,
+            "shap_value": -0.1889
+          },
+          {
+            "feature_value": 5.3,
+            "shap_value": -0.2658
+          },
+          {
+            "feature_value": 7.4,
+            "shap_value": -0.3437
+          },
+          {
+            "feature_value": 7.6,
+            "shap_value": -0.3378
+          },
+          {
+            "feature_value": 7.7,
+            "shap_value": -0.3496
+          },
+          {
+            "feature_value": 9.0,
+            "shap_value": -0.152
+          },
+          {
+            "feature_value": 6.3,
+            "shap_value": -0.181
+          },
+          {
+            "feature_value": 8.1,
+            "shap_value": -0.2349
+          },
+          {
+            "feature_value": 4.2,
+            "shap_value": -0.3181
+          },
+          {
+            "feature_value": 2.0,
+            "shap_value": -0.3506
+          },
+          {
+            "feature_value": 2.1,
+            "shap_value": -0.3311
+          },
+          {
+            "feature_value": 3.3,
+            "shap_value": -0.276
+          },
+          {
+            "feature_value": 3.7,
+            "shap_value": -0.2616
+          },
+          {
+            "feature_value": 3.4,
+            "shap_value": -0.2708
+          },
+          {
+            "feature_value": 1.9,
+            "shap_value": -0.2227
+          },
+          {
+            "feature_value": 2.6,
+            "shap_value": -0.26
+          },
+          {
+            "feature_value": 3.1,
+            "shap_value": -0.306
+          },
+          {
+            "feature_value": 2.5,
+            "shap_value": -0.3254
+          },
+          {
+            "feature_value": 1.7,
+            "shap_value": -0.3108
+          },
+          {
+            "feature_value": 5.4,
+            "shap_value": -0.2506
+          },
+          {
+            "feature_value": 3.9,
+            "shap_value": -0.26
+          },
+          {
+            "feature_value": 4.6,
+            "shap_value": -0.2286
+          },
+          {
+            "feature_value": 6.4,
+            "shap_value": -0.2332
+          },
+          {
+            "feature_value": 8.4,
+            "shap_value": -0.367
+          },
+          {
+            "feature_value": 6.7,
+            "shap_value": -0.3223
+          },
+          {
+            "feature_value": 12.0,
+            "shap_value": -0.0341
+          },
+          {
+            "feature_value": 9.0,
+            "shap_value": -0.1982
+          },
+          {
+            "feature_value": 9.7,
+            "shap_value": -0.155
+          },
+          {
+            "feature_value": 10.1,
+            "shap_value": -0.1419
+          },
+          {
+            "feature_value": 12.4,
+            "shap_value": -0.2052
+          },
+          {
+            "feature_value": 9.8,
+            "shap_value": -0.2625
+          },
+          {
+            "feature_value": 9.9,
+            "shap_value": -0.2532
+          },
+          {
+            "feature_value": 17.8,
+            "shap_value": 0.1976
+          },
+          {
+            "feature_value": 16.7,
+            "shap_value": 0.504
+          },
+          {
+            "feature_value": 14.7,
+            "shap_value": 0.2362
+          },
+          {
+            "feature_value": 16.7,
+            "shap_value": 0.5053
+          },
+          {
+            "feature_value": 11.5,
+            "shap_value": -0.082
+          },
+          {
+            "feature_value": 11.0,
+            "shap_value": 0.0095
+          },
+          {
+            "feature_value": 10.3,
+            "shap_value": -0.201
+          },
+          {
+            "feature_value": 11.6,
+            "shap_value": -0.0012
+          },
+          {
+            "feature_value": 10.6,
+            "shap_value": 0.0214
+          },
+          {
+            "feature_value": 11.0,
+            "shap_value": 0.083
+          },
+          {
+            "feature_value": 12.8,
+            "shap_value": -0.0945
+          },
+          {
+            "feature_value": 13.0,
+            "shap_value": -0.1111
+          },
+          {
+            "feature_value": 8.8,
+            "shap_value": -0.2491
+          },
+          {
+            "feature_value": 9.5,
+            "shap_value": -0.3234
+          },
+          {
+            "feature_value": 9.8,
+            "shap_value": -0.2738
+          },
+          {
+            "feature_value": 8.1,
+            "shap_value": -0.3701
+          },
+          {
+            "feature_value": 12.3,
+            "shap_value": -0.0295
+          },
+          {
+            "feature_value": 8.3,
+            "shap_value": -0.3714
+          },
+          {
+            "feature_value": 10.2,
+            "shap_value": -0.2423
+          },
+          {
+            "feature_value": 7.7,
+            "shap_value": -0.3185
+          },
+          {
+            "feature_value": 10.2,
+            "shap_value": -0.2741
+          },
+          {
+            "feature_value": 11.9,
+            "shap_value": -0.0289
+          },
+          {
+            "feature_value": 8.1,
+            "shap_value": -0.3281
+          },
+          {
+            "feature_value": 9.7,
+            "shap_value": -0.2854
+          },
+          {
+            "feature_value": 11.5,
+            "shap_value": -0.0579
+          },
+          {
+            "feature_value": 11.1,
+            "shap_value": -0.0254
+          },
+          {
+            "feature_value": 14.5,
+            "shap_value": -0.0504
+          },
+          {
+            "feature_value": 21.5,
+            "shap_value": 0.1954
+          },
+          {
+            "feature_value": 26.0,
+            "shap_value": -0.1188
+          },
+          {
+            "feature_value": 16.8,
+            "shap_value": 0.5416
+          },
+          {
+            "feature_value": 10.2,
+            "shap_value": -0.1636
+          },
+          {
+            "feature_value": 12.5,
+            "shap_value": -0.0731
+          },
+          {
+            "feature_value": 17.3,
+            "shap_value": 0.4956
+          },
+          {
+            "feature_value": 11.2,
+            "shap_value": 0.0155
+          },
+          {
+            "feature_value": 9.7,
+            "shap_value": -0.2152
+          },
+          {
+            "feature_value": 11.4,
+            "shap_value": -0.0218
+          },
+          {
+            "feature_value": 12.6,
+            "shap_value": -0.0331
+          },
+          {
+            "feature_value": 17.3,
+            "shap_value": 0.4997
+          },
+          {
+            "feature_value": 19.9,
+            "shap_value": -0.0745
+          },
+          {
+            "feature_value": 11.9,
+            "shap_value": -0.1756
+          },
+          {
+            "feature_value": 13.6,
+            "shap_value": -0.1766
+          },
+          {
+            "feature_value": 11.6,
+            "shap_value": -0.1067
+          },
+          {
+            "feature_value": 15.1,
+            "shap_value": 0.4528
+          },
+          {
+            "feature_value": 20.2,
+            "shap_value": -0.0531
+          },
+          {
+            "feature_value": 11.7,
+            "shap_value": -0.0256
+          },
+          {
+            "feature_value": 11.7,
+            "shap_value": -0.0286
+          },
+          {
+            "feature_value": 14.9,
+            "shap_value": 0.2922
+          },
+          {
+            "feature_value": 19.0,
+            "shap_value": -0.0155
+          },
+          {
+            "feature_value": 17.4,
+            "shap_value": 0.4096
+          },
+          {
+            "feature_value": 15.9,
+            "shap_value": 0.5231
+          },
+          {
+            "feature_value": 17.2,
+            "shap_value": 0.5433
+          },
+          {
+            "feature_value": 20.3,
+            "shap_value": -0.0516
+          },
+          {
+            "feature_value": 14.2,
+            "shap_value": -0.0922
+          },
+          {
+            "feature_value": 10.9,
+            "shap_value": -0.0579
+          },
+          {
+            "feature_value": 12.8,
+            "shap_value": -0.1204
+          },
+          {
+            "feature_value": 14.2,
+            "shap_value": -0.0748
+          },
+          {
+            "feature_value": 17.2,
+            "shap_value": 0.5112
+          },
+          {
+            "feature_value": 20.5,
+            "shap_value": -0.0546
+          },
+          {
+            "feature_value": 20.2,
+            "shap_value": -0.0639
+          },
+          {
+            "feature_value": 18.0,
+            "shap_value": 0.1226
+          },
+          {
+            "feature_value": 14.7,
+            "shap_value": 0.1026
+          },
+          {
+            "feature_value": 13.7,
+            "shap_value": -0.0766
+          },
+          {
+            "feature_value": 13.1,
+            "shap_value": -0.161
+          },
+          {
+            "feature_value": 15.1,
+            "shap_value": 0.4112
+          },
+          {
+            "feature_value": 22.2,
+            "shap_value": 0.0965
+          },
+          {
+            "feature_value": 20.6,
+            "shap_value": 0.0046
+          },
+          {
+            "feature_value": 13.3,
+            "shap_value": -0.211
+          },
+          {
+            "feature_value": 14.3,
+            "shap_value": -0.0497
+          },
+          {
+            "feature_value": 18.7,
+            "shap_value": 0.1445
+          },
+          {
+            "feature_value": 24.2,
+            "shap_value": 0.3299
+          },
+          {
+            "feature_value": 16.7,
+            "shap_value": 0.5045
+          },
+          {
+            "feature_value": 15.3,
+            "shap_value": 0.5744
+          },
+          {
+            "feature_value": 19.3,
+            "shap_value": -0.065
+          },
+          {
+            "feature_value": 16.4,
+            "shap_value": 0.4707
+          },
+          {
+            "feature_value": 15.0,
+            "shap_value": 0.2983
+          },
+          {
+            "feature_value": 16.5,
+            "shap_value": 0.5238
+          },
+          {
+            "feature_value": 16.3,
+            "shap_value": 0.472
+          },
+          {
+            "feature_value": 14.8,
+            "shap_value": 0.2351
+          },
+          {
+            "feature_value": 12.3,
+            "shap_value": -0.1296
+          },
+          {
+            "feature_value": 13.9,
+            "shap_value": -0.0275
+          },
+          {
+            "feature_value": 13.7,
+            "shap_value": -0.1096
+          },
+          {
+            "feature_value": 14.5,
+            "shap_value": -0.0675
+          },
+          {
+            "feature_value": 15.0,
+            "shap_value": 0.2904
+          },
+          {
+            "feature_value": 14.2,
+            "shap_value": -0.0588
+          },
+          {
+            "feature_value": 16.5,
+            "shap_value": 0.5856
+          },
+          {
+            "feature_value": 18.6,
+            "shap_value": 0.2111
+          },
+          {
+            "feature_value": 17.7,
+            "shap_value": 0.1809
+          },
+          {
+            "feature_value": 21.8,
+            "shap_value": 0.1886
+          },
+          {
+            "feature_value": 19.9,
+            "shap_value": -0.1453
+          },
+          {
+            "feature_value": 18.6,
+            "shap_value": 0.2123
+          },
+          {
+            "feature_value": 21.2,
+            "shap_value": 0.051
+          },
+          {
+            "feature_value": 26.9,
+            "shap_value": -0.2487
+          },
+          {
+            "feature_value": 17.9,
+            "shap_value": 0.2492
+          },
+          {
+            "feature_value": 23.6,
+            "shap_value": 0.1558
+          },
+          {
+            "feature_value": 15.9,
+            "shap_value": 0.4502
+          },
+          {
+            "feature_value": 17.6,
+            "shap_value": 0.3465
+          },
+          {
+            "feature_value": 19.0,
+            "shap_value": -0.0728
+          },
+          {
+            "feature_value": 20.8,
+            "shap_value": -0.0354
+          },
+          {
+            "feature_value": 19.3,
+            "shap_value": 0.0396
+          },
+          {
+            "feature_value": 22.7,
+            "shap_value": 0.2905
+          },
+          {
+            "feature_value": 24.8,
+            "shap_value": 0.127
+          },
+          {
+            "feature_value": 24.6,
+            "shap_value": 0.2441
+          },
+          {
+            "feature_value": 29.0,
+            "shap_value": -0.0642
+          },
+          {
+            "feature_value": 27.6,
+            "shap_value": -0.5531
+          },
+          {
+            "feature_value": 25.4,
+            "shap_value": -0.0735
+          },
+          {
+            "feature_value": 22.0,
+            "shap_value": 0.2006
+          },
+          {
+            "feature_value": 19.4,
+            "shap_value": -0.0008
+          },
+          {
+            "feature_value": 17.1,
+            "shap_value": 0.6117
+          },
+          {
+            "feature_value": 19.2,
+            "shap_value": -0.0809
+          },
+          {
+            "feature_value": 20.7,
+            "shap_value": -0.0603
+          },
+          {
+            "feature_value": 22.1,
+            "shap_value": 0.2493
+          },
+          {
+            "feature_value": 23.8,
+            "shap_value": 0.3748
+          },
+          {
+            "feature_value": 20.1,
+            "shap_value": 0.039
+          },
+          {
+            "feature_value": 19.5,
+            "shap_value": -0.0453
+          },
+          {
+            "feature_value": 16.3,
+            "shap_value": 0.5972
+          },
+          {
+            "feature_value": 15.4,
+            "shap_value": 0.5448
+          },
+          {
+            "feature_value": 19.4,
+            "shap_value": -0.1383
+          },
+          {
+            "feature_value": 23.7,
+            "shap_value": 0.2658
+          },
+          {
+            "feature_value": 25.1,
+            "shap_value": 0.0059
+          },
+          {
+            "feature_value": 20.4,
+            "shap_value": 0.0762
+          },
+          {
+            "feature_value": 18.2,
+            "shap_value": 0.3041
+          },
+          {
+            "feature_value": 18.9,
+            "shap_value": 0.2712
+          },
+          {
+            "feature_value": 22.1,
+            "shap_value": 0.297
+          },
+          {
+            "feature_value": 27.6,
+            "shap_value": -0.4811
+          },
+          {
+            "feature_value": 27.1,
+            "shap_value": -0.4229
+          },
+          {
+            "feature_value": 25.1,
+            "shap_value": -0.2191
+          },
+          {
+            "feature_value": 22.1,
+            "shap_value": 0.228
+          },
+          {
+            "feature_value": 23.8,
+            "shap_value": 0.2396
+          },
+          {
+            "feature_value": 23.3,
+            "shap_value": 0.2875
+          },
+          {
+            "feature_value": 25.0,
+            "shap_value": 0.2559
+          },
+          {
+            "feature_value": 27.6,
+            "shap_value": -0.3114
+          },
+          {
+            "feature_value": 29.7,
+            "shap_value": 0.0757
+          },
+          {
+            "feature_value": 20.1,
+            "shap_value": 0.0065
+          },
+          {
+            "feature_value": 22.5,
+            "shap_value": 0.1964
+          },
+          {
+            "feature_value": 27.2,
+            "shap_value": -0.2471
+          },
+          {
+            "feature_value": 26.8,
+            "shap_value": -0.3611
+          },
+          {
+            "feature_value": 29.9,
+            "shap_value": -0.0437
+          },
+          {
+            "feature_value": 26.2,
+            "shap_value": -0.2557
+          },
+          {
+            "feature_value": 29.6,
+            "shap_value": -0.0887
+          },
+          {
+            "feature_value": 32.8,
+            "shap_value": -0.0748
+          },
+          {
+            "feature_value": 29.4,
+            "shap_value": -0.1744
+          },
+          {
+            "feature_value": 24.1,
+            "shap_value": 0.1996
+          },
+          {
+            "feature_value": 22.1,
+            "shap_value": 0.2086
+          },
+          {
+            "feature_value": 22.5,
+            "shap_value": 0.2558
+          },
+          {
+            "feature_value": 25.3,
+            "shap_value": -0.0191
+          },
+          {
+            "feature_value": 26.0,
+            "shap_value": -0.0693
+          },
+          {
+            "feature_value": 28.1,
+            "shap_value": -0.4007
+          },
+          {
+            "feature_value": 25.7,
+            "shap_value": -0.2182
+          },
+          {
+            "feature_value": 22.0,
+            "shap_value": 0.1833
+          },
+          {
+            "feature_value": 25.2,
+            "shap_value": 0.0221
+          },
+          {
+            "feature_value": 27.2,
+            "shap_value": -0.2323
+          },
+          {
+            "feature_value": 29.1,
+            "shap_value": 0.2886
+          },
+          {
+            "feature_value": 28.5,
+            "shap_value": 0.0929
+          },
+          {
+            "feature_value": 27.8,
+            "shap_value": -0.5564
+          },
+          {
+            "feature_value": 27.3,
+            "shap_value": -0.5163
+          },
+          {
+            "feature_value": 25.4,
+            "shap_value": -0.2075
+          },
+          {
+            "feature_value": 22.6,
+            "shap_value": 0.4033
+          },
+          {
+            "feature_value": 23.2,
+            "shap_value": 0.4512
+          },
+          {
+            "feature_value": 25.9,
+            "shap_value": -0.1211
+          },
+          {
+            "feature_value": 20.7,
+            "shap_value": 0.1213
+          },
+          {
+            "feature_value": 20.7,
+            "shap_value": 0.0363
+          },
+          {
+            "feature_value": 22.8,
+            "shap_value": 0.206
+          },
+          {
+            "feature_value": 24.9,
+            "shap_value": 0.2116
+          },
+          {
+            "feature_value": 29.0,
+            "shap_value": -0.0251
+          },
+          {
+            "feature_value": 29.5,
+            "shap_value": -0.2155
+          },
+          {
+            "feature_value": 31.8,
+            "shap_value": -0.043
+          },
+          {
+            "feature_value": 28.0,
+            "shap_value": -0.6338
+          },
+          {
+            "feature_value": 24.1,
+            "shap_value": 0.2142
+          },
+          {
+            "feature_value": 18.8,
+            "shap_value": 0.3688
+          },
+          {
+            "feature_value": 22.3,
+            "shap_value": 0.2504
+          },
+          {
+            "feature_value": 22.1,
+            "shap_value": 0.3552
+          },
+          {
+            "feature_value": 22.1,
+            "shap_value": 0.3172
+          },
+          {
+            "feature_value": 23.1,
+            "shap_value": 0.3767
+          },
+          {
+            "feature_value": 22.1,
+            "shap_value": 0.2166
+          },
+          {
+            "feature_value": 23.6,
+            "shap_value": 0.1883
+          },
+          {
+            "feature_value": 29.6,
+            "shap_value": 0.3403
+          },
+          {
+            "feature_value": 30.7,
+            "shap_value": 0.175
+          },
+          {
+            "feature_value": 30.6,
+            "shap_value": 0.1842
+          },
+          {
+            "feature_value": 30.2,
+            "shap_value": -0.0826
+          },
+          {
+            "feature_value": 29.2,
+            "shap_value": -0.0151
+          },
+          {
+            "feature_value": 26.4,
+            "shap_value": -0.2852
+          },
+          {
+            "feature_value": 27.4,
+            "shap_value": -0.621
+          },
+          {
+            "feature_value": 25.0,
+            "shap_value": 0.1156
+          },
+          {
+            "feature_value": 23.4,
+            "shap_value": 0.3287
+          },
+          {
+            "feature_value": 24.0,
+            "shap_value": 0.4293
+          },
+          {
+            "feature_value": 23.5,
+            "shap_value": 0.3958
+          },
+          {
+            "feature_value": 24.8,
+            "shap_value": 0.2916
+          },
+          {
+            "feature_value": 26.0,
+            "shap_value": -0.2287
+          },
+          {
+            "feature_value": 26.1,
+            "shap_value": -0.2868
+          },
+          {
+            "feature_value": 25.8,
+            "shap_value": -0.3052
+          },
+          {
+            "feature_value": 23.4,
+            "shap_value": 0.2895
+          },
+          {
+            "feature_value": 21.0,
+            "shap_value": -0.0483
+          },
+          {
+            "feature_value": 22.5,
+            "shap_value": 0.2213
+          },
+          {
+            "feature_value": 22.5,
+            "shap_value": 0.1496
+          },
+          {
+            "feature_value": 20.5,
+            "shap_value": -0.0659
+          },
+          {
+            "feature_value": 20.3,
+            "shap_value": -0.1062
+          },
+          {
+            "feature_value": 23.5,
+            "shap_value": 0.168
+          },
+          {
+            "feature_value": 24.1,
+            "shap_value": 0.273
+          },
+          {
+            "feature_value": 20.9,
+            "shap_value": 0.0553
+          },
+          {
+            "feature_value": 18.2,
+            "shap_value": 0.2027
+          },
+          {
+            "feature_value": 20.5,
+            "shap_value": -0.0779
+          },
+          {
+            "feature_value": 23.1,
+            "shap_value": 0.3492
+          },
+          {
+            "feature_value": 21.2,
+            "shap_value": 0.1042
+          },
+          {
+            "feature_value": 17.5,
+            "shap_value": 0.4736
+          },
+          {
+            "feature_value": 19.7,
+            "shap_value": -0.0519
+          },
+          {
+            "feature_value": 22.0,
+            "shap_value": 0.15
+          },
+          {
+            "feature_value": 23.0,
+            "shap_value": 0.2987
+          },
+          {
+            "feature_value": 16.9,
+            "shap_value": 0.5361
+          },
+          {
+            "feature_value": 20.8,
+            "shap_value": 0.0346
+          },
+          {
+            "feature_value": 18.8,
+            "shap_value": 0.3211
+          },
+          {
+            "feature_value": 19.7,
+            "shap_value": -0.0198
+          },
+          {
+            "feature_value": 16.9,
+            "shap_value": 0.5623
+          },
+          {
+            "feature_value": 16.4,
+            "shap_value": 0.6094
+          },
+          {
+            "feature_value": 16.6,
+            "shap_value": 0.5536
+          },
+          {
+            "feature_value": 20.1,
+            "shap_value": -0.031
+          },
+          {
+            "feature_value": 21.7,
+            "shap_value": 0.2251
+          },
+          {
+            "feature_value": 15.5,
+            "shap_value": 0.5722
+          },
+          {
+            "feature_value": 15.5,
+            "shap_value": 0.5654
+          },
+          {
+            "feature_value": 16.2,
+            "shap_value": 0.5582
+          },
+          {
+            "feature_value": 12.5,
+            "shap_value": -0.2367
+          },
+          {
+            "feature_value": 12.3,
+            "shap_value": -0.1913
+          },
+          {
+            "feature_value": 13.8,
+            "shap_value": -0.0294
+          },
+          {
+            "feature_value": 13.9,
+            "shap_value": -0.012
+          },
+          {
+            "feature_value": 13.7,
+            "shap_value": -0.0621
+          },
+          {
+            "feature_value": 13.5,
+            "shap_value": -0.131
+          },
+          {
+            "feature_value": 14.9,
+            "shap_value": 0.2485
+          },
+          {
+            "feature_value": 10.8,
+            "shap_value": 0.0543
+          },
+          {
+            "feature_value": 14.8,
+            "shap_value": 0.1302
+          },
+          {
+            "feature_value": 13.9,
+            "shap_value": -0.0771
+          },
+          {
+            "feature_value": 14.9,
+            "shap_value": 0.2933
+          },
+          {
+            "feature_value": 16.3,
+            "shap_value": 0.5429
+          },
+          {
+            "feature_value": 16.5,
+            "shap_value": 0.5497
+          },
+          {
+            "feature_value": 13.5,
+            "shap_value": -0.1694
+          },
+          {
+            "feature_value": 13.1,
+            "shap_value": -0.1294
+          },
+          {
+            "feature_value": 8.0,
+            "shap_value": -0.3583
+          },
+          {
+            "feature_value": 8.8,
+            "shap_value": -0.1707
+          },
+          {
+            "feature_value": 12.5,
+            "shap_value": -0.1923
+          },
+          {
+            "feature_value": 13.9,
+            "shap_value": -0.0594
+          },
+          {
+            "feature_value": 10.3,
+            "shap_value": -0.134
+          },
+          {
+            "feature_value": 14.1,
+            "shap_value": -0.0024
+          },
+          {
+            "feature_value": 15.0,
+            "shap_value": 0.1777
+          },
+          {
+            "feature_value": 12.4,
+            "shap_value": -0.0438
+          },
+          {
+            "feature_value": 9.2,
+            "shap_value": -0.2244
+          },
+          {
+            "feature_value": 14.4,
+            "shap_value": 0.0133
+          },
+          {
+            "feature_value": 14.3,
+            "shap_value": -0.0805
+          },
+          {
+            "feature_value": 12.6,
+            "shap_value": -0.1331
+          },
+          {
+            "feature_value": 12.6,
+            "shap_value": -0.0502
+          },
+          {
+            "feature_value": 16.3,
+            "shap_value": 0.5317
+          },
+          {
+            "feature_value": 18.5,
+            "shap_value": 0.1758
+          },
+          {
+            "feature_value": 14.5,
+            "shap_value": -0.0857
+          },
+          {
+            "feature_value": 12.2,
+            "shap_value": -0.0798
+          },
+          {
+            "feature_value": 13.8,
+            "shap_value": -0.0729
+          },
+          {
+            "feature_value": 13.3,
+            "shap_value": -0.2341
+          },
+          {
+            "feature_value": 11.1,
+            "shap_value": -0.0794
+          },
+          {
+            "feature_value": 12.9,
+            "shap_value": -0.1765
+          },
+          {
+            "feature_value": 12.4,
+            "shap_value": -0.1394
+          },
+          {
+            "feature_value": 11.6,
+            "shap_value": -0.1064
+          },
+          {
+            "feature_value": 8.9,
+            "shap_value": -0.1429
+          },
+          {
+            "feature_value": 12.1,
+            "shap_value": -0.177
+          },
+          {
+            "feature_value": 12.1,
+            "shap_value": -0.0559
+          },
+          {
+            "feature_value": 10.3,
+            "shap_value": -0.0783
+          },
+          {
+            "feature_value": 10.3,
+            "shap_value": -0.2986
+          },
+          {
+            "feature_value": 10.1,
+            "shap_value": -0.3354
+          },
+          {
+            "feature_value": 8.1,
+            "shap_value": -0.3213
+          },
+          {
+            "feature_value": 5.7,
+            "shap_value": -0.3144
+          },
+          {
+            "feature_value": 8.6,
+            "shap_value": -0.3292
+          },
+          {
+            "feature_value": 11.8,
+            "shap_value": -0.0546
+          },
+          {
+            "feature_value": 10.2,
+            "shap_value": -0.1691
+          },
+          {
+            "feature_value": 9.6,
+            "shap_value": -0.2322
+          },
+          {
+            "feature_value": 6.5,
+            "shap_value": -0.2709
+          },
+          {
+            "feature_value": 6.5,
+            "shap_value": -0.2473
+          },
+          {
+            "feature_value": 8.0,
+            "shap_value": -0.305
+          },
+          {
+            "feature_value": 5.8,
+            "shap_value": -0.2821
+          },
+          {
+            "feature_value": 6.7,
+            "shap_value": -0.2559
+          },
+          {
+            "feature_value": 12.1,
+            "shap_value": -0.0264
+          },
+          {
+            "feature_value": 10.3,
+            "shap_value": -0.1894
+          },
+          {
+            "feature_value": 11.4,
+            "shap_value": -0.1237
+          },
+          {
+            "feature_value": 12.3,
+            "shap_value": -0.105
+          },
+          {
+            "feature_value": 10.5,
+            "shap_value": 0.0735
+          },
+          {
+            "feature_value": 13.3,
+            "shap_value": -0.2754
+          },
+          {
+            "feature_value": 13.0,
+            "shap_value": -0.1723
+          },
+          {
+            "feature_value": 12.4,
+            "shap_value": -0.0698
+          },
+          {
+            "feature_value": 11.1,
+            "shap_value": -0.1261
+          },
+          {
+            "feature_value": 14.3,
+            "shap_value": -0.1052
+          },
+          {
+            "feature_value": 11.7,
+            "shap_value": -0.1469
+          },
+          {
+            "feature_value": 11.5,
+            "shap_value": -0.0315
+          },
+          {
+            "feature_value": 10.4,
+            "shap_value": -0.0164
+          },
+          {
+            "feature_value": 6.6,
+            "shap_value": -0.1459
+          },
+          {
+            "feature_value": 6.9,
+            "shap_value": -0.2432
+          },
+          {
+            "feature_value": 8.4,
+            "shap_value": -0.4171
+          },
+          {
+            "feature_value": 10.5,
+            "shap_value": 0.0174
+          },
+          {
+            "feature_value": 6.7,
+            "shap_value": -0.339
+          },
+          {
+            "feature_value": 8.4,
+            "shap_value": -0.5782
+          },
+          {
+            "feature_value": 4.9,
+            "shap_value": -0.4037
+          },
+          {
+            "feature_value": 6.0,
+            "shap_value": -0.2874
+          },
+          {
+            "feature_value": 3.0,
+            "shap_value": -0.2988
+          },
+          {
+            "feature_value": 2.5,
+            "shap_value": -0.3273
+          },
+          {
+            "feature_value": 4.2,
+            "shap_value": -0.2625
+          },
+          {
+            "feature_value": 6.8,
+            "shap_value": -0.2047
+          },
+          {
+            "feature_value": 5.7,
+            "shap_value": -0.2082
+          },
+          {
+            "feature_value": 4.5,
+            "shap_value": -0.1936
+          },
+          {
+            "feature_value": 6.2,
+            "shap_value": -0.2019
+          },
+          {
+            "feature_value": 12.3,
+            "shap_value": -0.1149
+          },
+          {
+            "feature_value": 8.9,
+            "shap_value": -0.3511
+          },
+          {
+            "feature_value": 5.9,
+            "shap_value": -0.3612
+          },
+          {
+            "feature_value": 5.8,
+            "shap_value": -0.2338
+          },
+          {
+            "feature_value": 4.9,
+            "shap_value": -0.4344
+          },
+          {
+            "feature_value": 5.2,
+            "shap_value": -0.3452
+          },
+          {
+            "feature_value": 10.9,
+            "shap_value": 0.111
+          },
+          {
+            "feature_value": 10.2,
+            "shap_value": -0.181
+          },
+          {
+            "feature_value": 8.3,
+            "shap_value": -0.5116
+          },
+          {
+            "feature_value": 10.7,
+            "shap_value": -0.0187
+          },
+          {
+            "feature_value": 14.1,
+            "shap_value": -0.0668
+          },
+          {
+            "feature_value": 9.8,
+            "shap_value": -0.2591
+          },
+          {
+            "feature_value": 9.7,
+            "shap_value": -0.1586
+          },
+          {
+            "feature_value": 9.3,
+            "shap_value": -0.1344
+          },
+          {
+            "feature_value": 8.6,
+            "shap_value": -0.1665
+          },
+          {
+            "feature_value": 8.4,
+            "shap_value": -0.4546
+          },
+          {
+            "feature_value": 9.4,
+            "shap_value": -0.1893
+          },
+          {
+            "feature_value": 7.1,
+            "shap_value": -0.244
+          },
+          {
+            "feature_value": 7.1,
+            "shap_value": -0.3536
+          },
+          {
+            "feature_value": 6.3,
+            "shap_value": -0.1854
+          },
+          {
+            "feature_value": 6.6,
+            "shap_value": -0.1148
+          },
+          {
+            "feature_value": 5.9,
+            "shap_value": -0.1208
+          },
+          {
+            "feature_value": 6.2,
+            "shap_value": -0.1558
+          },
+          {
+            "feature_value": 9.8,
+            "shap_value": -0.1851
+          },
+          {
+            "feature_value": 12.4,
+            "shap_value": -0.0582
+          },
+          {
+            "feature_value": 9.1,
+            "shap_value": -0.2838
+          },
+          {
+            "feature_value": 10.6,
+            "shap_value": 0.028
+          },
+          {
+            "feature_value": 10.5,
+            "shap_value": 0.0347
+          },
+          {
+            "feature_value": 16.1,
+            "shap_value": 0.5589
+          },
+          {
+            "feature_value": 11.8,
+            "shap_value": -0.1529
+          },
+          {
+            "feature_value": 11.0,
+            "shap_value": 0.0996
+          },
+          {
+            "feature_value": 15.7,
+            "shap_value": 0.5401
+          },
+          {
+            "feature_value": 16.7,
+            "shap_value": 0.59
+          },
+          {
+            "feature_value": 14.1,
+            "shap_value": 0.0215
+          },
+          {
+            "feature_value": 15.7,
+            "shap_value": 0.6265
+          },
+          {
+            "feature_value": 9.6,
+            "shap_value": -0.2993
+          },
+          {
+            "feature_value": 9.0,
+            "shap_value": -0.2546
+          },
+          {
+            "feature_value": 9.0,
+            "shap_value": -0.2779
+          },
+          {
+            "feature_value": 12.3,
+            "shap_value": -0.0364
+          },
+          {
+            "feature_value": 10.1,
+            "shap_value": -0.3096
+          },
+          {
+            "feature_value": 11.2,
+            "shap_value": 0.0508
+          },
+          {
+            "feature_value": 7.7,
+            "shap_value": -0.2385
+          },
+          {
+            "feature_value": 8.5,
+            "shap_value": -0.2314
+          },
+          {
+            "feature_value": 8.1,
+            "shap_value": -0.3804
+          },
+          {
+            "feature_value": 6.8,
+            "shap_value": -0.3882
+          },
+          {
+            "feature_value": 7.6,
+            "shap_value": -0.2185
+          },
+          {
+            "feature_value": 5.4,
+            "shap_value": -0.2099
+          },
+          {
+            "feature_value": 3.6,
+            "shap_value": -0.1532
+          },
+          {
+            "feature_value": 5.1,
+            "shap_value": -0.2397
+          },
+          {
+            "feature_value": 8.3,
+            "shap_value": -0.4721
+          },
+          {
+            "feature_value": 10.7,
+            "shap_value": 0.0213
+          },
+          {
+            "feature_value": 8.3,
+            "shap_value": -0.5109
+          },
+          {
+            "feature_value": 8.1,
+            "shap_value": -0.361
+          },
+          {
+            "feature_value": 9.9,
+            "shap_value": -0.323
+          },
+          {
+            "feature_value": 10.5,
+            "shap_value": 0.05
+          },
+          {
+            "feature_value": 10.2,
+            "shap_value": -0.263
+          },
+          {
+            "feature_value": 11.1,
+            "shap_value": -0.0129
+          },
+          {
+            "feature_value": 12.7,
+            "shap_value": -0.1666
+          },
+          {
+            "feature_value": 11.5,
+            "shap_value": -0.1753
+          },
+          {
+            "feature_value": 10.0,
+            "shap_value": -0.4507
+          },
+          {
+            "feature_value": 10.4,
+            "shap_value": -0.2236
+          },
+          {
+            "feature_value": 6.9,
+            "shap_value": -0.4571
+          },
+          {
+            "feature_value": 8.6,
+            "shap_value": -0.1757
+          },
+          {
+            "feature_value": 10.4,
+            "shap_value": -0.2463
+          },
+          {
+            "feature_value": 9.0,
+            "shap_value": -0.2007
+          },
+          {
+            "feature_value": 1.4,
+            "shap_value": -0.3131
+          },
+          {
+            "feature_value": 5.3,
+            "shap_value": -0.2586
+          },
+          {
+            "feature_value": 10.9,
+            "shap_value": 0.0517
+          },
+          {
+            "feature_value": 11.2,
+            "shap_value": -0.0275
+          },
+          {
+            "feature_value": 14.1,
+            "shap_value": -0.068
+          },
+          {
+            "feature_value": 12.1,
+            "shap_value": -0.1102
+          },
+          {
+            "feature_value": 13.2,
+            "shap_value": -0.1664
+          },
+          {
+            "feature_value": 9.7,
+            "shap_value": -0.2614
+          },
+          {
+            "feature_value": 10.1,
+            "shap_value": -0.3635
+          },
+          {
+            "feature_value": 10.0,
+            "shap_value": -0.2194
+          },
+          {
+            "feature_value": 12.0,
+            "shap_value": -0.0322
+          },
+          {
+            "feature_value": 10.7,
+            "shap_value": 0.0466
+          },
+          {
+            "feature_value": 11.3,
+            "shap_value": 0.0887
+          },
+          {
+            "feature_value": 14.5,
+            "shap_value": 0.0314
+          },
+          {
+            "feature_value": 13.2,
+            "shap_value": -0.097
+          },
+          {
+            "feature_value": 8.3,
+            "shap_value": -0.5127
+          },
+          {
+            "feature_value": 9.5,
+            "shap_value": -0.1976
+          },
+          {
+            "feature_value": 14.1,
+            "shap_value": 0.032
+          },
+          {
+            "feature_value": 9.1,
+            "shap_value": -0.3773
+          },
+          {
+            "feature_value": 12.0,
+            "shap_value": 0.0405
+          },
+          {
+            "feature_value": 13.8,
+            "shap_value": 0.0485
+          },
+          {
+            "feature_value": 16.6,
+            "shap_value": 0.6244
+          },
+          {
+            "feature_value": 18.7,
+            "shap_value": 0.0462
+          },
+          {
+            "feature_value": 20.9,
+            "shap_value": 0.0315
+          },
+          {
+            "feature_value": 12.1,
+            "shap_value": -0.0701
+          },
+          {
+            "feature_value": 15.3,
+            "shap_value": 0.571
+          },
+          {
+            "feature_value": 18.1,
+            "shap_value": 0.1758
+          },
+          {
+            "feature_value": 20.6,
+            "shap_value": 0.027
+          },
+          {
+            "feature_value": 12.3,
+            "shap_value": -0.2175
+          },
+          {
+            "feature_value": 15.2,
+            "shap_value": 0.481
+          },
+          {
+            "feature_value": 11.8,
+            "shap_value": -0.1448
+          },
+          {
+            "feature_value": 7.9,
+            "shap_value": -0.3667
+          },
+          {
+            "feature_value": 8.5,
+            "shap_value": -0.489
+          },
+          {
+            "feature_value": 11.9,
+            "shap_value": -0.0139
+          },
+          {
+            "feature_value": 13.7,
+            "shap_value": 0.0031
+          },
+          {
+            "feature_value": 19.9,
+            "shap_value": -0.0722
+          },
+          {
+            "feature_value": 21.9,
+            "shap_value": 0.3662
+          },
+          {
+            "feature_value": 21.4,
+            "shap_value": 0.2059
+          },
+          {
+            "feature_value": 15.4,
+            "shap_value": 0.6462
+          },
+          {
+            "feature_value": 12.2,
+            "shap_value": -0.1112
+          },
+          {
+            "feature_value": 13.7,
+            "shap_value": 0.0145
+          },
+          {
+            "feature_value": 16.0,
+            "shap_value": 0.5781
+          },
+          {
+            "feature_value": 16.9,
+            "shap_value": 0.5168
+          },
+          {
+            "feature_value": 18.0,
+            "shap_value": 0.0468
+          },
+          {
+            "feature_value": 13.3,
+            "shap_value": -0.1013
+          },
+          {
+            "feature_value": 13.4,
+            "shap_value": -0.1599
+          },
+          {
+            "feature_value": 17.7,
+            "shap_value": 0.2093
+          },
+          {
+            "feature_value": 22.1,
+            "shap_value": 0.0742
+          },
+          {
+            "feature_value": 21.6,
+            "shap_value": 0.0689
+          },
+          {
+            "feature_value": 21.9,
+            "shap_value": 0.0888
+          },
+          {
+            "feature_value": 25.6,
+            "shap_value": -0.1051
+          },
+          {
+            "feature_value": 25.0,
+            "shap_value": 0.0949
+          },
+          {
+            "feature_value": 19.4,
+            "shap_value": 0.0501
+          },
+          {
+            "feature_value": 17.1,
+            "shap_value": 0.6251
+          },
+          {
+            "feature_value": 15.9,
+            "shap_value": 0.6458
+          },
+          {
+            "feature_value": 17.2,
+            "shap_value": 0.6878
+          },
+          {
+            "feature_value": 20.3,
+            "shap_value": 0.0131
+          },
+          {
+            "feature_value": 19.0,
+            "shap_value": -0.0791
+          },
+          {
+            "feature_value": 20.6,
+            "shap_value": 0.0658
+          },
+          {
+            "feature_value": 26.7,
+            "shap_value": -0.3643
+          },
+          {
+            "feature_value": 14.6,
+            "shap_value": 0.3117
+          },
+          {
+            "feature_value": 15.3,
+            "shap_value": 0.6793
+          },
+          {
+            "feature_value": 9.6,
+            "shap_value": -0.4045
+          },
+          {
+            "feature_value": 12.1,
+            "shap_value": -0.0813
+          },
+          {
+            "feature_value": 16.1,
+            "shap_value": 0.5257
+          },
+          {
+            "feature_value": 17.7,
+            "shap_value": 0.2711
+          },
+          {
+            "feature_value": 16.8,
+            "shap_value": 0.6615
+          },
+          {
+            "feature_value": 18.8,
+            "shap_value": 0.3318
+          },
+          {
+            "feature_value": 22.8,
+            "shap_value": 0.2779
+          },
+          {
+            "feature_value": 23.7,
+            "shap_value": 0.308
+          },
+          {
+            "feature_value": 18.7,
+            "shap_value": 0.286
+          },
+          {
+            "feature_value": 16.9,
+            "shap_value": 0.5574
+          },
+          {
+            "feature_value": 15.3,
+            "shap_value": 0.5776
+          },
+          {
+            "feature_value": 21.6,
+            "shap_value": 0.1989
+          },
+          {
+            "feature_value": 18.4,
+            "shap_value": 0.0361
+          },
+          {
+            "feature_value": 21.7,
+            "shap_value": 0.1949
+          },
+          {
+            "feature_value": 27.5,
+            "shap_value": -0.2417
+          },
+          {
+            "feature_value": 19.9,
+            "shap_value": 0.0763
+          },
+          {
+            "feature_value": 18.1,
+            "shap_value": 0.3246
+          },
+          {
+            "feature_value": 16.7,
+            "shap_value": 0.6045
+          },
+          {
+            "feature_value": 14.1,
+            "shap_value": -0.0776
+          },
+          {
+            "feature_value": 16.3,
+            "shap_value": 0.4276
+          },
+          {
+            "feature_value": 15.8,
+            "shap_value": 0.5871
+          },
+          {
+            "feature_value": 16.5,
+            "shap_value": 0.6336
+          },
+          {
+            "feature_value": 17.6,
+            "shap_value": 0.6005
+          },
+          {
+            "feature_value": 21.0,
+            "shap_value": 0.0977
+          },
+          {
+            "feature_value": 21.6,
+            "shap_value": 0.2649
+          },
+          {
+            "feature_value": 25.6,
+            "shap_value": -0.3383
+          },
+          {
+            "feature_value": 28.5,
+            "shap_value": 0.1586
+          },
+          {
+            "feature_value": 30.2,
+            "shap_value": -0.2435
+          },
+          {
+            "feature_value": 22.9,
+            "shap_value": 0.3483
+          },
+          {
+            "feature_value": 22.3,
+            "shap_value": 0.3062
+          },
+          {
+            "feature_value": 24.0,
+            "shap_value": 0.2992
+          },
+          {
+            "feature_value": 26.6,
+            "shap_value": -0.7674
+          },
+          {
+            "feature_value": 21.2,
+            "shap_value": 0.193
+          },
+          {
+            "feature_value": 23.7,
+            "shap_value": 0.4759
+          },
+          {
+            "feature_value": 26.9,
+            "shap_value": -0.4323
+          },
+          {
+            "feature_value": 29.6,
+            "shap_value": -0.3167
+          },
+          {
+            "feature_value": 30.0,
+            "shap_value": -0.3783
+          },
+          {
+            "feature_value": 19.2,
+            "shap_value": 0.015
+          },
+          {
+            "feature_value": 17.8,
+            "shap_value": 0.385
+          },
+          {
+            "feature_value": 19.0,
+            "shap_value": -0.1651
+          },
+          {
+            "feature_value": 17.6,
+            "shap_value": 0.5568
+          },
+          {
+            "feature_value": 16.0,
+            "shap_value": 0.5702
+          },
+          {
+            "feature_value": 17.6,
+            "shap_value": 0.6316
+          },
+          {
+            "feature_value": 19.0,
+            "shap_value": 0.0594
+          },
+          {
+            "feature_value": 21.6,
+            "shap_value": 0.1562
+          },
+          {
+            "feature_value": 21.6,
+            "shap_value": 0.1745
+          },
+          {
+            "feature_value": 22.5,
+            "shap_value": 0.2669
+          },
+          {
+            "feature_value": 27.0,
+            "shap_value": -0.5296
+          },
+          {
+            "feature_value": 23.7,
+            "shap_value": 0.2745
+          },
+          {
+            "feature_value": 21.3,
+            "shap_value": 0.2452
+          },
+          {
+            "feature_value": 24.2,
+            "shap_value": 0.2302
+          },
+          {
+            "feature_value": 24.6,
+            "shap_value": 0.0939
+          },
+          {
+            "feature_value": 23.0,
+            "shap_value": 0.2704
+          },
+          {
+            "feature_value": 21.3,
+            "shap_value": 0.282
+          },
+          {
+            "feature_value": 24.6,
+            "shap_value": 0.1532
+          },
+          {
+            "feature_value": 27.7,
+            "shap_value": -0.3789
+          },
+          {
+            "feature_value": 27.2,
+            "shap_value": -0.4241
+          },
+          {
+            "feature_value": 20.2,
+            "shap_value": 0.0232
+          },
+          {
+            "feature_value": 21.2,
+            "shap_value": 0.1986
+          },
+          {
+            "feature_value": 24.4,
+            "shap_value": 0.2534
+          },
+          {
+            "feature_value": 28.1,
+            "shap_value": -0.1366
+          },
+          {
+            "feature_value": 32.1,
+            "shap_value": -0.0003
+          },
+          {
+            "feature_value": 33.0,
+            "shap_value": -0.0281
+          },
+          {
+            "feature_value": 23.8,
+            "shap_value": 0.2797
+          },
+          {
+            "feature_value": 26.4,
+            "shap_value": -0.2008
+          },
+          {
+            "feature_value": 21.8,
+            "shap_value": 0.2868
+          },
+          {
+            "feature_value": 22.4,
+            "shap_value": 0.4279
+          },
+          {
+            "feature_value": 25.6,
+            "shap_value": -0.1718
+          },
+          {
+            "feature_value": 22.9,
+            "shap_value": 0.3553
+          },
+          {
+            "feature_value": 23.3,
+            "shap_value": 0.3048
+          },
+          {
+            "feature_value": 24.6,
+            "shap_value": 0.1745
+          },
+          {
+            "feature_value": 28.0,
+            "shap_value": -0.3922
+          },
+          {
+            "feature_value": 22.6,
+            "shap_value": 0.2769
+          },
+          {
+            "feature_value": 20.3,
+            "shap_value": -0.1802
+          },
+          {
+            "feature_value": 23.9,
+            "shap_value": 0.2818
+          },
+          {
+            "feature_value": 27.1,
+            "shap_value": -0.3849
+          },
+          {
+            "feature_value": 28.7,
+            "shap_value": 0.0491
+          },
+          {
+            "feature_value": 29.1,
+            "shap_value": 0.0774
+          },
+          {
+            "feature_value": 29.0,
+            "shap_value": -0.4054
+          },
+          {
+            "feature_value": 27.1,
+            "shap_value": -0.5674
+          },
+          {
+            "feature_value": 24.3,
+            "shap_value": 0.4821
+          },
+          {
+            "feature_value": 23.6,
+            "shap_value": 0.3091
+          },
+          {
+            "feature_value": 25.0,
+            "shap_value": 0.2517
+          },
+          {
+            "feature_value": 24.4,
+            "shap_value": 0.2697
+          },
+          {
+            "feature_value": 26.8,
+            "shap_value": -0.8255
+          },
+          {
+            "feature_value": 26.8,
+            "shap_value": -0.764
+          },
+          {
+            "feature_value": 24.8,
+            "shap_value": 0.1093
+          },
+          {
+            "feature_value": 23.1,
+            "shap_value": 0.4561
+          },
+          {
+            "feature_value": 25.1,
+            "shap_value": -0.3539
+          },
+          {
+            "feature_value": 26.3,
+            "shap_value": -0.3405
+          },
+          {
+            "feature_value": 26.3,
+            "shap_value": -0.3419
+          },
+          {
+            "feature_value": 28.3,
+            "shap_value": -0.3122
+          },
+          {
+            "feature_value": 28.0,
+            "shap_value": -0.5125
+          },
+          {
+            "feature_value": 26.3,
+            "shap_value": -0.2012
+          },
+          {
+            "feature_value": 30.0,
+            "shap_value": 0.2141
+          },
+          {
+            "feature_value": 25.5,
+            "shap_value": -0.2777
+          },
+          {
+            "feature_value": 22.6,
+            "shap_value": 0.2871
+          },
+          {
+            "feature_value": 21.7,
+            "shap_value": 0.2486
+          },
+          {
+            "feature_value": 18.2,
+            "shap_value": 0.3128
+          },
+          {
+            "feature_value": 20.3,
+            "shap_value": -0.1434
+          },
+          {
+            "feature_value": 23.9,
+            "shap_value": 0.2561
+          },
+          {
+            "feature_value": 21.0,
+            "shap_value": 0.1447
+          },
+          {
+            "feature_value": 20.5,
+            "shap_value": 0.0641
+          },
+          {
+            "feature_value": 19.0,
+            "shap_value": 0.0303
+          },
+          {
+            "feature_value": 19.9,
+            "shap_value": -0.0173
+          },
+          {
+            "feature_value": 20.3,
+            "shap_value": -0.0467
+          },
+          {
+            "feature_value": 21.3,
+            "shap_value": 0.3224
+          },
+          {
+            "feature_value": 19.6,
+            "shap_value": -0.0626
+          },
+          {
+            "feature_value": 22.2,
+            "shap_value": 0.2206
+          },
+          {
+            "feature_value": 25.5,
+            "shap_value": -0.0199
+          },
+          {
+            "feature_value": 20.4,
+            "shap_value": -0.0168
+          },
+          {
+            "feature_value": 19.2,
+            "shap_value": -0.0674
+          },
+          {
+            "feature_value": 20.2,
+            "shap_value": -0.0817
+          },
+          {
+            "feature_value": 14.9,
+            "shap_value": 0.1464
+          },
+          {
+            "feature_value": 18.7,
+            "shap_value": 0.2443
+          },
+          {
+            "feature_value": 18.8,
+            "shap_value": 0.3147
+          },
+          {
+            "feature_value": 22.0,
+            "shap_value": 0.23
+          },
+          {
+            "feature_value": 22.5,
+            "shap_value": 0.136
+          },
+          {
+            "feature_value": 20.5,
+            "shap_value": 0.0409
+          },
+          {
+            "feature_value": 19.2,
+            "shap_value": -0.0599
+          },
+          {
+            "feature_value": 20.5,
+            "shap_value": -0.1303
+          },
+          {
+            "feature_value": 19.7,
+            "shap_value": -0.017
+          },
+          {
+            "feature_value": 19.6,
+            "shap_value": 0.0589
+          }
+        ]
+      }
+    },
+    {
       "feature": "day_of_week",
-      "signed_contribution": 0.41052621603012085,
+      "signed_contribution": 0.39313414692878723,
       "direction": "helping",
       "phrase": "your usual day-of-week rhythm",
       "plot": {
@@ -54,13 +2879,13 @@
     },
     {
       "feature": "moving_time_acute_7",
-      "signed_contribution": 0.3972218930721283,
+      "signed_contribution": 0.37880203127861023,
       "direction": "helping",
       "phrase": "your recent training volume",
       "plot": {
         "kind": "continuous",
         "current_value": 6538.164,
-        "current_shap": 0.3972,
+        "current_shap": 0.3788,
         "points": [
           {
             "feature_value": 3639.0,
@@ -2983,13 +5808,13 @@
     },
     {
       "feature": "atl_ctl_ratio",
-      "signed_contribution": 0.3636775016784668,
+      "signed_contribution": 0.3787878155708313,
       "direction": "helping",
       "phrase": "how peaky your load balance looks",
       "plot": {
         "kind": "continuous",
         "current_value": 1.2889,
-        "current_shap": 0.3637,
+        "current_shap": 0.3788,
         "points": [
           {
             "feature_value": 1.0,
@@ -5912,13 +8737,13 @@
     },
     {
       "feature": "trained_days_7",
-      "signed_contribution": -0.26711875200271606,
+      "signed_contribution": -0.24466541409492493,
       "direction": "hurting",
       "phrase": "how often you've trained this past week",
       "plot": {
         "kind": "continuous",
         "current_value": 4.0,
-        "current_shap": -0.2671,
+        "current_shap": -0.2447,
         "points": [
           {
             "feature_value": 1.0,
@@ -8841,13 +11666,13 @@
     },
     {
       "feature": "chronic_load_28",
-      "signed_contribution": 0.25924479961395264,
+      "signed_contribution": 0.23927617073059082,
       "direction": "helping",
       "phrase": "longer-term fitness base",
       "plot": {
         "kind": "continuous",
         "current_value": 27.0059,
-        "current_shap": 0.2592,
+        "current_shap": 0.2393,
         "points": [
           {
             "feature_value": 144.0,
@@ -11770,13 +14595,13 @@
     },
     {
       "feature": "moving_time_chronic_28",
-      "signed_contribution": -0.2230163812637329,
+      "signed_contribution": -0.22323420643806458,
       "direction": "hurting",
       "phrase": "your training volume base over the past month",
       "plot": {
         "kind": "continuous",
         "current_value": 5217.8102,
-        "current_shap": -0.223,
+        "current_shap": -0.2232,
         "points": [
           {
             "feature_value": 3639.0,
@@ -14699,13 +17524,13 @@
     },
     {
       "feature": "trained_days_30",
-      "signed_contribution": 0.2187490612268448,
+      "signed_contribution": 0.21316805481910706,
       "direction": "helping",
       "phrase": "your training frequency over the past month",
       "plot": {
         "kind": "continuous",
         "current_value": 20.0,
-        "current_shap": 0.2187,
+        "current_shap": 0.2132,
         "points": [
           {
             "feature_value": 1.0,
@@ -17628,13 +20453,13 @@
     },
     {
       "feature": "dow_train_rate",
-      "signed_contribution": 0.2037639319896698,
+      "signed_contribution": 0.1896781623363495,
       "direction": "helping",
       "phrase": "your usual habit on this day of the week",
       "plot": {
         "kind": "continuous",
         "current_value": 0.5962,
-        "current_shap": 0.2038,
+        "current_shap": 0.1897,
         "points": [
           {
             "feature_value": 0.5,
@@ -20557,13 +23382,13 @@
     },
     {
       "feature": "days_since_last_hard",
-      "signed_contribution": 0.17813031375408173,
+      "signed_contribution": 0.17702306807041168,
       "direction": "helping",
       "phrase": "time since your last hard effort",
       "plot": {
         "kind": "continuous",
         "current_value": 0.0,
-        "current_shap": 0.1781,
+        "current_shap": 0.177,
         "points": [
           {
             "feature_value": 0.0,
@@ -23483,80 +26308,142 @@
           }
         ]
       }
-    },
-    {
-      "feature": "month",
-      "signed_contribution": -0.16675540804862976,
-      "direction": "hurting",
-      "phrase": "the time of year",
-      "plot": {
-        "kind": "categorical",
-        "current_value": 9,
-        "current_label": "Sep",
-        "categories": [
-          {
-            "value": 1,
-            "label": "Jan",
-            "mean_shap": 0.0582
-          },
-          {
-            "value": 2,
-            "label": "Feb",
-            "mean_shap": 0.0634
-          },
-          {
-            "value": 3,
-            "label": "Mar",
-            "mean_shap": 0.0854
-          },
-          {
-            "value": 4,
-            "label": "Apr",
-            "mean_shap": 0.0899
-          },
-          {
-            "value": 5,
-            "label": "May",
-            "mean_shap": 0.118
-          },
-          {
-            "value": 6,
-            "label": "Jun",
-            "mean_shap": 0.1422
-          },
-          {
-            "value": 7,
-            "label": "Jul",
-            "mean_shap": 0.074
-          },
-          {
-            "value": 8,
-            "label": "Aug",
-            "mean_shap": -0.1068
-          },
-          {
-            "value": 9,
-            "label": "Sep",
-            "mean_shap": -0.1571
-          },
-          {
-            "value": 10,
-            "label": "Oct",
-            "mean_shap": -0.1169
-          },
-          {
-            "value": 11,
-            "label": "Nov",
-            "mean_shap": -0.1058
-          },
-          {
-            "value": 12,
-            "label": "Dec",
-            "mean_shap": -0.1143
-          }
-        ]
-      }
     }
   ],
-  "blurb": "You're favored to train (89%) \u2014 nice. your usual day-of-week rhythm is pushing forward; how often you've trained this past week keeps it honest. Shoot for ~18 relative-effort points."
+  "waterfall": {
+    "baseline_probability": 0.6132,
+    "final_probability": 0.9517,
+    "steps": [
+      {
+        "feature": "forecast_temp_high",
+        "signed_contribution": 0.5939,
+        "direction": "helping",
+        "phrase": "the daytime temperature forecast"
+      },
+      {
+        "feature": "day_of_week",
+        "signed_contribution": 0.3931,
+        "direction": "helping",
+        "phrase": "your usual day-of-week rhythm"
+      },
+      {
+        "feature": "moving_time_acute_7",
+        "signed_contribution": 0.3788,
+        "direction": "helping",
+        "phrase": "your recent training volume"
+      },
+      {
+        "feature": "atl_ctl_ratio",
+        "signed_contribution": 0.3788,
+        "direction": "helping",
+        "phrase": "how peaky your load balance looks"
+      },
+      {
+        "feature": "trained_days_7",
+        "signed_contribution": -0.2447,
+        "direction": "hurting",
+        "phrase": "how often you've trained this past week"
+      },
+      {
+        "feature": "chronic_load_28",
+        "signed_contribution": 0.2393,
+        "direction": "helping",
+        "phrase": "longer-term fitness base"
+      },
+      {
+        "feature": "moving_time_chronic_28",
+        "signed_contribution": -0.2232,
+        "direction": "hurting",
+        "phrase": "your training volume base over the past month"
+      },
+      {
+        "feature": "trained_days_30",
+        "signed_contribution": 0.2132,
+        "direction": "helping",
+        "phrase": "your training frequency over the past month"
+      },
+      {
+        "feature": "other_features",
+        "signed_contribution": 0.7917,
+        "direction": "helping",
+        "phrase": "all other features"
+      }
+    ]
+  },
+  "blurb": "You're favored to train (95%) \u2014 nice. the daytime temperature forecast is pushing forward; how often you've trained this past week keeps it honest. Shoot for ~30 relative-effort points.",
+  "calibration": {
+    "total_samples": 1,
+    "buckets": [
+      {
+        "lower_bound": 0.0,
+        "upper_bound": 0.1,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.1,
+        "upper_bound": 0.2,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.2,
+        "upper_bound": 0.3,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.3,
+        "upper_bound": 0.4,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.4,
+        "upper_bound": 0.5,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.5,
+        "upper_bound": 0.6,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.6,
+        "upper_bound": 0.7,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.7,
+        "upper_bound": 0.8,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.8,
+        "upper_bound": 0.9,
+        "predicted_rate": null,
+        "actual_rate": null,
+        "sample_size": 0
+      },
+      {
+        "lower_bound": 0.9,
+        "upper_bound": 1.0,
+        "predicted_rate": 0.9216,
+        "actual_rate": 1.0,
+        "sample_size": 1
+      }
+    ]
+  }
 }
