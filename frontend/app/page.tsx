@@ -171,11 +171,9 @@ function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
         <span>feature value</span>
         <span>{xExtent[1].toFixed(1)}</span>
       </div>
-      <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
-        <span>{yExtent[1].toFixed(2)}</span>
-        <span>SHAP contribution</span>
-        <span>{yExtent[0].toFixed(2)}</span>
-      </div>
+      <p className="mt-1 text-center text-[11px] text-slate-500">
+        SHAP range {yExtent[0].toFixed(2)} to {yExtent[1].toFixed(2)}
+      </p>
     </div>
   );
 }
@@ -238,16 +236,6 @@ function CategoricalFeaturePlot({ plot }: { plot: CategoricalPlot }) {
             );
           })}
         </svg>
-      </div>
-      <div
-        className="mt-2 grid gap-1 text-[11px] text-slate-500"
-        style={{ gridTemplateColumns: `repeat(${plot.categories.length}, minmax(0, 1fr))` }}
-      >
-        {plot.categories.map((category) => (
-          <span key={`label-${category.value}`} className="truncate text-center">
-            {category.label}
-          </span>
-        ))}
       </div>
     </div>
   );

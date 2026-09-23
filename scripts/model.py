@@ -257,7 +257,7 @@ def attach_feature_plots(
     feature_row: pd.DataFrame,
 ) -> list[dict[str, Any]]:
     current = feature_row.iloc[0]
-    historical_contribs = _feature_contributions_frame(model, historical)
+    historical_contribs = _feature_contributions_frame(model, historical[FEATURE_COLUMNS])
 
     enriched: list[dict[str, Any]] = []
     for contributor in top_contributors:
