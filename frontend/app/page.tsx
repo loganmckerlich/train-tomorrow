@@ -1,15 +1,34 @@
 import { unstable_noStore as noStore } from "next/cache";
 
+type ContinuousPoint = {
+  feature_value: number;
+  shap_value: number;
+};
+
+type ContinuousPlot = {
+  kind: "continuous";
+  current_value: number | null;
+  current_shap: number | null;
+  points: ContinuousPoint[];
+};
+
+type CategoricalPoint = {
+  value: number;
+  mean_shap: number;
+};
+
+type CategoricalPlot = {
+  kind: "categorical";
+  current_value: number | null;
+  categories: CategoricalPoint[];
+};
+
 type Contributor = {
   feature: string;
   signed_contribution: number;
   direction: "helping" | "hurting";
   phrase: string;
-  distribution?: {
-    current_value: number | null;
-    train_values: number[];
-    rest_values: number[];
-  };
+  plot?: ContinuousPlot | CategoricalPlot;
 };
 
 type PredictionPayload = {
@@ -23,6 +42,9 @@ type PredictionPayload = {
 
 const DEFAULT_URL =
   "https://raw.githubusercontent.com/loganmckerlich/train-tomorrow/master/data/latest.json";
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const SEASON_LABELS = ["Winter", "Spring", "Summer", "Fall"];
 
 async function getPrediction(): Promise<PredictionPayload | null> {
   noStore();
@@ -41,67 +63,15 @@ function contributorBarWidth(score: number): string {
   return `${Math.max(10, Math.min(100, Math.round(Math.abs(score) * 100)))}%`;
 }
 
-function average(values: number[]): number | null {
-  if (values.length === 0) {
-    return null;
-  }
-
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
-}
-
 function isFiniteNumber(value: number | null | undefined): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
-function toFiniteNumbers(values: unknown[]): number[] {
-  return values.map((value) => Number(value)).filter(Number.isFinite);
+function formatSigned(value: number | null, digits = 2): string {
+  return isFiniteNumber(value) ? `${value >= 0 ? "+" : ""}${value.toFixed(digits)}` : "n/a";
 }
 
-function describeDistribution(distribution: NonNullable<Contributor["distribution"]>) {
-  const restValues = toFiniteNumbers(distribution.rest_values);
-  const trainValues = toFiniteNumbers(distribution.train_values);
-  const currentValue = Number(distribution.current_value);
-  const hasCurrentValue = Number.isFinite(currentValue);
-  const restAverage = average(restValues);
-  const trainAverage = average(trainValues);
-  const currentText = hasCurrentValue
-    ? `Current value ${currentValue.toFixed(1)}.`
-    : "Current value unavailable.";
-  const restText =
-    restAverage === null
-      ? "No rest-day samples available."
-      : `Rest average ${restAverage.toFixed(1)} across ${restValues.length} days.`;
-  const trainText =
-    trainAverage === null
-      ? "No training-day samples available."
-      : `Train average ${trainAverage.toFixed(1)} across ${trainValues.length} days.`;
-
-  return {
-    visible: `${currentText} ${restText} ${trainText}`,
-    accessible: `${currentText} ${restText} ${trainText}`,
-  };
-}
-
-type HistogramPoint = {
-  restCount: number;
-  trainCount: number;
-};
-
-function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
-  if (!distribution) {
-    return null;
-  }
-
-  const restValues = toFiniteNumbers(distribution.rest_values);
-  const trainValues = toFiniteNumbers(distribution.train_values);
-  const currentValue = Number(distribution.current_value);
-  const hasCurrentValue = Number.isFinite(currentValue);
-  const values = [
-    ...restValues,
-    ...trainValues,
-    ...(hasCurrentValue ? [currentValue] : []),
-  ];
-
+function paddedExtent(values: number[], fallbackPadding = 0.5): [number, number] | null {
   if (values.length === 0) {
     return null;
   }
@@ -116,36 +86,199 @@ function buildHistogram(distribution: Contributor["distribution"], bins = 16) {
       max = value;
     }
   }
+
   if (min === max) {
-    min -= 0.5;
-    max += 0.5;
+    return [min - fallbackPadding, max + fallbackPadding];
   }
 
-  const range = max - min;
-  const points: HistogramPoint[] = Array.from({ length: bins }, () => ({ restCount: 0, trainCount: 0 }));
-  const addValues = (sample: number[], key: keyof HistogramPoint) => {
-    sample.forEach((value) => {
-      if (!Number.isFinite(value)) {
-        return;
-      }
-      const position = (value - min) / range;
-      const index = Math.min(bins - 1, Math.max(0, Math.floor(position * bins)));
-      points[index][key] += 1;
-    });
-  };
+  const padding = (max - min) * 0.08;
+  return [min - padding, max + padding];
+}
 
-  addValues(restValues, "restCount");
-  addValues(trainValues, "trainCount");
+function scale(value: number, domain: [number, number], range: [number, number]): number {
+  const [domainMin, domainMax] = domain;
+  const [rangeMin, rangeMax] = range;
+  return rangeMin + ((value - domainMin) / (domainMax - domainMin)) * (rangeMax - rangeMin);
+}
 
-  return {
-    points,
-    min,
-    max,
-    currentPosition: hasCurrentValue
-      ? Math.max(0, Math.min(100, ((currentValue - min) / range) * 100))
-      : null,
-    maxCount: Math.max(1, ...points.flatMap((point) => [point.restCount, point.trainCount])),
-  };
+function formatCategoryValue(feature: string, value: number): string {
+  if (feature === "day_of_week") {
+    return DAY_LABELS[value] ?? String(value);
+  }
+  if (feature === "month") {
+    return MONTH_LABELS[value - 1] ?? String(value);
+  }
+  if (feature === "season") {
+    return SEASON_LABELS[value] ?? String(value);
+  }
+  return String(value);
+}
+
+function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
+  const historicalPoints = plot.points.filter(
+    (point) => Number.isFinite(point.feature_value) && Number.isFinite(point.shap_value),
+  );
+  const currentVisible = isFiniteNumber(plot.current_value) && isFiniteNumber(plot.current_shap);
+  const currentValue = currentVisible ? plot.current_value : null;
+  const currentShap = currentVisible ? plot.current_shap : null;
+  const xExtent = paddedExtent([
+    ...historicalPoints.map((point) => point.feature_value),
+    ...(currentValue === null ? [] : [currentValue]),
+  ]);
+  const yExtent = paddedExtent([
+    ...historicalPoints.map((point) => point.shap_value),
+    ...(currentShap === null ? [0] : [currentShap, 0]),
+  ]);
+
+  if (!xExtent || !yExtent) {
+    return null;
+  }
+
+  const zeroY = scale(0, yExtent, [90, 10]);
+
+  return (
+    <div className="mt-3">
+      <p className="text-xs text-slate-500">
+        SHAP contribution vs. feature value. Above 0 pushes toward training; below 0 pushes away.
+      </p>
+      <p className="mt-1 text-xs text-slate-500">
+        Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)}, SHAP{" "}
+        {formatSigned(currentShap)}.
+      </p>
+      <div className="mt-3 rounded-lg border border-slate-200 bg-white p-2">
+        <svg viewBox="0 0 100 100" className="h-36 w-full" aria-hidden="true">
+          <line
+            x1="8"
+            x2="96"
+            y1={zeroY}
+            y2={zeroY}
+            className="stroke-slate-400"
+            strokeDasharray="4 3"
+            strokeWidth="1"
+          />
+          {historicalPoints.map((point, index) => (
+            <circle
+              key={`${point.feature_value}-${point.shap_value}-${index}`}
+              cx={scale(point.feature_value, xExtent, [8, 96])}
+              cy={scale(point.shap_value, yExtent, [90, 10])}
+              r="1.9"
+              className="fill-slate-500"
+              fillOpacity="0.45"
+            />
+          ))}
+          {currentValue !== null && currentShap !== null ? (
+            <circle
+              cx={scale(currentValue, xExtent, [8, 96])}
+              cy={scale(currentShap, yExtent, [90, 10])}
+              r="3.4"
+              className="fill-amber-400 stroke-slate-900"
+              strokeWidth="1.5"
+            />
+          ) : null}
+        </svg>
+      </div>
+      <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
+        <span>{xExtent[0].toFixed(1)}</span>
+        <span>feature value</span>
+        <span>{xExtent[1].toFixed(1)}</span>
+      </div>
+      <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
+        <span>{yExtent[1].toFixed(2)}</span>
+        <span>SHAP contribution</span>
+        <span>{yExtent[0].toFixed(2)}</span>
+      </div>
+    </div>
+  );
+}
+
+function CategoricalFeaturePlot({
+  feature,
+  plot,
+}: {
+  feature: string;
+  plot: CategoricalPlot;
+}) {
+  if (plot.categories.length === 0) {
+    return null;
+  }
+
+  const yExtent = paddedExtent([...plot.categories.map((category) => category.mean_shap), 0]);
+  if (!yExtent) {
+    return null;
+  }
+
+  const zeroY = scale(0, yExtent, [90, 10]);
+  const barWidth = 84 / plot.categories.length;
+  const currentLabel = isFiniteNumber(plot.current_value)
+    ? formatCategoryValue(feature, plot.current_value)
+    : "n/a";
+
+  return (
+    <div className="mt-3">
+      <p className="text-xs text-slate-500">
+        Mean SHAP contribution by category. Above 0 pushes toward training; below 0 pushes away.
+      </p>
+      <p className="mt-1 text-xs text-slate-500">Today&apos;s category: {currentLabel}.</p>
+      <div className="mt-3 rounded-lg border border-slate-200 bg-white p-2">
+        <svg viewBox="0 0 100 100" className="h-36 w-full" aria-hidden="true">
+          <line
+            x1="8"
+            x2="96"
+            y1={zeroY}
+            y2={zeroY}
+            className="stroke-slate-400"
+            strokeDasharray="4 3"
+            strokeWidth="1"
+          />
+          {plot.categories.map((category, index) => {
+            const x = 8 + index * barWidth + barWidth * 0.15;
+            const y = scale(category.mean_shap, yExtent, [90, 10]);
+            const isToday = category.value === plot.current_value;
+            return (
+              <rect
+                key={`${category.value}-${category.mean_shap}`}
+                x={x}
+                y={Math.min(y, zeroY)}
+                width={Math.max(barWidth * 0.7, 2)}
+                height={Math.max(Math.abs(zeroY - y), 1)}
+                rx="1.5"
+                className={isToday ? "fill-amber-400 stroke-slate-900" : "fill-slate-500"}
+                fillOpacity={isToday ? 1 : 0.55}
+                strokeWidth={isToday ? "1.2" : "0"}
+              />
+            );
+          })}
+        </svg>
+      </div>
+      <div
+        className="mt-2 grid gap-1 text-[11px] text-slate-500"
+        style={{ gridTemplateColumns: `repeat(${plot.categories.length}, minmax(0, 1fr))` }}
+      >
+        {plot.categories.map((category) => (
+          <span key={`label-${category.value}`} className="truncate text-center">
+            {formatCategoryValue(feature, category.value)}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FeaturePlot({ contributor }: { contributor: Contributor }) {
+  if (!contributor.plot) {
+    return null;
+  }
+
+  return (
+    <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <summary className="cursor-pointer text-xs font-medium text-slate-700">Show model effect plot</summary>
+      {contributor.plot.kind === "continuous" ? (
+        <ContinuousFeaturePlot plot={contributor.plot} />
+      ) : (
+        <CategoricalFeaturePlot feature={contributor.feature} plot={contributor.plot} />
+      )}
+    </details>
+  );
 }
 
 export default async function Home() {
@@ -216,91 +349,7 @@ export default async function Home() {
                   style={{ width: contributorBarWidth(item.signed_contribution) }}
                 />
               </div>
-              {(() => {
-                const distribution = item.distribution;
-                if (!distribution) {
-                  return null;
-                }
-
-                const histogram = buildHistogram(distribution);
-                if (!histogram) {
-                  return null;
-                }
-                const summary = describeDistribution(distribution);
-
-                return (
-                  <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                    <summary className="cursor-pointer text-xs font-medium text-slate-700">
-                      Show distribution histogram
-                    </summary>
-                    <div className="mt-3">
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
-                        <span className="inline-flex items-center gap-1">
-                          <span className="h-2.5 w-3 rounded-sm border border-amber-600 bg-amber-100" />
-                          rest
-                        </span>
-                        <span className="inline-flex items-center gap-1">
-                          <span className="h-2.5 w-1.5 rounded-sm bg-sky-500" />
-                          train
-                        </span>
-                        <span className="inline-flex items-center gap-1">
-                          <span className="h-3 w-px bg-slate-900" />
-                          value {isFiniteNumber(distribution.current_value) ? distribution.current_value.toFixed(1) : "n/a"}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-xs text-slate-500">{summary.visible}</p>
-                      <p className="sr-only">{summary.accessible}</p>
-                      <div className="relative mt-3 h-32">
-                        <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
-                          {histogram.points.map((point, index) => {
-                            const x = (index * 100) / histogram.points.length;
-                            const width = 100 / histogram.points.length;
-                            const restHeight = (point.restCount / histogram.maxCount) * 100;
-                            const trainHeight = (point.trainCount / histogram.maxCount) * 100;
-                            return (
-                              <g key={`${item.feature}-${x}`}>
-                                <rect
-                                  x={x}
-                                  y={100 - restHeight}
-                                  width={Math.max(width, 1)}
-                                  height={restHeight}
-                                  rx="1"
-                                  className="fill-amber-500"
-                                  fillOpacity="0.28"
-                                />
-                                <rect
-                                  x={x + width * 0.25}
-                                  y={100 - trainHeight}
-                                  width={Math.max(width * 0.5, 1)}
-                                  height={trainHeight}
-                                  rx="1"
-                                  className="fill-sky-500"
-                                  fillOpacity="0.5"
-                                />
-                              </g>
-                            );
-                          })}
-                          {histogram.currentPosition !== null ? (
-                            <line
-                              x1={histogram.currentPosition}
-                              x2={histogram.currentPosition}
-                              y1="0"
-                              y2="100"
-                              className="stroke-slate-900"
-                              strokeWidth="1.5"
-                            />
-                          ) : null}
-                        </svg>
-                      </div>
-                      <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
-                        <span>{histogram.min.toFixed(1)}</span>
-                        <span>feature value</span>
-                        <span>{histogram.max.toFixed(1)}</span>
-                      </div>
-                    </div>
-                  </details>
-                );
-              })()}
+              <FeaturePlot contributor={item} />
             </li>
           ))}
         </ul>

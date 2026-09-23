@@ -14,6 +14,7 @@ from features import FEATURE_COLUMNS
 
 CLASSIFIER_MODEL_PATH = "classifier.json"
 REGRESSOR_MODEL_PATH = "regressor.json"
+CATEGORICAL_FEATURES = {"day_of_week", "month", "season"}
 
 DEFAULT_XGB_PARAMS: dict[str, Any] = {
     "eta": 0.05,
@@ -222,31 +223,72 @@ def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> 
 
 
 def feature_contributions(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, float]:
-    matrix = xgb.DMatrix(feature_row[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
-    return {name: float(value) for name, value in zip(FEATURE_COLUMNS, contribs[:-1], strict=True)}
+    return {
+        name: float(value)
+        for name, value in _feature_contributions_frame(model, feature_row).iloc[0].items()
+    }
 
 
-def attach_feature_distributions(
-    top_contributors: list[dict[str, Any]], historical: pd.DataFrame, feature_row: pd.DataFrame
+def _feature_contributions_frame(model: xgb.XGBModel, feature_rows: pd.DataFrame) -> pd.DataFrame:
+    matrix = xgb.DMatrix(feature_rows[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
+    contribs = model.get_booster().predict(matrix, pred_contribs=True)
+    return pd.DataFrame(contribs[:, :-1], columns=FEATURE_COLUMNS, index=feature_rows.index)
+
+
+def attach_feature_plots(
+    model: xgb.XGBModel,
+    top_contributors: list[dict[str, Any]],
+    historical: pd.DataFrame,
+    feature_row: pd.DataFrame,
 ) -> list[dict[str, Any]]:
     current = feature_row.iloc[0]
-    train_mask = historical["will_train_tomorrow"] == 1
-    rest_mask = historical["will_train_tomorrow"] == 0
+    historical_contribs = _feature_contributions_frame(model, historical)
 
     enriched: list[dict[str, Any]] = []
     for contributor in top_contributors:
         feature = contributor["feature"]
         values = pd.to_numeric(historical[feature], errors="coerce")
         current_value = pd.to_numeric(pd.Series([current.get(feature)]), errors="coerce").iloc[0]
+        shap_values = pd.to_numeric(historical_contribs[feature], errors="coerce")
+
+        if feature in CATEGORICAL_FEATURES:
+            categories = (
+                pd.DataFrame({"value": values, "shap": shap_values})
+                .dropna()
+                .groupby("value", sort=True)["shap"]
+                .mean()
+                .items()
+            )
+            plot: dict[str, Any] = {
+                "kind": "categorical",
+                "current_value": int(current_value) if not pd.isna(current_value) else None,
+                "categories": [
+                    {
+                        "value": int(value) if float(value).is_integer() else round(float(value), 4),
+                        "mean_shap": round(float(mean_shap), 4),
+                    }
+                    for value, mean_shap in categories
+                ],
+            }
+        else:
+            plot = {
+                "kind": "continuous",
+                "current_value": round(float(current_value), 4) if not pd.isna(current_value) else None,
+                "current_shap": round(float(contributor["signed_contribution"]), 4),
+                "points": [
+                    {
+                        "feature_value": round(float(value), 4),
+                        "shap_value": round(float(shap_value), 4),
+                    }
+                    for value, shap_value in zip(values, shap_values, strict=True)
+                    if not pd.isna(value) and not pd.isna(shap_value)
+                ],
+            }
+
         enriched.append(
             {
                 **contributor,
-                "distribution": {
-                    "current_value": round(float(current_value), 4) if not pd.isna(current_value) else None,
-                    "train_values": [round(float(value), 4) for value in values[train_mask].dropna().tolist()],
-                    "rest_values": [round(float(value), 4) for value in values[rest_mask].dropna().tolist()],
-                },
+                "plot": plot,
             }
         )
     return enriched

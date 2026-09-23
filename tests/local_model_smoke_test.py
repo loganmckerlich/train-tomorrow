@@ -11,7 +11,7 @@ import pandas as pd
 
 from blurb import generate_blurb, summarize_top_contributors
 from features import prepare_datasets
-from model import attach_feature_distributions, feature_contributions, predict_tomorrow, train_and_save_models
+from model import attach_feature_plots, feature_contributions, predict_tomorrow, train_and_save_models
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,9 @@ def main() -> None:
         contributions = feature_contributions(models.classifier, prepared.tomorrow_features)
 
     top_contributors = summarize_top_contributors(contributions, top_n=3)
-    top_contributors = attach_feature_distributions(top_contributors, prepared.historical, prepared.tomorrow_features)
+    top_contributors = attach_feature_plots(
+        models.classifier, top_contributors, prepared.historical, prepared.tomorrow_features
+    )
     blurb = generate_blurb(
         will_train=prediction["will_train"],
         probability=prediction["probability"],
@@ -61,10 +63,15 @@ def main() -> None:
 
     assert top_contributors
     for contributor in top_contributors:
-        distribution = contributor["distribution"]
-        assert distribution["current_value"] is None or isinstance(distribution["current_value"], float)
-        assert distribution["train_values"]
-        assert distribution["rest_values"]
+        plot = contributor["plot"]
+        assert plot["kind"] in {"categorical", "continuous"}
+        if plot["kind"] == "continuous":
+            assert plot["current_value"] is None or isinstance(plot["current_value"], float)
+            assert isinstance(plot["current_shap"], float)
+            assert plot["points"]
+        else:
+            assert plot["current_value"] is None or isinstance(plot["current_value"], int)
+            assert plot["categories"]
 
     logger.info("Local modeling smoke test passed.")
     logger.info(
