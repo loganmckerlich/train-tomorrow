@@ -11,7 +11,8 @@ import pandas as pd
 
 from blurb import generate_blurb, summarize_top_contributors
 from features import prepare_datasets
-from model import attach_feature_plots, feature_contributions, predict_tomorrow, train_and_save_models
+from model import attach_feature_plots, explain_prediction, feature_contributions, predict_tomorrow, train_and_save_models
+from run_daily import build_waterfall
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +49,12 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         models = train_and_save_models(prepared.historical, Path(tmpdir))
         prediction = predict_tomorrow(models, prepared.tomorrow_features)
+        explanation = explain_prediction(models.classifier, prepared.tomorrow_features)
         contributions = feature_contributions(models.classifier, prepared.tomorrow_features)
 
-    top_contributors = summarize_top_contributors(contributions, top_n=3)
+    ranked_contributors = summarize_top_contributors(contributions, top_n=len(contributions))
+    waterfall = build_waterfall(ranked_contributors, explanation["baseline_probability"], prediction["probability"])
+    top_contributors = ranked_contributors[:3]
     top_contributors = attach_feature_plots(
         models.classifier, top_contributors, prepared.historical, prepared.tomorrow_features
     )
@@ -62,6 +66,9 @@ def main() -> None:
     )
 
     assert top_contributors
+    assert 0.0 < explanation["baseline_probability"] < 1.0
+    assert waterfall["steps"]
+    assert abs(float(waterfall["final_probability"]) - float(prediction["probability"])) < 1e-4
     for contributor in top_contributors:
         plot = contributor["plot"]
         assert plot["kind"] in {"categorical", "continuous"}

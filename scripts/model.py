@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -29,6 +30,14 @@ DEFAULT_XGB_PARAMS: dict[str, Any] = {
 }
 
 logger = logging.getLogger(__name__)
+
+
+def _sigmoid(value: float) -> float:
+    if value >= 0:
+        exp_term = math.exp(-value)
+        return 1.0 / (1.0 + exp_term)
+    exp_term = math.exp(value)
+    return exp_term / (1.0 + exp_term)
 
 
 @dataclass
@@ -226,9 +235,23 @@ def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> 
 
 
 def feature_contributions(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, float]:
-    return {
+    return explain_prediction(model, feature_row)["contributions"]
+
+
+def explain_prediction(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, Any]:
+    matrix = xgb.DMatrix(feature_row[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
+    contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
+    contributions = {
         name: float(value)
-        for name, value in _feature_contributions_frame(model, feature_row).iloc[0].items()
+        for name, value in zip(FEATURE_COLUMNS, contribs[:-1], strict=True)
+    }
+    baseline_log_odds = float(contribs[-1])
+    total_log_odds = baseline_log_odds + float(np.sum(contribs[:-1]))
+    return {
+        "contributions": contributions,
+        "baseline_log_odds": baseline_log_odds,
+        "baseline_probability": _sigmoid(baseline_log_odds),
+        "probability": _sigmoid(total_log_odds),
     }
 
 

@@ -10,8 +10,14 @@ import yaml
 
 from blurb import generate_blurb, generate_blurb_llm, summarize_top_contributors
 from features import prepare_datasets
-from model import attach_feature_plots, feature_contributions, predict_tomorrow, train_and_save_models
-from predictions_log import backfill_outcomes, load_entries, save_entries, upsert_entry
+from model import attach_feature_plots, explain_prediction, predict_tomorrow, train_and_save_models
+from predictions_log import (
+    backfill_outcomes,
+    build_calibration_summary,
+    load_entries,
+    save_entries,
+    upsert_entry,
+)
 from strava_client import fetch_activities_dataframe, out_of_range_dates
 from weather_client import DEFAULT_LAT, DEFAULT_LON, fetch_historical_weather, fetch_tomorrow_forecast
 
@@ -22,6 +28,32 @@ PREDICTIONS_HISTORY_PATH = ROOT_DIR / "data" / "predictions_history.jsonl"
 PARAMS_PATH = ROOT_DIR / "params.yaml"
 
 logger = logging.getLogger(__name__)
+
+
+def build_waterfall(contributors: list[dict[str, object]], baseline_probability: float, final_probability: float) -> dict[str, object]:
+    visible_steps = contributors[:8]
+    remaining = contributors[8:]
+    remaining_contribution = sum(float(item["signed_contribution"]) for item in remaining)
+    if remaining and abs(remaining_contribution) > 1e-9:
+        visible_steps.append(
+            {
+                "feature": "other_features",
+                "signed_contribution": remaining_contribution,
+                "direction": "helping" if remaining_contribution >= 0 else "hurting",
+                "phrase": "all other features",
+            }
+        )
+    return {
+        "baseline_probability": round(float(baseline_probability), 4),
+        "final_probability": round(float(final_probability), 4),
+        "steps": [
+            {
+                **item,
+                "signed_contribution": round(float(item["signed_contribution"]), 4),
+            }
+            for item in visible_steps
+        ],
+    }
 
 
 def load_params(path: Path = PARAMS_PATH) -> dict:
@@ -71,8 +103,10 @@ def run_pipeline() -> dict[str, object]:
     )
 
     prediction = predict_tomorrow(models, prepared.tomorrow_features)
-    contribs = feature_contributions(models.classifier, prepared.tomorrow_features)
-    top_contributors = summarize_top_contributors(contribs, top_n=blurb_params.get("top_contributors", 3))
+    explanation = explain_prediction(models.classifier, prepared.tomorrow_features)
+    contribs = explanation["contributions"]
+    ranked_contributors = summarize_top_contributors(contribs, top_n=len(contribs))
+    top_contributors = ranked_contributors[: blurb_params.get("top_contributors", 3)]
     top_contributors = attach_feature_plots(
         models.classifier, top_contributors, prepared.historical, prepared.tomorrow_features
     )
@@ -103,6 +137,11 @@ def run_pipeline() -> dict[str, object]:
             else None
         ),
         "top_contributors": top_contributors,
+        "waterfall": build_waterfall(
+            ranked_contributors,
+            baseline_probability=float(explanation["baseline_probability"]),
+            final_probability=float(prediction["probability"]),
+        ),
         "blurb": blurb,
     }
 
@@ -110,6 +149,7 @@ def run_pipeline() -> dict[str, object]:
     # past predictions' actual results without any extra Strava calls.
     entries = load_entries(PREDICTIONS_HISTORY_PATH)
     entries = backfill_outcomes(entries, prepared.historical)
+    payload["calibration"] = build_calibration_summary(entries)
     entries = upsert_entry(entries, payload, as_of_date=str(prepared.tomorrow_features.iloc[0]["as_of_date"]))
     save_entries(entries, PREDICTIONS_HISTORY_PATH)
 

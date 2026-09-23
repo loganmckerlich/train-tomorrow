@@ -13,6 +13,48 @@ from pathlib import Path
 import pandas as pd
 
 
+def build_calibration_summary(entries: list[dict], bucket_count: int = 10) -> dict:
+    resolved = [
+        entry
+        for entry in entries
+        if isinstance(entry.get("probability"), (int, float)) and entry.get("actual_will_train") is not None
+    ]
+    buckets: list[dict[str, float | int | None]] = []
+    for bucket_index in range(bucket_count):
+        lower_bound = bucket_index / bucket_count
+        upper_bound = (bucket_index + 1) / bucket_count
+        bucket_entries = [
+            entry
+            for entry in resolved
+            if lower_bound <= float(entry["probability"]) < upper_bound
+            or (bucket_index == bucket_count - 1 and float(entry["probability"]) == 1.0)
+        ]
+        sample_size = len(bucket_entries)
+        predicted_rate = (
+            sum(float(entry["probability"]) for entry in bucket_entries) / sample_size
+            if sample_size
+            else None
+        )
+        actual_rate = (
+            sum(bool(entry["actual_will_train"]) for entry in bucket_entries) / sample_size
+            if sample_size
+            else None
+        )
+        buckets.append(
+            {
+                "lower_bound": round(lower_bound, 4),
+                "upper_bound": round(upper_bound, 4),
+                "predicted_rate": round(predicted_rate, 4) if predicted_rate is not None else None,
+                "actual_rate": round(actual_rate, 4) if actual_rate is not None else None,
+                "sample_size": sample_size,
+            }
+        )
+    return {
+        "total_samples": len(resolved),
+        "buckets": buckets,
+    }
+
+
 def load_entries(path: Path) -> list[dict]:
     if not path.exists():
         return []
