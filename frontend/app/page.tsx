@@ -100,7 +100,7 @@ function scale(value: number, domain: [number, number], range: [number, number])
   return rangeMin + ((value - domainMin) / (domainMax - domainMin)) * (rangeMax - rangeMin);
 }
 
-function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
+function ContinuousFeaturePlot({ feature, plot }: { feature: string; plot: ContinuousPlot }) {
   const historicalPoints = plot.points.filter(
     (point) => Number.isFinite(point.feature_value) && Number.isFinite(point.shap_value),
   );
@@ -123,17 +123,25 @@ function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
   const zeroY = scale(0, yExtent, [90, 10]);
   const historicalCount = historicalPoints.length;
   const summary = `Historical days: ${historicalCount}. Feature values ranged from ${xExtent[0].toFixed(1)} to ${xExtent[1].toFixed(1)}. SHAP contributions ranged from ${yExtent[0].toFixed(2)} to ${yExtent[1].toFixed(2)}.`;
+  const idBase = `${feature}-continuous-plot`;
 
   return (
-    <div className="mt-3">
-      <p className="text-xs text-slate-500">
+    <figure
+      className="mt-3"
+      role="img"
+      aria-labelledby={`${idBase}-title`}
+      aria-describedby={`${idBase}-today ${idBase}-summary`}
+    >
+      <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
         SHAP contribution vs. feature value. Above 0 pushes toward training; below 0 pushes away.
-      </p>
-      <p className="mt-1 text-xs text-slate-500">
+      </figcaption>
+      <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
         Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)}, SHAP{" "}
         {formatSigned(currentShap)}.
       </p>
-      <p className="mt-1 text-xs text-slate-500">{summary}</p>
+      <p id={`${idBase}-summary`} className="mt-1 text-xs text-slate-500">
+        {summary}
+      </p>
       <div className="mt-3 rounded-lg border border-slate-200 bg-white p-2">
         <svg viewBox="0 0 100 100" className="h-36 w-full" aria-hidden="true">
           <line
@@ -174,11 +182,11 @@ function ContinuousFeaturePlot({ plot }: { plot: ContinuousPlot }) {
       <p className="mt-1 text-center text-[11px] text-slate-500">
         SHAP range {yExtent[0].toFixed(2)} to {yExtent[1].toFixed(2)}
       </p>
-    </div>
+    </figure>
   );
 }
 
-function CategoricalFeaturePlot({ plot }: { plot: CategoricalPlot }) {
+function CategoricalFeaturePlot({ feature, plot }: { feature: string; plot: CategoricalPlot }) {
   if (plot.categories.length === 0) {
     return null;
   }
@@ -191,14 +199,22 @@ function CategoricalFeaturePlot({ plot }: { plot: CategoricalPlot }) {
   const zeroY = scale(0, yExtent, [90, 10]);
   const barWidth = 84 / plot.categories.length;
   const currentLabel = plot.current_label ?? "n/a";
+  const idBase = `${feature}-categorical-plot`;
 
   return (
-    <div className="mt-3">
-      <p className="text-xs text-slate-500">
+    <figure
+      className="mt-3"
+      role="img"
+      aria-labelledby={`${idBase}-title`}
+      aria-describedby={`${idBase}-today ${idBase}-values`}
+    >
+      <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
         Mean SHAP contribution by category. Above 0 pushes toward training; below 0 pushes away.
+      </figcaption>
+      <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
+        Today&apos;s category: {currentLabel}.
       </p>
-      <p className="mt-1 text-xs text-slate-500">Today&apos;s category: {currentLabel}.</p>
-      <ul className="mt-1 space-y-1 text-xs text-slate-500">
+      <ul id={`${idBase}-values`} className="mt-1 space-y-1 text-xs text-slate-500">
         {plot.categories.map((category) => (
           <li key={`summary-${category.value}`}>
             {category.label}: {formatSigned(category.mean_shap)}
@@ -237,7 +253,7 @@ function CategoricalFeaturePlot({ plot }: { plot: CategoricalPlot }) {
           })}
         </svg>
       </div>
-    </div>
+    </figure>
   );
 }
 
@@ -250,9 +266,9 @@ function FeaturePlot({ contributor }: { contributor: Contributor }) {
     <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
       <summary className="cursor-pointer text-xs font-medium text-slate-700">Show model effect plot</summary>
       {contributor.plot.kind === "continuous" ? (
-        <ContinuousFeaturePlot plot={contributor.plot} />
+        <ContinuousFeaturePlot feature={contributor.feature} plot={contributor.plot} />
       ) : (
-        <CategoricalFeaturePlot plot={contributor.plot} />
+        <CategoricalFeaturePlot feature={contributor.feature} plot={contributor.plot} />
       )}
     </details>
   );

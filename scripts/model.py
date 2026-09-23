@@ -232,10 +232,13 @@ def feature_contributions(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dic
     }
 
 
-def _feature_contributions_frame(model: xgb.XGBModel, feature_rows: pd.DataFrame) -> pd.DataFrame:
+def _feature_contributions_frame(
+    model: xgb.XGBModel, feature_rows: pd.DataFrame, columns: list[str] | None = None
+) -> pd.DataFrame:
     matrix = xgb.DMatrix(feature_rows[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
     contribs = model.get_booster().predict(matrix, pred_contribs=True)
-    return pd.DataFrame(contribs[:, :-1], columns=FEATURE_COLUMNS, index=feature_rows.index)
+    frame = pd.DataFrame(contribs[:, :-1], columns=FEATURE_COLUMNS, index=feature_rows.index)
+    return frame if columns is None else frame[columns]
 
 
 def _category_label(feature: str, value: float) -> str:
@@ -257,7 +260,10 @@ def attach_feature_plots(
     feature_row: pd.DataFrame,
 ) -> list[dict[str, Any]]:
     current = feature_row.iloc[0]
-    historical_contribs = _feature_contributions_frame(model, historical[FEATURE_COLUMNS])
+    requested_features = [contributor["feature"] for contributor in top_contributors]
+    historical_contribs = _feature_contributions_frame(
+        model, historical[FEATURE_COLUMNS], columns=requested_features
+    )
 
     enriched: list[dict[str, Any]] = []
     for contributor in top_contributors:
