@@ -70,6 +70,7 @@ type CalibrationSummary = {
 
 type PredictionPayload = {
   date: string;
+  generated_at?: string;
   will_train: boolean;
   probability: number;
   predicted_effort: number | null;
@@ -132,6 +133,21 @@ function contributionPoints(shapValue: number, probability: number): number {
 
 function formatContributionPoints(value: number | null, digits = 1): string {
   return isFiniteNumber(value) ? `${value >= 0 ? "+" : ""}${value.toFixed(digits)} points` : "n/a";
+}
+
+function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
+  if (!isoTimestamp) {
+    return null;
+  }
+  const parsed = new Date(isoTimestamp);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed.toLocaleString("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }) + " UTC";
 }
 
 function paddedExtent(values: number[], fallbackPadding = 0.5): [number, number] | null {
@@ -590,8 +606,15 @@ export default async function Home() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-8 px-6 py-14">
       <header>
-        <p className="text-sm font-medium uppercase tracking-wide text-slate-500">{prediction.date}</p>
+        <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
+          Predicting for {prediction.date}
+        </p>
         <h1 className="mt-2 text-4xl font-bold text-slate-900">train tomorrow</h1>
+        {formatGeneratedAt(prediction.generated_at) ? (
+          <p className="mt-1 text-xs text-slate-500">
+            Prediction generated {formatGeneratedAt(prediction.generated_at)}
+          </p>
+        ) : null}
       </header>
 
       <section className="rounded-2xl bg-slate-900 p-6 text-lg text-slate-50 shadow-sm">

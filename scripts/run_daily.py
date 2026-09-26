@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -131,6 +132,7 @@ def run_pipeline() -> dict[str, object]:
 
     payload = {
         "date": str(prepared.tomorrow_features.iloc[0]["target_date"]),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "will_train": bool(prediction["will_train"]),
         "probability": round(float(prediction["probability"]), 4),
         "predicted_effort": (
