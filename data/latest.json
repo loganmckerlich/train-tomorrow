@@ -1,6 +1,6 @@
 {
   "date": "2026-09-27",
-  "generated_at": "2026-09-26T21:20:38.265500+00:00",
+  "generated_at": "2026-09-26T21:33:18.303069+00:00",
   "will_train": false,
   "probability": 0.1831,
   "predicted_effort": null,
@@ -815,67 +815,9 @@
       }
     }
   ],
-  "waterfall": {
-    "baseline_probability": 0.6178,
-    "final_probability": 0.1831,
-    "steps": [
-      {
-        "feature": "day_of_week",
-        "signed_contribution": -1.0034,
-        "direction": "hurting",
-        "phrase": "your usual day-of-week rhythm"
-      },
-      {
-        "feature": "dow_train_rate",
-        "signed_contribution": -0.8132,
-        "direction": "hurting",
-        "phrase": "your usual habit on this day of the week"
-      },
-      {
-        "feature": "trained_days_7",
-        "signed_contribution": 0.3234,
-        "direction": "helping",
-        "phrase": "how often you've trained this past week"
-      },
-      {
-        "feature": "moving_time_chronic_28",
-        "signed_contribution": -0.2731,
-        "direction": "hurting",
-        "phrase": "your training volume base over the past month"
-      },
-      {
-        "feature": "today_relative_effort",
-        "signed_contribution": -0.1945,
-        "direction": "hurting",
-        "phrase": "how hard today's session was"
-      },
-      {
-        "feature": "forecast_precip_probability_vs_seasonal",
-        "signed_contribution": -0.1404,
-        "direction": "hurting",
-        "phrase": "how much rainier or drier than usual it is"
-      },
-      {
-        "feature": "forecast_temp_low",
-        "signed_contribution": -0.125,
-        "direction": "hurting",
-        "phrase": "the overnight low"
-      },
-      {
-        "feature": "trained_days_30",
-        "signed_contribution": 0.1127,
-        "direction": "helping",
-        "phrase": "your training frequency over the past month"
-      },
-      {
-        "feature": "other_features",
-        "signed_contribution": 0.1377,
-        "direction": "helping",
-        "phrase": "all other features"
-      }
-    ]
-  },
-  "blurb": "**Tomorrow\u2019s Verdict: REST DAY** \n*(Training Probability: a microscopic 18.3%)*\n\nCancel your morning alarms\u2014tomorrow is officially a **rest day**. The model gives you less than a 20% chance of actually putting on workout clothes, and honestly, the data isn't wrong.\n\nHere is why you\u2019ll be on the couch:\n\n* **Your calendar habits speak louder than your ambitions:** It\u2019s this day of the week, and historically, you almost *never* train today. Your day-of-week routine is heavily driving this rest call.\n* **You\u2019re cooked:** Today\u2019s effort took a toll, and your high training volume over the last month means your body is screaming for a break.\n\nSure, you\u2019ve racked up a few active days over the past week, but your usual day-off vibes are completely bulldozing any urge to sweat. Put your feet up and enjoy doing absolutely nothing.",
+  "baseline_probability": 0.6178,
+  "other_contribution": 0.0,
+  "blurb": "### **The Verdict: Hit the Snooze Button \ud83d\udecc**\n\n**Prediction:** Rest Day  \n**Chance you\u2019ll actually train:** A meager **18.3%** *(so don't bother laying out your workout gear).*\n\n---\n\n### **Why the algorithm knows you're slacking tomorrow:**\n\n* **It\u2019s literally your habit:** Your weekly rhythm and historical data show you almost *never* train on this day. The calendar is doing most of the talking here.\n* **Today wiped you out:** You actually put in some real effort today, and your body is going to use that as an excuse to do zero physical activity tomorrow.\n* **The weather is handing you an out:** A cold overnight low and dreary forecasts are giving you the perfect excuse to stay under the covers. \n\nSure, you\u2019ve been somewhat consistent over the last week, but let\u2019s be real\u2014your Sunday-driver habits and today's fatigue are running the show. Enjoy the couch!",
   "calibration": {
     "total_samples": 5,
     "buckets": [
