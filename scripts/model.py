@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -15,10 +14,6 @@ from features import FEATURE_COLUMNS
 
 CLASSIFIER_MODEL_PATH = "classifier.json"
 REGRESSOR_MODEL_PATH = "regressor.json"
-CATEGORICAL_FEATURES = {"day_of_week", "month", "season"}
-DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-SEASON_LABELS = ["Winter", "Spring", "Summer", "Fall"]
 
 DEFAULT_XGB_PARAMS: dict[str, Any] = {
     "eta": 0.05,
@@ -32,12 +27,8 @@ DEFAULT_XGB_PARAMS: dict[str, Any] = {
 logger = logging.getLogger(__name__)
 
 
-def _sigmoid(value: float) -> float:
-    if value >= 0:
-        exp_term = math.exp(-value)
-        return 1.0 / (1.0 + exp_term)
-    exp_term = math.exp(value)
-    return exp_term / (1.0 + exp_term)
+def _feature_list(features: list[str] | None) -> list[str]:
+    return FEATURE_COLUMNS if features is None else features
 
 
 @dataclass
@@ -79,7 +70,12 @@ def _recency_weights(as_of_dates: pd.Series, half_life_days: float = 180.0) -> n
     return np.power(0.5, age_days / half_life_days)
 
 
-def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5, xgb_params: dict[str, Any] | None = None, features: list[str] = FEATURE_COLUMNS) -> pd.DataFrame:
+def walk_forward_evaluate(
+    dataset: pd.DataFrame,
+    n_folds: int = 5,
+    xgb_params: dict[str, Any] | None = None,
+    features: list[str] | None = None,
+) -> pd.DataFrame:
     """Expanding-window backtest across multiple test windows, not just one 80/20 split.
 
     A single holdout can look better or worse than reality purely because of which season/period
@@ -90,6 +86,7 @@ def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5, xgb_params: d
     n = len(ordered)
     fold_edges = np.linspace(int(n * 0.5), n, n_folds + 1).astype(int)
     merged_xgb_params = {**DEFAULT_XGB_PARAMS, **(xgb_params or {})}
+    features = _feature_list(features)
 
     rows: list[dict[str, Any]] = []
     for fold in range(n_folds):
@@ -127,10 +124,11 @@ def train_and_save_models(
     split_frac: float = 0.8,
     half_life_days: float = 180.0,
     xgb_params: dict[str, Any] | None = None,
-    features: list[str] = FEATURE_COLUMNS,
+    features: list[str] | None = None,
 ) -> TrainedModels:
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
     merged_xgb_params = {**DEFAULT_XGB_PARAMS, **(xgb_params or {})}
+    features = _feature_list(features)
 
     clf_train, clf_test = _time_split(ordered, frac=split_frac)
     y_train = clf_train["will_train_tomorrow"]
@@ -205,10 +203,11 @@ def load_models(model_dir: Path) -> TrainedModels:
 
 
 def evaluate_models(
-    models: TrainedModels, dataset: pd.DataFrame, features: list[str] = FEATURE_COLUMNS
+    models: TrainedModels, dataset: pd.DataFrame, features: list[str] | None = None
 ) -> dict[str, np.ndarray]:
     """Reproduce the same time-based test split used during training, for notebook analysis."""
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
+    features = _feature_list(features)
 
     _, clf_test = _time_split(ordered)
     probs = models.classifier.predict_proba(clf_test[features])[:, 1]
@@ -226,8 +225,9 @@ def evaluate_models(
 
 
 def predict_tomorrow(
-    models: TrainedModels, tomorrow_features: pd.DataFrame, features: list[str] = FEATURE_COLUMNS
+    models: TrainedModels, tomorrow_features: pd.DataFrame, features: list[str] | None = None
 ) -> dict[str, Any]:
+    features = _feature_list(features)
     feature_frame = tomorrow_features[features]
     probability = float(models.classifier.predict_proba(feature_frame)[0, 1])
     will_train = probability >= 0.5
@@ -237,117 +237,3 @@ def predict_tomorrow(
         "probability": probability,
         "predicted_effort": predicted_effort,
     }
-
-
-def feature_contributions(
-    model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] = FEATURE_COLUMNS
-) -> dict[str, float]:
-    return explain_prediction(model, feature_row, features)["contributions"]
-
-
-def explain_prediction(
-    model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] = FEATURE_COLUMNS
-) -> dict[str, Any]:
-    matrix = xgb.DMatrix(feature_row[features], feature_names=features)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
-    contributions = {
-        name: float(value)
-        for name, value in zip(features, contribs[:-1], strict=True)
-    }
-    baseline_log_odds = float(contribs[-1])
-    total_log_odds = baseline_log_odds + float(np.sum(contribs[:-1]))
-    return {
-        "contributions": contributions,
-        "baseline_log_odds": baseline_log_odds,
-        "baseline_probability": _sigmoid(baseline_log_odds),
-        "probability": _sigmoid(total_log_odds),
-    }
-
-
-def _feature_contributions_frame(
-    model: xgb.XGBModel,
-    feature_rows: pd.DataFrame,
-    columns: list[str] | None = None,
-    features: list[str] = FEATURE_COLUMNS,
-) -> pd.DataFrame:
-    matrix = xgb.DMatrix(feature_rows[features], feature_names=features)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)
-    frame = pd.DataFrame(contribs[:, :-1], columns=features, index=feature_rows.index)
-    return frame if columns is None else frame[columns]
-
-
-def _category_label(feature: str, value: float) -> str:
-    numeric = int(value) if float(value).is_integer() else round(float(value), 4)
-    if feature == "day_of_week":
-        return DAY_LABELS[int(numeric)] if 0 <= int(numeric) < len(DAY_LABELS) else str(numeric)
-    if feature == "month":
-        month_index = int(numeric) - 1
-        return MONTH_LABELS[month_index] if 0 <= month_index < len(MONTH_LABELS) else str(numeric)
-    if feature == "season":
-        return SEASON_LABELS[int(numeric)] if 0 <= int(numeric) < len(SEASON_LABELS) else str(numeric)
-    return str(numeric)
-
-
-def attach_feature_plots(
-    model: xgb.XGBModel,
-    top_contributors: list[dict[str, Any]],
-    historical: pd.DataFrame,
-    feature_row: pd.DataFrame,
-    features: list[str] = FEATURE_COLUMNS,
-) -> list[dict[str, Any]]:
-    current = feature_row.iloc[0]
-    requested_features = [contributor["feature"] for contributor in top_contributors]
-    historical_contribs = _feature_contributions_frame(
-        model, historical[features], columns=requested_features, features=features
-    )
-
-    enriched: list[dict[str, Any]] = []
-    for contributor in top_contributors:
-        feature = contributor["feature"]
-        values = pd.to_numeric(historical[feature], errors="coerce")
-        current_value = pd.to_numeric(pd.Series([current.get(feature)]), errors="coerce").iloc[0]
-        shap_values = pd.to_numeric(historical_contribs[feature], errors="coerce")
-
-        if feature in CATEGORICAL_FEATURES:
-            categories = (
-                pd.DataFrame({"value": values, "shap": shap_values})
-                .dropna()
-                .groupby("value", sort=True)["shap"]
-                .mean()
-                .items()
-            )
-            plot: dict[str, Any] = {
-                "kind": "categorical",
-                "current_value": int(current_value) if not pd.isna(current_value) else None,
-                "current_label": _category_label(feature, float(current_value)) if not pd.isna(current_value) else None,
-                "categories": [
-                    {
-                        "value": int(value) if float(value).is_integer() else round(float(value), 4),
-                        "label": _category_label(feature, float(value)),
-                        "mean_shap": round(float(mean_shap), 4),
-                    }
-                    for value, mean_shap in categories
-                ],
-            }
-        else:
-            plot = {
-                "kind": "continuous",
-                "current_value": round(float(current_value), 4) if not pd.isna(current_value) else None,
-                "current_shap": round(float(contributor["signed_contribution"]), 4),
-                "points": [
-                    {
-                        "feature_value": round(float(value), 4),
-                        "shap_value": round(float(shap_value), 4),
-                    }
-                    for value, shap_value in zip(values, shap_values, strict=True)
-                    if not pd.isna(value) and not pd.isna(shap_value)
-                ],
-            }
-
-        enriched.append(
-            {
-                **contributor,
-                "plot": plot,
-            }
-        )
-    return enriched

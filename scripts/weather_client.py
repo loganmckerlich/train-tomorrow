@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import calendar
 import os
 from datetime import date, timedelta
 from typing import Any
@@ -19,6 +20,12 @@ SEASONAL_YEARS_BACK = 5
 SEASONAL_WINDOW_DAYS = 30
 # morning/midday/evening precip buckets, as [start_hour, end_hour) local time
 PRECIP_BUCKETS = {"precip_morning": (5, 9), "precip_midday": (9, 16), "precip_evening": (16, 21)}
+
+
+def _shift_years_safe(day: date, years: int) -> date:
+    target_year = day.year - years
+    target_day = min(day.day, calendar.monthrange(target_year, day.month)[1])
+    return date(target_year, day.month, target_day)
 
 
 def _daily_frame(daily: dict[str, Any]) -> pd.DataFrame:
@@ -76,9 +83,15 @@ def _seasonal_baseline(climatology: pd.DataFrame, target_day: date, window_days:
         return pd.Series({col: float("nan") for col in SEASONAL_COLUMNS})
 
     doy = pd.Series([d.timetuple().tm_yday for d in climatology.index], index=climatology.index)
-    target_doy = target_day.timetuple().tm_yday
-    circular_diff = (doy - target_doy).abs()
-    circular_diff = np.minimum(circular_diff, 365 - circular_diff)
+    year_lengths = pd.Series(
+        [366 if calendar.isleap(d.year) else 365 for d in climatology.index],
+        index=climatology.index,
+        dtype=float,
+    )
+    target_fraction = target_day.timetuple().tm_yday / (366 if calendar.isleap(target_day.year) else 365)
+    day_fractions = doy / year_lengths
+    circular_diff = (day_fractions - target_fraction).abs()
+    circular_diff = np.minimum(circular_diff, 1 - circular_diff) * year_lengths
     window = climatology.loc[circular_diff <= window_days]
     if window.empty:
         window = climatology
@@ -92,12 +105,15 @@ def _apply_seasonal_anomalies(frame: pd.DataFrame, lat: float, lon: float) -> pd
 
     earliest_day = min(frame.index)
     climatology_end = earliest_day - timedelta(days=1)
-    climatology_start = date(climatology_end.year - SEASONAL_YEARS_BACK, climatology_end.month, climatology_end.day)
+    climatology_start = _shift_years_safe(climatology_end, SEASONAL_YEARS_BACK)
     climatology = _fetch_archive_daily(lat, lon, climatology_start, climatology_end)
 
     baselines = {day: _seasonal_baseline(climatology, day) for day in set(frame.index)}
     for col in SEASONAL_COLUMNS:
-        frame[f"{col}_vs_seasonal"] = [frame.at[day, col] - baselines[day][col] for day in frame.index]
+        frame[f"{col}_vs_seasonal"] = [
+            frame.at[day, col] - baselines[day][col]
+            for day in frame.index
+        ]
     return frame
 
 
@@ -176,4 +192,3 @@ def fetch_historical_weather(start_date: date, end_date: date) -> pd.DataFrame:
     frame = _apply_seasonal_anomalies(frame, lat, lon)
     frame = frame.join(_precip_bucket_frame(payload.get("hourly") or {}))
     return frame
-

@@ -9,9 +9,10 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from blurb import generate_blurb, generate_blurb_llm, summarize_top_contributors
+from blurb import generate_blurb, generate_blurb_llm
+from explain import attach_feature_plots, explain_prediction, summarize_top_contributors
 from features import FEATURE_COLUMNS, prepare_datasets
-from model import attach_feature_plots, explain_prediction, predict_tomorrow, train_and_save_models
+from model import predict_tomorrow, train_and_save_models
 from predictions_log import (
     backfill_outcomes,
     build_calibration_summary,
@@ -31,7 +32,9 @@ PARAMS_PATH = ROOT_DIR / "params.yaml"
 logger = logging.getLogger(__name__)
 
 
-def build_waterfall(contributors: list[dict[str, object]], baseline_probability: float, final_probability: float) -> dict[str, object]:
+def build_waterfall(
+    contributors: list[dict[str, object]], baseline_probability: float, final_probability: float
+) -> dict[str, object]:
     visible_steps = contributors[:8]
     remaining = contributors[8:]
     remaining_contribution = sum(float(item["signed_contribution"]) for item in remaining)
@@ -93,7 +96,14 @@ def run_pipeline() -> dict[str, object]:
         long_ride_quantile=model_params.get("long_ride_quantile", 0.75),
     )
 
-    model_features = model_params.get("features") or FEATURE_COLUMNS
+    model_features = list(model_params.get("features") or FEATURE_COLUMNS)
+    duplicate_features = sorted({feature for feature in model_features if model_features.count(feature) > 1})
+    if duplicate_features:
+        raise ValueError(f"Duplicate model feature(s) in params.yaml: {', '.join(duplicate_features)}")
+
+    unknown_features = sorted({feature for feature in model_features if feature not in FEATURE_COLUMNS})
+    if unknown_features:
+        raise ValueError(f"Unknown model feature(s) in params.yaml: {', '.join(unknown_features)}")
 
     # Retraining each run keeps v1 simple; incremental retraining can be added later.
     models = train_and_save_models(
@@ -109,9 +119,12 @@ def run_pipeline() -> dict[str, object]:
     explanation = explain_prediction(models.classifier, prepared.tomorrow_features, features=model_features)
     contribs = explanation["contributions"]
     ranked_contributors = summarize_top_contributors(contribs, top_n=len(contribs))
-    top_contributors = ranked_contributors[: blurb_params.get("top_contributors", 3)]
     top_contributors = attach_feature_plots(
-        models.classifier, top_contributors, prepared.historical, prepared.tomorrow_features, features=model_features
+        models.classifier,
+        ranked_contributors[: blurb_params.get("top_contributors", 3)],
+        prepared.historical,
+        prepared.tomorrow_features,
+        features=model_features,
     )
     blurb = generate_blurb(
         will_train=prediction["will_train"],

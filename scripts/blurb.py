@@ -9,57 +9,6 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-PHRASE_BANK: dict[str, str] = {
-    "acute_load_7": "recent training load in your legs",
-    "chronic_load_28": "longer-term fitness base",
-    "atl_ctl_ratio": "how peaky your load balance looks",
-    "days_since_last_hard": "time since your last hard effort",
-    "streak_length": "your current streak momentum",
-    "trained_today": "whether you already trained today",
-    "trained_hard_today": "whether today's session was a hard one",
-    "trained_days_2": "how much you've trained the past 2 days",
-    "trained_both_days_2": "back-to-back training the last 2 days",
-    "trained_days_7": "how often you've trained this past week",
-    "trained_days_30": "your training frequency over the past month",
-    "moving_time_acute_7": "your recent training volume",
-    "moving_time_chronic_28": "your training volume base over the past month",
-    "today_relative_effort": "how hard today's session was",
-    "dow_train_rate": "your usual habit on this day of the week",
-    "month_train_rate": "how you usually train this time of year",
-    "trained_last_weekend": "whether you trained on the most recent weekend",
-    "day_of_week": "your usual day-of-week rhythm",
-    "month": "the time of year",
-    "season": "seasonal daylight vibes",
-    "days_since_last_long_ride": "time since your last really long session",
-    "forecast_temp_high": "the daytime temperature forecast",
-    "forecast_temp_low": "the overnight low",
-    "forecast_precip_probability": "rain in the forecast",
-    "forecast_rain_expected": "whether rain is expected at all",
-    "forecast_wind_speed": "the wind forecast",
-    "forecast_temp_high_vs_seasonal": "how the daytime temp compares to normal for this time of year",
-    "forecast_temp_low_vs_seasonal": "how the overnight low compares to normal for this time of year",
-    "forecast_precip_probability_vs_seasonal": "how much rainier or drier than usual it is",
-    "forecast_wind_speed_vs_seasonal": "how much windier or calmer than usual it is",
-    "forecast_precip_morning": "rain chances during your morning window",
-    "forecast_precip_midday": "rain chances during the midday window",
-    "forecast_precip_evening": "rain chances during your evening window",
-}
-
-
-def summarize_top_contributors(contributions: dict[str, float], top_n: int = 3) -> list[dict[str, Any]]:
-    ranked = sorted(contributions.items(), key=lambda item: abs(item[1]), reverse=True)[:top_n]
-    output: list[dict[str, Any]] = []
-    for feature, value in ranked:
-        output.append(
-            {
-                "feature": feature,
-                "signed_contribution": float(value),
-                "direction": "helping" if value >= 0 else "hurting",
-                "phrase": PHRASE_BANK.get(feature, feature.replace("_", " ")),
-            }
-        )
-    return output
-
 
 def generate_blurb(
     will_train: bool,

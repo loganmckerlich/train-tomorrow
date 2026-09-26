@@ -60,7 +60,6 @@ type WaterfallSegment = WaterfallStep & {
   endProbability: number;
   deltaPoints: number;
 };
-
 type CalibrationBucket = {
   lower_bound: number;
   upper_bound: number;
@@ -82,6 +81,8 @@ type PredictionPayload = {
   predicted_effort: number | null;
   top_contributors: Contributor[];
   waterfall?: WaterfallSummary;
+  baseline_probability?: number;
+  other_contribution?: number;
   calibration?: CalibrationSummary;
   blurb: string;
 };
@@ -616,6 +617,7 @@ export default async function Home() {
   );
   const contributionMagnitudes = contributionPointValues.map((value) => Math.abs(value));
   const maxContributionMagnitude = Math.max(...contributionMagnitudes, 1);
+  const generatedAt = formatGeneratedAt(prediction.generated_at);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-8 px-6 py-14">
@@ -624,11 +626,7 @@ export default async function Home() {
           Predicting for {prediction.date}
         </p>
         <h1 className="mt-2 text-4xl font-bold text-slate-900">train tomorrow</h1>
-        {formatGeneratedAt(prediction.generated_at) ? (
-          <p className="mt-1 text-xs text-slate-500">
-            Prediction generated {formatGeneratedAt(prediction.generated_at)}
-          </p>
-        ) : null}
+        {generatedAt ? <p className="mt-1 text-xs text-slate-500">Prediction generated {generatedAt}</p> : null}
       </header>
 
       <section className="rounded-2xl bg-slate-900 p-6 text-lg text-slate-50 shadow-sm">

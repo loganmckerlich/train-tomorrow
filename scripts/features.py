@@ -128,7 +128,7 @@ def _trained_last_weekend(state: pd.DataFrame) -> pd.Series:
     # look at the PRIOR week's weekend, not the current (possibly incomplete) one
     weekly_flag_prev = weekly_flag.shift(1)
 
-    return  week_period.map(weekly_flag_prev).fillna(False).astype(bool)
+    return week_period.map(weekly_flag_prev).fillna(False).astype(bool)
 
 def _compute_state_features(daily: pd.DataFrame, hard_threshold: float, long_threshold: float) -> pd.DataFrame:
     state = daily.copy()
