@@ -602,11 +602,12 @@ export default async function Home() {
     );
   }
 
-  const waterfallPointsByFeature = new Map<string, number>(
-    (prediction.waterfall ? buildWaterfallSegments(prediction.waterfall) : []).map((segment) => [
-      segment.feature,
-      segment.deltaPoints,
-    ]),
+  const waterfallPointsByFeature = (prediction.waterfall ? buildWaterfallSegments(prediction.waterfall) : []).reduce(
+    (pointsByFeature, segment) => {
+      pointsByFeature.set(segment.feature, (pointsByFeature.get(segment.feature) ?? 0) + segment.deltaPoints);
+      return pointsByFeature;
+    },
+    new Map<string, number>(),
   );
   const contributionPointValues = prediction.top_contributors.map(
     (item) =>
