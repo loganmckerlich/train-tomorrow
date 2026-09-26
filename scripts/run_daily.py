@@ -3,13 +3,14 @@ from __future__ import annotations
 import json
 import logging
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 import yaml
 
 from blurb import generate_blurb, generate_blurb_llm, summarize_top_contributors
-from features import prepare_datasets
+from features import FEATURE_COLUMNS, prepare_datasets
 from model import attach_feature_plots, explain_prediction, predict_tomorrow, train_and_save_models
 from predictions_log import (
     backfill_outcomes,
@@ -92,6 +93,7 @@ def run_pipeline() -> dict[str, object]:
         long_ride_quantile=model_params.get("long_ride_quantile", 0.75),
     )
 
+    model_features = model_params.get("features") or FEATURE_COLUMNS
 
     # Retraining each run keeps v1 simple; incremental retraining can be added later.
     models = train_and_save_models(
@@ -100,15 +102,16 @@ def run_pipeline() -> dict[str, object]:
         split_frac=model_params.get("train_test_split_frac", 0.8),
         half_life_days=model_params.get("recency_half_life_days", 180.0),
         xgb_params=model_params.get("xgboost"),
+        features=model_features,
     )
 
-    prediction = predict_tomorrow(models, prepared.tomorrow_features)
-    explanation = explain_prediction(models.classifier, prepared.tomorrow_features)
+    prediction = predict_tomorrow(models, prepared.tomorrow_features, features=model_features)
+    explanation = explain_prediction(models.classifier, prepared.tomorrow_features, features=model_features)
     contribs = explanation["contributions"]
     ranked_contributors = summarize_top_contributors(contribs, top_n=len(contribs))
     top_contributors = ranked_contributors[: blurb_params.get("top_contributors", 3)]
     top_contributors = attach_feature_plots(
-        models.classifier, top_contributors, prepared.historical, prepared.tomorrow_features
+        models.classifier, top_contributors, prepared.historical, prepared.tomorrow_features, features=model_features
     )
     blurb = generate_blurb(
         will_train=prediction["will_train"],
@@ -129,6 +132,7 @@ def run_pipeline() -> dict[str, object]:
 
     payload = {
         "date": str(prepared.tomorrow_features.iloc[0]["target_date"]),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "will_train": bool(prediction["will_train"]),
         "probability": round(float(prediction["probability"]), 4),
         "predicted_effort": (

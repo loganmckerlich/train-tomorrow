@@ -24,6 +24,7 @@ FEATURE_COLUMNS = [
     "today_relative_effort",
     "dow_train_rate",
     "month_train_rate",
+    "trained_last_weekend",
     "day_of_week",
     "month",
     "season",
@@ -33,6 +34,13 @@ FEATURE_COLUMNS = [
     "forecast_precip_probability",
     "forecast_rain_expected",
     "forecast_wind_speed",
+    "forecast_temp_high_vs_seasonal",
+    "forecast_temp_low_vs_seasonal",
+    "forecast_precip_probability_vs_seasonal",
+    "forecast_wind_speed_vs_seasonal",
+    "forecast_precip_morning",
+    "forecast_precip_midday",
+    "forecast_precip_evening",
 ]
 
 
@@ -107,6 +115,20 @@ def _same_month_rate(state: pd.DataFrame) -> pd.Series:
         rate.loc[idx] = state.loc[idx, "trained_today"].shift(1).expanding().mean()
     return rate.fillna(0.5)
 
+def _trained_last_weekend(state: pd.DataFrame) -> pd.Series:
+    """Causal indicator for whether the athlete trained on the most recent weekend."""
+    idx = pd.to_datetime(state.index)
+    week_period = idx.to_period("W-SUN")  # groups each Mon–Sun into one period
+    is_weekend = idx.weekday >= 5
+    trained_on_weekend = state["trained_today"].astype(bool) & is_weekend
+
+    # did training happen on Sat or Sun within each week?
+    weekly_flag = pd.Series(trained_on_weekend.values, index=week_period).groupby(level=0).max()
+
+    # look at the PRIOR week's weekend, not the current (possibly incomplete) one
+    weekly_flag_prev = weekly_flag.shift(1)
+
+    return  week_period.map(weekly_flag_prev).fillna(False).astype(bool)
 
 def _compute_state_features(daily: pd.DataFrame, hard_threshold: float, long_threshold: float) -> pd.DataFrame:
     state = daily.copy()
@@ -123,6 +145,7 @@ def _compute_state_features(daily: pd.DataFrame, hard_threshold: float, long_thr
     state["moving_time_chronic_28"] = state["moving_time"].ewm(span=28, adjust=False).mean()
     state["same_weekday_rate"] = _same_weekday_rate(state)
     state["same_month_rate"] = _same_month_rate(state)
+    state["trained_last_weekend"] = _trained_last_weekend(state)
 
     last_hard: Any = None
     last_long: Any = None
@@ -193,9 +216,19 @@ def prepare_datasets(
             forecast_temp_low = float(weather_row["temp_low"])
             forecast_precip_probability = float(weather_row["precip_probability"])
             forecast_wind_speed = float(weather_row["wind_speed"])
+            forecast_temp_high_vs_seasonal = float(weather_row["temp_high_vs_seasonal"])
+            forecast_temp_low_vs_seasonal = float(weather_row["temp_low_vs_seasonal"])
+            forecast_precip_probability_vs_seasonal = float(weather_row["precip_probability_vs_seasonal"])
+            forecast_wind_speed_vs_seasonal = float(weather_row["wind_speed_vs_seasonal"])
+            forecast_precip_morning = float(weather_row["precip_morning"])
+            forecast_precip_midday = float(weather_row["precip_midday"])
+            forecast_precip_evening = float(weather_row["precip_evening"])
         else:
             forecast_temp_high = forecast_temp_low = np.nan
             forecast_precip_probability = forecast_wind_speed = np.nan
+            forecast_temp_high_vs_seasonal = forecast_temp_low_vs_seasonal = np.nan
+            forecast_precip_probability_vs_seasonal = forecast_wind_speed_vs_seasonal = np.nan
+            forecast_precip_morning = forecast_precip_midday = forecast_precip_evening = np.nan
 
         rows.append(
             {
@@ -218,6 +251,7 @@ def prepare_datasets(
                 "dow_train_rate": float(state.loc[next_day, "same_weekday_rate"]),
                 "month_train_rate": float(state.loc[next_day, "same_month_rate"]),
                 "day_of_week": next_day.weekday(),
+                "trained_last_weekend": bool(today_row["trained_last_weekend"]),
                 "month": next_day.month,
                 "season": _season_from_month(next_day.month),
                 "days_since_last_long_ride": int(today_row["days_since_last_long_ride"]),
@@ -226,6 +260,13 @@ def prepare_datasets(
                 "forecast_precip_probability": forecast_precip_probability,
                 "forecast_rain_expected": int(forecast_precip_probability > 0) if not np.isnan(forecast_precip_probability) else 0,
                 "forecast_wind_speed": forecast_wind_speed,
+                "forecast_temp_high_vs_seasonal": forecast_temp_high_vs_seasonal,
+                "forecast_temp_low_vs_seasonal": forecast_temp_low_vs_seasonal,
+                "forecast_precip_probability_vs_seasonal": forecast_precip_probability_vs_seasonal,
+                "forecast_wind_speed_vs_seasonal": forecast_wind_speed_vs_seasonal,
+                "forecast_precip_morning": forecast_precip_morning,
+                "forecast_precip_midday": forecast_precip_midday,
+                "forecast_precip_evening": forecast_precip_evening,
                 "will_train_tomorrow": int(next_row["trained_today"]),
                 "next_day_relative_effort": float(next_row["relative_effort"]),
             }
@@ -265,6 +306,7 @@ def prepare_datasets(
                 "dow_train_rate": target_dow_rate,
                 "month_train_rate": target_month_rate,
                 "day_of_week": target_day.weekday(),
+                "trained_last_weekend": bool(recent["trained_last_weekend"]),
                 "month": target_day.month,
                 "season": _season_from_month(target_day.month),
                 "days_since_last_long_ride": int(recent["days_since_last_long_ride"]),
@@ -273,6 +315,13 @@ def prepare_datasets(
                 "forecast_precip_probability": float(tomorrow_weather["precip_probability"]),
                 "forecast_rain_expected": int(float(tomorrow_weather["precip_probability"]) > 0),
                 "forecast_wind_speed": float(tomorrow_weather["wind_speed"]),
+                "forecast_temp_high_vs_seasonal": float(tomorrow_weather["temp_high_vs_seasonal"]),
+                "forecast_temp_low_vs_seasonal": float(tomorrow_weather["temp_low_vs_seasonal"]),
+                "forecast_precip_probability_vs_seasonal": float(tomorrow_weather["precip_probability_vs_seasonal"]),
+                "forecast_wind_speed_vs_seasonal": float(tomorrow_weather["wind_speed_vs_seasonal"]),
+                "forecast_precip_morning": float(tomorrow_weather["precip_morning"]),
+                "forecast_precip_midday": float(tomorrow_weather["precip_midday"]),
+                "forecast_precip_evening": float(tomorrow_weather["precip_evening"]),
             }
         ]
     )

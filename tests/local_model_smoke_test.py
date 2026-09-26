@@ -43,6 +43,13 @@ def main() -> None:
         "temp_low": 11.0,
         "precip_probability": 25.0,
         "wind_speed": 10.0,
+        "temp_high_vs_seasonal": 1.5,
+        "temp_low_vs_seasonal": 0.5,
+        "precip_probability_vs_seasonal": -3.0,
+        "wind_speed_vs_seasonal": 2.0,
+        "precip_morning": 10.0,
+        "precip_midday": 5.0,
+        "precip_evening": 0.0,
     }
     prepared = prepare_datasets(activities=activities, tomorrow_weather=weather)
 

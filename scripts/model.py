@@ -79,7 +79,7 @@ def _recency_weights(as_of_dates: pd.Series, half_life_days: float = 180.0) -> n
     return np.power(0.5, age_days / half_life_days)
 
 
-def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5, xgb_params: dict[str, Any] | None = None) -> pd.DataFrame:
+def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5, xgb_params: dict[str, Any] | None = None, features: list[str] = FEATURE_COLUMNS) -> pd.DataFrame:
     """Expanding-window backtest across multiple test windows, not just one 80/20 split.
 
     A single holdout can look better or worse than reality purely because of which season/period
@@ -101,8 +101,8 @@ def walk_forward_evaluate(dataset: pd.DataFrame, n_folds: int = 5, xgb_params: d
             continue
 
         clf = xgb.XGBClassifier(objective="binary:logistic", eval_metric="logloss", **merged_xgb_params)
-        clf.fit(train[FEATURE_COLUMNS], train["will_train_tomorrow"], sample_weight=_recency_weights(train["as_of_date"]))
-        probs = clf.predict_proba(test[FEATURE_COLUMNS])[:, 1]
+        clf.fit(train[features], train["will_train_tomorrow"], sample_weight=_recency_weights(train["as_of_date"]))
+        probs = clf.predict_proba(test[features])[:, 1]
         y_test = test["will_train_tomorrow"].to_numpy()
         preds = (probs >= 0.5).astype(int)
 
@@ -127,6 +127,7 @@ def train_and_save_models(
     split_frac: float = 0.8,
     half_life_days: float = 180.0,
     xgb_params: dict[str, Any] | None = None,
+    features: list[str] = FEATURE_COLUMNS,
 ) -> TrainedModels:
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
     merged_xgb_params = {**DEFAULT_XGB_PARAMS, **(xgb_params or {})}
@@ -137,10 +138,10 @@ def train_and_save_models(
 
     classifier = xgb.XGBClassifier(objective="binary:logistic", eval_metric="logloss", **merged_xgb_params)
     classifier.fit(
-        clf_train[FEATURE_COLUMNS], y_train, sample_weight=_recency_weights(clf_train["as_of_date"], half_life_days)
+        clf_train[features], y_train, sample_weight=_recency_weights(clf_train["as_of_date"], half_life_days)
     )
 
-    probs = classifier.predict_proba(clf_test[FEATURE_COLUMNS])[:, 1]
+    probs = classifier.predict_proba(clf_test[features])[:, 1]
     preds = (probs >= 0.5).astype(int)
     accuracy = float((preds == y_test.to_numpy()).mean())
     baseline_accuracy = float(max(y_test.mean(), 1 - y_test.mean()))
@@ -156,7 +157,7 @@ def train_and_save_models(
     # from the newest data instead of only ever seeing it as an evaluation set.
     logger.info("refitting classifier on full dataset (n=%d) before saving", len(ordered))
     classifier.fit(
-        ordered[FEATURE_COLUMNS],
+        ordered[features],
         ordered["will_train_tomorrow"],
         sample_weight=_recency_weights(ordered["as_of_date"], half_life_days),
     )
@@ -174,16 +175,16 @@ def train_and_save_models(
         **merged_xgb_params,
     )
     regressor.fit(
-        reg_train[FEATURE_COLUMNS], yr_train, sample_weight=_recency_weights(reg_train["as_of_date"], half_life_days)
+        reg_train[features], yr_train, sample_weight=_recency_weights(reg_train["as_of_date"], half_life_days)
     )
 
-    reg_preds = regressor.predict(reg_test[FEATURE_COLUMNS])
+    reg_preds = regressor.predict(reg_test[features])
     mae = float(np.mean(np.abs(reg_preds - yr_test.to_numpy())))
     logger.info("regressor_mae=%.3f", mae)
 
     logger.info("refitting regressor on full positive-label dataset (n=%d) before saving", len(reg_rows))
     regressor.fit(
-        reg_rows[FEATURE_COLUMNS],
+        reg_rows[features],
         reg_rows["next_day_relative_effort"],
         sample_weight=_recency_weights(reg_rows["as_of_date"], half_life_days),
     )
@@ -203,16 +204,18 @@ def load_models(model_dir: Path) -> TrainedModels:
     return TrainedModels(classifier=classifier, regressor=regressor)
 
 
-def evaluate_models(models: TrainedModels, dataset: pd.DataFrame) -> dict[str, np.ndarray]:
+def evaluate_models(
+    models: TrainedModels, dataset: pd.DataFrame, features: list[str] = FEATURE_COLUMNS
+) -> dict[str, np.ndarray]:
     """Reproduce the same time-based test split used during training, for notebook analysis."""
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
 
     _, clf_test = _time_split(ordered)
-    probs = models.classifier.predict_proba(clf_test[FEATURE_COLUMNS])[:, 1]
+    probs = models.classifier.predict_proba(clf_test[features])[:, 1]
 
     reg_rows = ordered[ordered["will_train_tomorrow"] == 1].copy()
     _, reg_test = _time_split(reg_rows)
-    reg_preds = models.regressor.predict(reg_test[FEATURE_COLUMNS])
+    reg_preds = models.regressor.predict(reg_test[features])
 
     return {
         "y_test": clf_test["will_train_tomorrow"].to_numpy(),
@@ -222,11 +225,13 @@ def evaluate_models(models: TrainedModels, dataset: pd.DataFrame) -> dict[str, n
     }
 
 
-def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> dict[str, Any]:
-    features = tomorrow_features[FEATURE_COLUMNS]
-    probability = float(models.classifier.predict_proba(features)[0, 1])
+def predict_tomorrow(
+    models: TrainedModels, tomorrow_features: pd.DataFrame, features: list[str] = FEATURE_COLUMNS
+) -> dict[str, Any]:
+    feature_frame = tomorrow_features[features]
+    probability = float(models.classifier.predict_proba(feature_frame)[0, 1])
     will_train = probability >= 0.5
-    predicted_effort = float(models.regressor.predict(features)[0]) if will_train else None
+    predicted_effort = float(models.regressor.predict(feature_frame)[0]) if will_train else None
     return {
         "will_train": bool(will_train),
         "probability": probability,
@@ -234,16 +239,20 @@ def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> 
     }
 
 
-def feature_contributions(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, float]:
-    return explain_prediction(model, feature_row)["contributions"]
+def feature_contributions(
+    model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] = FEATURE_COLUMNS
+) -> dict[str, float]:
+    return explain_prediction(model, feature_row, features)["contributions"]
 
 
-def explain_prediction(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, Any]:
-    matrix = xgb.DMatrix(feature_row[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
+def explain_prediction(
+    model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] = FEATURE_COLUMNS
+) -> dict[str, Any]:
+    matrix = xgb.DMatrix(feature_row[features], feature_names=features)
     contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
     contributions = {
         name: float(value)
-        for name, value in zip(FEATURE_COLUMNS, contribs[:-1], strict=True)
+        for name, value in zip(features, contribs[:-1], strict=True)
     }
     baseline_log_odds = float(contribs[-1])
     total_log_odds = baseline_log_odds + float(np.sum(contribs[:-1]))
@@ -256,11 +265,14 @@ def explain_prediction(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[s
 
 
 def _feature_contributions_frame(
-    model: xgb.XGBModel, feature_rows: pd.DataFrame, columns: list[str] | None = None
+    model: xgb.XGBModel,
+    feature_rows: pd.DataFrame,
+    columns: list[str] | None = None,
+    features: list[str] = FEATURE_COLUMNS,
 ) -> pd.DataFrame:
-    matrix = xgb.DMatrix(feature_rows[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
+    matrix = xgb.DMatrix(feature_rows[features], feature_names=features)
     contribs = model.get_booster().predict(matrix, pred_contribs=True)
-    frame = pd.DataFrame(contribs[:, :-1], columns=FEATURE_COLUMNS, index=feature_rows.index)
+    frame = pd.DataFrame(contribs[:, :-1], columns=features, index=feature_rows.index)
     return frame if columns is None else frame[columns]
 
 
@@ -281,11 +293,12 @@ def attach_feature_plots(
     top_contributors: list[dict[str, Any]],
     historical: pd.DataFrame,
     feature_row: pd.DataFrame,
+    features: list[str] = FEATURE_COLUMNS,
 ) -> list[dict[str, Any]]:
     current = feature_row.iloc[0]
     requested_features = [contributor["feature"] for contributor in top_contributors]
     historical_contribs = _feature_contributions_frame(
-        model, historical[FEATURE_COLUMNS], columns=requested_features
+        model, historical[features], columns=requested_features, features=features
     )
 
     enriched: list[dict[str, Any]] = []
