@@ -1,4 +1,13 @@
 import { unstable_noStore as noStore } from "next/cache";
+import ReactMarkdown from "react-markdown";
+import type { Components } from "react-markdown";
+
+const blurbMarkdownComponents: Components = {
+  p: ({ children }) => <p className="mt-3 leading-relaxed first:mt-0">{children}</p>,
+  strong: ({ children }) => <strong className="font-semibold text-amber-300">{children}</strong>,
+  ul: ({ children }) => <ul className="mt-3 list-disc space-y-1 pl-5">{children}</ul>,
+  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+};
 
 type ContinuousPoint = {
   feature_value: number;
@@ -585,8 +594,8 @@ export default async function Home() {
         <h1 className="mt-2 text-4xl font-bold text-slate-900">train tomorrow</h1>
       </header>
 
-      <section className="rounded-2xl bg-slate-900 p-6 text-slate-50 shadow-sm">
-        <p className="text-lg leading-relaxed">{prediction.blurb}</p>
+      <section className="rounded-2xl bg-slate-900 p-6 text-lg text-slate-50 shadow-sm">
+        <ReactMarkdown components={blurbMarkdownComponents}>{prediction.blurb}</ReactMarkdown>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2">

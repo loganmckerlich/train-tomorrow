@@ -5,3 +5,4 @@ __pycache__/
 frontend/node_modules/
 frontend/.next/
 .ipynb_checkpoints/
+local_data/

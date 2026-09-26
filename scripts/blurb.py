@@ -26,6 +26,7 @@ PHRASE_BANK: dict[str, str] = {
     "today_relative_effort": "how hard today's session was",
     "dow_train_rate": "your usual habit on this day of the week",
     "month_train_rate": "how you usually train this time of year",
+    "trained_last_weekend": "whether you trained on the most recent weekend",
     "day_of_week": "your usual day-of-week rhythm",
     "month": "the time of year",
     "season": "seasonal daylight vibes",
@@ -35,6 +36,13 @@ PHRASE_BANK: dict[str, str] = {
     "forecast_precip_probability": "rain in the forecast",
     "forecast_rain_expected": "whether rain is expected at all",
     "forecast_wind_speed": "the wind forecast",
+    "forecast_temp_high_vs_seasonal": "how the daytime temp compares to normal for this time of year",
+    "forecast_temp_low_vs_seasonal": "how the overnight low compares to normal for this time of year",
+    "forecast_precip_probability_vs_seasonal": "how much rainier or drier than usual it is",
+    "forecast_wind_speed_vs_seasonal": "how much windier or calmer than usual it is",
+    "forecast_precip_morning": "rain chances during your morning window",
+    "forecast_precip_midday": "rain chances during the midday window",
+    "forecast_precip_evening": "rain chances during your evening window",
 }
 
 
