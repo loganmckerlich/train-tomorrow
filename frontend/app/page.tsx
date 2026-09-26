@@ -55,6 +55,12 @@ type WaterfallSummary = {
   steps: WaterfallStep[];
 };
 
+type WaterfallSegment = WaterfallStep & {
+  startProbability: number;
+  endProbability: number;
+  deltaPoints: number;
+};
+
 type CalibrationBucket = {
   lower_bound: number;
   upper_bound: number;
@@ -133,6 +139,32 @@ function contributionPoints(shapValue: number, probability: number): number {
 
 function formatContributionPoints(value: number | null, digits = 1): string {
   return isFiniteNumber(value) ? `${value >= 0 ? "+" : ""}${value.toFixed(digits)} points` : "n/a";
+}
+
+function buildWaterfallSegments(waterfall: WaterfallSummary): WaterfallSegment[] {
+  return waterfall.steps.reduce<{
+    items: WaterfallSegment[];
+    runningLogOdds: number;
+  }>(
+    (state, step) => {
+      const startProbability = sigmoid(state.runningLogOdds);
+      const nextLogOdds = state.runningLogOdds + step.signed_contribution;
+      const endProbability = sigmoid(nextLogOdds);
+      return {
+        runningLogOdds: nextLogOdds,
+        items: [
+          ...state.items,
+          {
+            ...step,
+            startProbability,
+            endProbability,
+            deltaPoints: (endProbability - startProbability) * 100,
+          },
+        ],
+      };
+    },
+    { items: [], runningLogOdds: logit(waterfall.baseline_probability) },
+  ).items;
 }
 
 function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
@@ -415,35 +447,7 @@ function WaterfallPlot({ waterfall }: { waterfall: WaterfallSummary }) {
     return null;
   }
 
-  const segments = waterfall.steps.reduce<{
-    items: Array<
-      WaterfallStep & {
-        startProbability: number;
-        endProbability: number;
-        deltaPoints: number;
-      }
-    >;
-    runningLogOdds: number;
-  }>(
-    (state, step) => {
-      const startProbability = sigmoid(state.runningLogOdds);
-      const nextLogOdds = state.runningLogOdds + step.signed_contribution;
-      const endProbability = sigmoid(nextLogOdds);
-      return {
-        runningLogOdds: nextLogOdds,
-        items: [
-          ...state.items,
-          {
-            ...step,
-            startProbability,
-            endProbability,
-            deltaPoints: (endProbability - startProbability) * 100,
-          },
-        ],
-      };
-    },
-    { items: [], runningLogOdds: logit(waterfall.baseline_probability) },
-  ).items;
+  const segments = buildWaterfallSegments(waterfall);
   const chartHeight = 16 + segments.length * 12;
 
   return (
@@ -598,9 +602,19 @@ export default async function Home() {
     );
   }
 
-  const contributionMagnitudes = prediction.top_contributors.map((item) =>
-    Math.abs(contributionPoints(item.signed_contribution, prediction.probability)),
+  const waterfallPointsByFeature = (prediction.waterfall ? buildWaterfallSegments(prediction.waterfall) : []).reduce(
+    (pointsByFeature, segment) => {
+      pointsByFeature.set(segment.feature, (pointsByFeature.get(segment.feature) ?? 0) + segment.deltaPoints);
+      return pointsByFeature;
+    },
+    new Map<string, number>(),
   );
+  const contributionPointValues = prediction.top_contributors.map(
+    (item) =>
+      waterfallPointsByFeature.get(item.feature) ??
+      contributionPoints(item.signed_contribution, prediction.probability),
+  );
+  const contributionMagnitudes = contributionPointValues.map((value) => Math.abs(value));
   const maxContributionMagnitude = Math.max(...contributionMagnitudes, 1);
 
   return (
@@ -648,7 +662,9 @@ export default async function Home() {
         {prediction.waterfall ? <WaterfallPlot waterfall={prediction.waterfall} /> : null}
         <ul className="mt-4 space-y-4">
           {prediction.top_contributors.map((item) => {
-            const effectPoints = contributionPoints(item.signed_contribution, prediction.probability);
+            const effectPoints =
+              waterfallPointsByFeature.get(item.feature) ??
+              contributionPoints(item.signed_contribution, prediction.probability);
             return (
               <li key={item.feature}>
                 <div className="mb-1 flex items-center justify-between gap-4 text-sm">
