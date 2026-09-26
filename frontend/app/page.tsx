@@ -42,24 +42,6 @@ type Contributor = {
   plot?: ContinuousPlot | CategoricalPlot;
 };
 
-type WaterfallStep = {
-  feature: string;
-  signed_contribution: number;
-  direction: "helping" | "hurting";
-  phrase: string;
-};
-
-type WaterfallSummary = {
-  baseline_probability: number;
-  final_probability: number;
-  steps: WaterfallStep[];
-};
-
-type WaterfallSegment = WaterfallStep & {
-  startProbability: number;
-  endProbability: number;
-  deltaPoints: number;
-};
 type CalibrationBucket = {
   lower_bound: number;
   upper_bound: number;
@@ -80,7 +62,6 @@ type PredictionPayload = {
   probability: number;
   predicted_effort: number | null;
   top_contributors: Contributor[];
-  waterfall?: WaterfallSummary;
   baseline_probability?: number;
   other_contribution?: number;
   calibration?: CalibrationSummary;
@@ -140,32 +121,6 @@ function contributionPoints(shapValue: number, probability: number): number {
 
 function formatContributionPoints(value: number | null, digits = 1): string {
   return isFiniteNumber(value) ? `${value >= 0 ? "+" : ""}${value.toFixed(digits)} points` : "n/a";
-}
-
-function buildWaterfallSegments(waterfall: WaterfallSummary): WaterfallSegment[] {
-  return waterfall.steps.reduce<{
-    items: WaterfallSegment[];
-    runningLogOdds: number;
-  }>(
-    (state, step) => {
-      const startProbability = sigmoid(state.runningLogOdds);
-      const nextLogOdds = state.runningLogOdds + step.signed_contribution;
-      const endProbability = sigmoid(nextLogOdds);
-      return {
-        runningLogOdds: nextLogOdds,
-        items: [
-          ...state.items,
-          {
-            ...step,
-            startProbability,
-            endProbability,
-            deltaPoints: (endProbability - startProbability) * 100,
-          },
-        ],
-      };
-    },
-    { items: [], runningLogOdds: logit(waterfall.baseline_probability) },
-  ).items;
 }
 
 function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
@@ -443,21 +398,70 @@ function FeaturePlot({ contributor, probability }: { contributor: Contributor; p
   );
 }
 
-function WaterfallPlot({ waterfall }: { waterfall: WaterfallSummary }) {
-  if (waterfall.steps.length === 0) {
+function WaterfallPlot({
+  topContributors,
+  baselineProbability,
+  otherContribution,
+  finalProbability,
+}: {
+  topContributors: Contributor[];
+  baselineProbability: number;
+  otherContribution: number;
+  finalProbability: number;
+}) {
+  const steps: Array<Pick<Contributor, "feature" | "signed_contribution" | "direction" | "phrase">> = [
+    ...topContributors,
+  ];
+  if (Math.abs(otherContribution) > 1e-9) {
+    steps.push({
+      feature: "other_features",
+      signed_contribution: otherContribution,
+      direction: otherContribution >= 0 ? "helping" : "hurting",
+      phrase: "all other features",
+    });
+  }
+  if (steps.length === 0) {
     return null;
   }
 
-  const segments = buildWaterfallSegments(waterfall);
+  const segments = steps.reduce<{
+    items: Array<
+      (typeof steps)[number] & {
+        startProbability: number;
+        endProbability: number;
+        deltaPoints: number;
+      }
+    >;
+    runningLogOdds: number;
+  }>(
+    (state, step) => {
+      const startProbability = sigmoid(state.runningLogOdds);
+      const nextLogOdds = state.runningLogOdds + step.signed_contribution;
+      const endProbability = sigmoid(nextLogOdds);
+      return {
+        runningLogOdds: nextLogOdds,
+        items: [
+          ...state.items,
+          {
+            ...step,
+            startProbability,
+            endProbability,
+            deltaPoints: (endProbability - startProbability) * 100,
+          },
+        ],
+      };
+    },
+    { items: [], runningLogOdds: logit(baselineProbability) },
+  ).items;
   const chartHeight = 16 + segments.length * 12;
 
   return (
     <figure className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
       <figcaption className="text-sm font-medium text-slate-800">How the model got here</figcaption>
       <p className="mt-1 text-xs text-slate-500">
-        Starts from the model&apos;s average day ({formatPercent(waterfall.baseline_probability)})
+        Starts from the model&apos;s average day ({formatPercent(baselineProbability)})
         and walks through today&apos;s biggest pushes to land at{" "}
-        {formatPercent(waterfall.final_probability)}.
+        {formatPercent(finalProbability)}.
       </p>
       <div className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
         <svg
@@ -603,19 +607,9 @@ export default async function Home() {
     );
   }
 
-  const waterfallPointsByFeature = (prediction.waterfall ? buildWaterfallSegments(prediction.waterfall) : []).reduce(
-    (pointsByFeature, segment) => {
-      pointsByFeature.set(segment.feature, (pointsByFeature.get(segment.feature) ?? 0) + segment.deltaPoints);
-      return pointsByFeature;
-    },
-    new Map<string, number>(),
+  const contributionMagnitudes = prediction.top_contributors.map((item) =>
+    Math.abs(contributionPoints(item.signed_contribution, prediction.probability)),
   );
-  const contributionPointValues = prediction.top_contributors.map(
-    (item) =>
-      waterfallPointsByFeature.get(item.feature) ??
-      contributionPoints(item.signed_contribution, prediction.probability),
-  );
-  const contributionMagnitudes = contributionPointValues.map((value) => Math.abs(value));
   const maxContributionMagnitude = Math.max(...contributionMagnitudes, 1);
   const generatedAt = formatGeneratedAt(prediction.generated_at);
 
@@ -657,12 +651,17 @@ export default async function Home() {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
-        {prediction.waterfall ? <WaterfallPlot waterfall={prediction.waterfall} /> : null}
+        {prediction.baseline_probability !== undefined ? (
+          <WaterfallPlot
+            topContributors={prediction.top_contributors}
+            baselineProbability={prediction.baseline_probability}
+            otherContribution={prediction.other_contribution ?? 0}
+            finalProbability={prediction.probability}
+          />
+        ) : null}
         <ul className="mt-4 space-y-4">
           {prediction.top_contributors.map((item) => {
-            const effectPoints =
-              waterfallPointsByFeature.get(item.feature) ??
-              contributionPoints(item.signed_contribution, prediction.probability);
+            const effectPoints = contributionPoints(item.signed_contribution, prediction.probability);
             return (
               <li key={item.feature}>
                 <div className="mb-1 flex items-center justify-between gap-4 text-sm">

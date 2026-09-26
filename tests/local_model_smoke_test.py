@@ -11,10 +11,9 @@ bootstrap_scripts_path()
 import pandas as pd
 
 from blurb import generate_blurb
-from explain import build_explanation, feature_contributions, summarize_top_contributors
+from explain import build_explanation
 from features import prepare_datasets
 from model import predict_tomorrow, train_and_save_models
-from run_daily import build_waterfall
 
 logger = logging.getLogger(__name__)
 
@@ -59,14 +58,8 @@ def main() -> None:
         models = train_and_save_models(prepared.historical, Path(tmpdir))
         prediction = predict_tomorrow(models, prepared.tomorrow_features)
         explanation = build_explanation(models.classifier, prepared.tomorrow_features, prepared.historical, top_n=3)
-        contributions = feature_contributions(models.classifier, prepared.tomorrow_features)
 
     top_contributors = explanation["top_contributors"]
-    waterfall = build_waterfall(
-        summarize_top_contributors(contributions, top_n=len(contributions)),
-        explanation["baseline_probability"],
-        prediction["probability"],
-    )
     blurb = generate_blurb(
         will_train=prediction["will_train"],
         probability=prediction["probability"],
@@ -77,8 +70,6 @@ def main() -> None:
     assert top_contributors
     assert 0.0 < explanation["baseline_probability"] < 1.0
     assert isinstance(explanation["other_contribution"], float)
-    assert waterfall["steps"]
-    assert abs(float(waterfall["final_probability"]) - float(prediction["probability"])) < 1e-4
     for contributor in top_contributors:
         plot = contributor["plot"]
         assert plot["kind"] in {"categorical", "continuous"}

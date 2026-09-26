@@ -90,6 +90,7 @@ def upsert_entry(entries: list[dict], payload: dict, as_of_date: str) -> list[di
     entries.append(
         {
             "date": payload["date"],
+            "generated_at": payload.get("generated_at"),
             "will_train": payload["will_train"],
             "probability": payload["probability"],
             "predicted_effort": payload["predicted_effort"],
