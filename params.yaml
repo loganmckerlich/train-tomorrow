@@ -26,3 +26,14 @@ model:
     colsample_bytree: 0.9
     n_estimators: 300
     random_state: 42
+  features:
+    - trained_days_7
+    - trained_days_30
+    - moving_time_chronic_28
+    - today_relative_effort
+    - dow_train_rate
+    - day_of_week
+    - forecast_temp_high
+    - forecast_temp_low
+    - forecast_precip_probability_vs_seasonal
+    - forecast_precip_midday

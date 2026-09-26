@@ -3,14 +3,15 @@ from __future__ import annotations
 import json
 import logging
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 import yaml
 
 from blurb import generate_blurb, generate_blurb_llm
-from explain import build_explanation
-from features import prepare_datasets
+from explain import attach_feature_plots, explain_prediction, summarize_top_contributors
+from features import FEATURE_COLUMNS, prepare_datasets
 from model import predict_tomorrow, train_and_save_models
 from predictions_log import (
     backfill_outcomes,
@@ -29,6 +30,34 @@ PREDICTIONS_HISTORY_PATH = ROOT_DIR / "data" / "predictions_history.jsonl"
 PARAMS_PATH = ROOT_DIR / "params.yaml"
 
 logger = logging.getLogger(__name__)
+
+
+def build_waterfall(
+    contributors: list[dict[str, object]], baseline_probability: float, final_probability: float
+) -> dict[str, object]:
+    visible_steps = contributors[:8]
+    remaining = contributors[8:]
+    remaining_contribution = sum(float(item["signed_contribution"]) for item in remaining)
+    if remaining and abs(remaining_contribution) > 1e-9:
+        visible_steps.append(
+            {
+                "feature": "other_features",
+                "signed_contribution": remaining_contribution,
+                "direction": "helping" if remaining_contribution >= 0 else "hurting",
+                "phrase": "all other features",
+            }
+        )
+    return {
+        "baseline_probability": round(float(baseline_probability), 4),
+        "final_probability": round(float(final_probability), 4),
+        "steps": [
+            {
+                **item,
+                "signed_contribution": round(float(item["signed_contribution"]), 4),
+            }
+            for item in visible_steps
+        ],
+    }
 
 
 def load_params(path: Path = PARAMS_PATH) -> dict:
@@ -67,6 +96,14 @@ def run_pipeline() -> dict[str, object]:
         long_ride_quantile=model_params.get("long_ride_quantile", 0.75),
     )
 
+    model_features = list(model_params.get("features") or FEATURE_COLUMNS)
+    duplicate_features = sorted({feature for feature in model_features if model_features.count(feature) > 1})
+    if duplicate_features:
+        raise ValueError(f"Duplicate model feature(s) in params.yaml: {', '.join(duplicate_features)}")
+
+    unknown_features = sorted({feature for feature in model_features if feature not in FEATURE_COLUMNS})
+    if unknown_features:
+        raise ValueError(f"Unknown model feature(s) in params.yaml: {', '.join(unknown_features)}")
 
     # Retraining each run keeps v1 simple; incremental retraining can be added later.
     models = train_and_save_models(
@@ -75,16 +112,20 @@ def run_pipeline() -> dict[str, object]:
         split_frac=model_params.get("train_test_split_frac", 0.8),
         half_life_days=model_params.get("recency_half_life_days", 180.0),
         xgb_params=model_params.get("xgboost"),
+        features=model_features,
     )
 
-    prediction = predict_tomorrow(models, prepared.tomorrow_features)
-    explanation = build_explanation(
+    prediction = predict_tomorrow(models, prepared.tomorrow_features, features=model_features)
+    explanation = explain_prediction(models.classifier, prepared.tomorrow_features, features=model_features)
+    contribs = explanation["contributions"]
+    ranked_contributors = summarize_top_contributors(contribs, top_n=len(contribs))
+    top_contributors = attach_feature_plots(
         models.classifier,
-        prepared.tomorrow_features,
+        ranked_contributors[: blurb_params.get("top_contributors", 3)],
         prepared.historical,
-        top_n=blurb_params.get("top_contributors", 3),
+        prepared.tomorrow_features,
+        features=model_features,
     )
-    top_contributors = explanation["top_contributors"]
     blurb = generate_blurb(
         will_train=prediction["will_train"],
         probability=prediction["probability"],
@@ -104,6 +145,7 @@ def run_pipeline() -> dict[str, object]:
 
     payload = {
         "date": str(prepared.tomorrow_features.iloc[0]["target_date"]),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "will_train": bool(prediction["will_train"]),
         "probability": round(float(prediction["probability"]), 4),
         "predicted_effort": (
@@ -112,8 +154,11 @@ def run_pipeline() -> dict[str, object]:
             else None
         ),
         "top_contributors": top_contributors,
-        "baseline_probability": explanation["baseline_probability"],
-        "other_contribution": explanation["other_contribution"],
+        "waterfall": build_waterfall(
+            ranked_contributors,
+            baseline_probability=float(explanation["baseline_probability"]),
+            final_probability=float(prediction["probability"]),
+        ),
         "blurb": blurb,
     }
 

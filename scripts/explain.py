@@ -38,6 +38,7 @@ PHRASE_BANK: dict[str, str] = {
     "today_relative_effort": "how hard today's session was",
     "dow_train_rate": "your usual habit on this day of the week",
     "month_train_rate": "how you usually train this time of year",
+    "trained_last_weekend": "whether you trained on the most recent weekend",
     "day_of_week": "your usual day-of-week rhythm",
     "month": "the time of year",
     "season": "seasonal daylight vibes",
@@ -47,7 +48,18 @@ PHRASE_BANK: dict[str, str] = {
     "forecast_precip_probability": "rain in the forecast",
     "forecast_rain_expected": "whether rain is expected at all",
     "forecast_wind_speed": "the wind forecast",
+    "forecast_temp_high_vs_seasonal": "how the daytime temp compares to normal for this time of year",
+    "forecast_temp_low_vs_seasonal": "how the overnight low compares to normal for this time of year",
+    "forecast_precip_probability_vs_seasonal": "how much rainier or drier than usual it is",
+    "forecast_wind_speed_vs_seasonal": "how much windier or calmer than usual it is",
+    "forecast_precip_morning": "rain chances during your morning window",
+    "forecast_precip_midday": "rain chances during the midday window",
+    "forecast_precip_evening": "rain chances during your evening window",
 }
+
+
+def _feature_list(features: list[str] | None) -> list[str]:
+    return FEATURE_COLUMNS if features is None else features
 
 
 def _sigmoid(value: float) -> float:
@@ -73,16 +85,21 @@ def summarize_top_contributors(contributions: dict[str, float], top_n: int = 3) 
     return output
 
 
-def feature_contributions(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, float]:
-    return explain_prediction(model, feature_row)["contributions"]
+def feature_contributions(
+    model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] | None = None
+) -> dict[str, float]:
+    return explain_prediction(model, feature_row, features)["contributions"]
 
 
-def explain_prediction(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, Any]:
-    matrix = xgb.DMatrix(feature_row[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
+def explain_prediction(
+    model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] | None = None
+) -> dict[str, Any]:
+    features = _feature_list(features)
+    matrix = xgb.DMatrix(feature_row[features], feature_names=features)
     contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
     contributions = {
         name: float(value)
-        for name, value in zip(FEATURE_COLUMNS, contribs[:-1], strict=True)
+        for name, value in zip(features, contribs[:-1], strict=True)
     }
     baseline_log_odds = float(contribs[-1])
     total_log_odds = baseline_log_odds + float(np.sum(contribs[:-1]))
@@ -95,11 +112,15 @@ def explain_prediction(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[s
 
 
 def _feature_contributions_frame(
-    model: xgb.XGBModel, feature_rows: pd.DataFrame, columns: list[str] | None = None
+    model: xgb.XGBModel,
+    feature_rows: pd.DataFrame,
+    columns: list[str] | None = None,
+    features: list[str] | None = None,
 ) -> pd.DataFrame:
-    matrix = xgb.DMatrix(feature_rows[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
+    features = _feature_list(features)
+    matrix = xgb.DMatrix(feature_rows[features], feature_names=features)
     contribs = model.get_booster().predict(matrix, pred_contribs=True)
-    frame = pd.DataFrame(contribs[:, :-1], columns=FEATURE_COLUMNS, index=feature_rows.index)
+    frame = pd.DataFrame(contribs[:, :-1], columns=features, index=feature_rows.index)
     return frame if columns is None else frame[columns]
 
 
@@ -135,11 +156,13 @@ def attach_feature_plots(
     top_contributors: list[dict[str, Any]],
     historical: pd.DataFrame,
     feature_row: pd.DataFrame,
+    features: list[str] | None = None,
 ) -> list[dict[str, Any]]:
+    features = _feature_list(features)
     current = feature_row.iloc[0]
     requested_features = [contributor["feature"] for contributor in top_contributors]
     historical_contribs = _feature_contributions_frame(
-        model, historical[FEATURE_COLUMNS], columns=requested_features
+        model, historical[features], columns=requested_features, features=features
     )
 
     enriched: list[dict[str, Any]] = []
@@ -192,6 +215,7 @@ def build_explanation(
     feature_row: pd.DataFrame,
     historical: pd.DataFrame,
     top_n: int = 3,
+    features: list[str] | None = None,
 ) -> dict[str, Any]:
     """Rank SHAP contributions, attach effect plots to the top N, and summarize the rest.
 
@@ -199,9 +223,10 @@ def build_explanation(
     builds the waterfall directly from `top_contributors` + `baseline_probability` +
     `other_contribution`, instead of a separately-computed duplicate structure.
     """
-    explanation = explain_prediction(model, feature_row)
+    features = _feature_list(features)
+    explanation = explain_prediction(model, feature_row, features=features)
     ranked = summarize_top_contributors(explanation["contributions"], top_n=len(explanation["contributions"]))
-    top_contributors = attach_feature_plots(model, ranked[:top_n], historical, feature_row)
+    top_contributors = attach_feature_plots(model, ranked[:top_n], historical, feature_row, features=features)
 
     remainder = ranked[top_n:]
     other_contribution = sum(item["signed_contribution"] for item in remainder)
