@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -15,10 +14,6 @@ from features import FEATURE_COLUMNS
 
 CLASSIFIER_MODEL_PATH = "classifier.json"
 REGRESSOR_MODEL_PATH = "regressor.json"
-CATEGORICAL_FEATURES = {"day_of_week", "month", "season"}
-DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-SEASON_LABELS = ["Winter", "Spring", "Summer", "Fall"]
 
 DEFAULT_XGB_PARAMS: dict[str, Any] = {
     "eta": 0.05,
@@ -30,14 +25,6 @@ DEFAULT_XGB_PARAMS: dict[str, Any] = {
 }
 
 logger = logging.getLogger(__name__)
-
-
-def _sigmoid(value: float) -> float:
-    if value >= 0:
-        exp_term = math.exp(-value)
-        return 1.0 / (1.0 + exp_term)
-    exp_term = math.exp(value)
-    return exp_term / (1.0 + exp_term)
 
 
 @dataclass
@@ -234,107 +221,4 @@ def predict_tomorrow(models: TrainedModels, tomorrow_features: pd.DataFrame) -> 
     }
 
 
-def feature_contributions(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, float]:
-    return explain_prediction(model, feature_row)["contributions"]
 
-
-def explain_prediction(model: xgb.XGBModel, feature_row: pd.DataFrame) -> dict[str, Any]:
-    matrix = xgb.DMatrix(feature_row[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
-    contributions = {
-        name: float(value)
-        for name, value in zip(FEATURE_COLUMNS, contribs[:-1], strict=True)
-    }
-    baseline_log_odds = float(contribs[-1])
-    total_log_odds = baseline_log_odds + float(np.sum(contribs[:-1]))
-    return {
-        "contributions": contributions,
-        "baseline_log_odds": baseline_log_odds,
-        "baseline_probability": _sigmoid(baseline_log_odds),
-        "probability": _sigmoid(total_log_odds),
-    }
-
-
-def _feature_contributions_frame(
-    model: xgb.XGBModel, feature_rows: pd.DataFrame, columns: list[str] | None = None
-) -> pd.DataFrame:
-    matrix = xgb.DMatrix(feature_rows[FEATURE_COLUMNS], feature_names=FEATURE_COLUMNS)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)
-    frame = pd.DataFrame(contribs[:, :-1], columns=FEATURE_COLUMNS, index=feature_rows.index)
-    return frame if columns is None else frame[columns]
-
-
-def _category_label(feature: str, value: float) -> str:
-    numeric = int(value) if float(value).is_integer() else round(float(value), 4)
-    if feature == "day_of_week":
-        return DAY_LABELS[int(numeric)] if 0 <= int(numeric) < len(DAY_LABELS) else str(numeric)
-    if feature == "month":
-        month_index = int(numeric) - 1
-        return MONTH_LABELS[month_index] if 0 <= month_index < len(MONTH_LABELS) else str(numeric)
-    if feature == "season":
-        return SEASON_LABELS[int(numeric)] if 0 <= int(numeric) < len(SEASON_LABELS) else str(numeric)
-    return str(numeric)
-
-
-def attach_feature_plots(
-    model: xgb.XGBModel,
-    top_contributors: list[dict[str, Any]],
-    historical: pd.DataFrame,
-    feature_row: pd.DataFrame,
-) -> list[dict[str, Any]]:
-    current = feature_row.iloc[0]
-    requested_features = [contributor["feature"] for contributor in top_contributors]
-    historical_contribs = _feature_contributions_frame(
-        model, historical[FEATURE_COLUMNS], columns=requested_features
-    )
-
-    enriched: list[dict[str, Any]] = []
-    for contributor in top_contributors:
-        feature = contributor["feature"]
-        values = pd.to_numeric(historical[feature], errors="coerce")
-        current_value = pd.to_numeric(pd.Series([current.get(feature)]), errors="coerce").iloc[0]
-        shap_values = pd.to_numeric(historical_contribs[feature], errors="coerce")
-
-        if feature in CATEGORICAL_FEATURES:
-            categories = (
-                pd.DataFrame({"value": values, "shap": shap_values})
-                .dropna()
-                .groupby("value", sort=True)["shap"]
-                .mean()
-                .items()
-            )
-            plot: dict[str, Any] = {
-                "kind": "categorical",
-                "current_value": int(current_value) if not pd.isna(current_value) else None,
-                "current_label": _category_label(feature, float(current_value)) if not pd.isna(current_value) else None,
-                "categories": [
-                    {
-                        "value": int(value) if float(value).is_integer() else round(float(value), 4),
-                        "label": _category_label(feature, float(value)),
-                        "mean_shap": round(float(mean_shap), 4),
-                    }
-                    for value, mean_shap in categories
-                ],
-            }
-        else:
-            plot = {
-                "kind": "continuous",
-                "current_value": round(float(current_value), 4) if not pd.isna(current_value) else None,
-                "current_shap": round(float(contributor["signed_contribution"]), 4),
-                "points": [
-                    {
-                        "feature_value": round(float(value), 4),
-                        "shap_value": round(float(shap_value), 4),
-                    }
-                    for value, shap_value in zip(values, shap_values, strict=True)
-                    if not pd.isna(value) and not pd.isna(shap_value)
-                ],
-            }
-
-        enriched.append(
-            {
-                **contributor,
-                "plot": plot,
-            }
-        )
-    return enriched

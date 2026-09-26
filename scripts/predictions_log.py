@@ -80,12 +80,20 @@ def backfill_outcomes(entries: list[dict], historical: pd.DataFrame) -> list[dic
 
 
 def upsert_entry(entries: list[dict], payload: dict, as_of_date: str) -> list[dict]:
-    """Replace any existing entry for the same target date (handles manual re-runs) and append the latest one."""
+    """Replace any existing entry for the same target date (handles manual re-runs) and append the latest one.
+
+    Only keeps the fields backfill_outcomes/build_calibration_summary/the UI actually need -
+    explanation/plot data and the aggregate calibration snapshot are latest.json-only, not history.
+    """
     target_date = payload["date"]
     entries = [entry for entry in entries if entry.get("date") != target_date]
     entries.append(
         {
-            **payload,
+            "date": payload["date"],
+            "will_train": payload["will_train"],
+            "probability": payload["probability"],
+            "predicted_effort": payload["predicted_effort"],
+            "blurb": payload.get("blurb"),
             "as_of_date": as_of_date,
             "actual_will_train": None,
             "actual_effort": None,

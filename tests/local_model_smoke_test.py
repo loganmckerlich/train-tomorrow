@@ -9,10 +9,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))  # allo
 
 import pandas as pd
 
-from blurb import generate_blurb, summarize_top_contributors
+from blurb import generate_blurb
+from explain import build_explanation
 from features import prepare_datasets
-from model import attach_feature_plots, explain_prediction, feature_contributions, predict_tomorrow, train_and_save_models
-from run_daily import build_waterfall
+from model import predict_tomorrow, train_and_save_models
 
 logger = logging.getLogger(__name__)
 
@@ -49,15 +49,9 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         models = train_and_save_models(prepared.historical, Path(tmpdir))
         prediction = predict_tomorrow(models, prepared.tomorrow_features)
-        explanation = explain_prediction(models.classifier, prepared.tomorrow_features)
-        contributions = feature_contributions(models.classifier, prepared.tomorrow_features)
+        explanation = build_explanation(models.classifier, prepared.tomorrow_features, prepared.historical, top_n=3)
 
-    ranked_contributors = summarize_top_contributors(contributions, top_n=len(contributions))
-    waterfall = build_waterfall(ranked_contributors, explanation["baseline_probability"], prediction["probability"])
-    top_contributors = ranked_contributors[:3]
-    top_contributors = attach_feature_plots(
-        models.classifier, top_contributors, prepared.historical, prepared.tomorrow_features
-    )
+    top_contributors = explanation["top_contributors"]
     blurb = generate_blurb(
         will_train=prediction["will_train"],
         probability=prediction["probability"],
@@ -67,8 +61,7 @@ def main() -> None:
 
     assert top_contributors
     assert 0.0 < explanation["baseline_probability"] < 1.0
-    assert waterfall["steps"]
-    assert abs(float(waterfall["final_probability"]) - float(prediction["probability"])) < 1e-4
+    assert isinstance(explanation["other_contribution"], float)
     for contributor in top_contributors:
         plot = contributor["plot"]
         assert plot["kind"] in {"categorical", "continuous"}

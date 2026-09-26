@@ -33,19 +33,6 @@ type Contributor = {
   plot?: ContinuousPlot | CategoricalPlot;
 };
 
-type WaterfallStep = {
-  feature: string;
-  signed_contribution: number;
-  direction: "helping" | "hurting";
-  phrase: string;
-};
-
-type WaterfallSummary = {
-  baseline_probability: number;
-  final_probability: number;
-  steps: WaterfallStep[];
-};
-
 type CalibrationBucket = {
   lower_bound: number;
   upper_bound: number;
@@ -65,7 +52,8 @@ type PredictionPayload = {
   probability: number;
   predicted_effort: number | null;
   top_contributors: Contributor[];
-  waterfall?: WaterfallSummary;
+  baseline_probability?: number;
+  other_contribution?: number;
   calibration?: CalibrationSummary;
   blurb: string;
 };
@@ -385,14 +373,35 @@ function FeaturePlot({ contributor, probability }: { contributor: Contributor; p
   );
 }
 
-function WaterfallPlot({ waterfall }: { waterfall: WaterfallSummary }) {
-  if (waterfall.steps.length === 0) {
+function WaterfallPlot({
+  topContributors,
+  baselineProbability,
+  otherContribution,
+  finalProbability,
+}: {
+  topContributors: Contributor[];
+  baselineProbability: number;
+  otherContribution: number;
+  finalProbability: number;
+}) {
+  const steps: Array<Pick<Contributor, "feature" | "signed_contribution" | "direction" | "phrase">> = [
+    ...topContributors,
+  ];
+  if (Math.abs(otherContribution) > 1e-9) {
+    steps.push({
+      feature: "other_features",
+      signed_contribution: otherContribution,
+      direction: otherContribution >= 0 ? "helping" : "hurting",
+      phrase: "all other features",
+    });
+  }
+  if (steps.length === 0) {
     return null;
   }
 
-  const segments = waterfall.steps.reduce<{
+  const segments = steps.reduce<{
     items: Array<
-      WaterfallStep & {
+      (typeof steps)[number] & {
         startProbability: number;
         endProbability: number;
         deltaPoints: number;
@@ -417,7 +426,7 @@ function WaterfallPlot({ waterfall }: { waterfall: WaterfallSummary }) {
         ],
       };
     },
-    { items: [], runningLogOdds: logit(waterfall.baseline_probability) },
+    { items: [], runningLogOdds: logit(baselineProbability) },
   ).items;
   const chartHeight = 16 + segments.length * 12;
 
@@ -425,9 +434,9 @@ function WaterfallPlot({ waterfall }: { waterfall: WaterfallSummary }) {
     <figure className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
       <figcaption className="text-sm font-medium text-slate-800">How the model got here</figcaption>
       <p className="mt-1 text-xs text-slate-500">
-        Starts from the model&apos;s average day ({formatPercent(waterfall.baseline_probability)})
+        Starts from the model&apos;s average day ({formatPercent(baselineProbability)})
         and walks through today&apos;s biggest pushes to land at{" "}
-        {formatPercent(waterfall.final_probability)}.
+        {formatPercent(finalProbability)}.
       </p>
       <div className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
         <svg
@@ -613,7 +622,14 @@ export default async function Home() {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
-        {prediction.waterfall ? <WaterfallPlot waterfall={prediction.waterfall} /> : null}
+        {prediction.baseline_probability !== undefined ? (
+          <WaterfallPlot
+            topContributors={prediction.top_contributors}
+            baselineProbability={prediction.baseline_probability}
+            otherContribution={prediction.other_contribution ?? 0}
+            finalProbability={prediction.probability}
+          />
+        ) : null}
         <ul className="mt-4 space-y-4">
           {prediction.top_contributors.map((item) => {
             const effectPoints = contributionPoints(item.signed_contribution, prediction.probability);
