@@ -1,825 +1,825 @@
 {
-  "date": "2026-09-28",
-  "generated_at": "2026-09-28T13:05:15.758558+00:00",
+  "date": "2026-09-29",
+  "generated_at": "2026-09-29T13:06:52.023909+00:00",
   "will_train": true,
-  "probability": 0.7868,
-  "predicted_effort": 20.95,
+  "probability": 0.9935,
+  "predicted_effort": 26.92,
   "top_contributors": [
     {
-      "feature": "moving_time_chronic_28",
-      "signed_contribution": -0.9502198100090027,
-      "direction": "hurting",
-      "phrase": "your training volume base over the past month",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 5169.7638,
-        "current_shap": -0.9502,
-        "points": [
-          {
-            "feature_value": 1196.6943,
-            "shap_value": -0.1044
-          },
-          {
-            "feature_value": 1586.8945,
-            "shap_value": -0.0817
-          },
-          {
-            "feature_value": 1817.3734,
-            "shap_value": -0.1281
-          },
-          {
-            "feature_value": 2035.104,
-            "shap_value": -0.2073
-          },
-          {
-            "feature_value": 2231.2083,
-            "shap_value": -0.204
-          },
-          {
-            "feature_value": 2412.5774,
-            "shap_value": -0.1514
-          },
-          {
-            "feature_value": 2609.576,
-            "shap_value": -0.1351
-          },
-          {
-            "feature_value": 2819.8017,
-            "shap_value": -0.1197
-          },
-          {
-            "feature_value": 3035.4391,
-            "shap_value": -0.0041
-          },
-          {
-            "feature_value": 3243.4541,
-            "shap_value": 0.1497
-          },
-          {
-            "feature_value": 3514.6386,
-            "shap_value": 0.1993
-          },
-          {
-            "feature_value": 3744.1599,
-            "shap_value": 0.2284
-          },
-          {
-            "feature_value": 3945.4307,
-            "shap_value": 0.1838
-          },
-          {
-            "feature_value": 4117.2788,
-            "shap_value": 0.1332
-          },
-          {
-            "feature_value": 4248.1994,
-            "shap_value": 0.0711
-          },
-          {
-            "feature_value": 4419.4161,
-            "shap_value": 0.0572
-          },
-          {
-            "feature_value": 4539.3837,
-            "shap_value": 0.0913
-          },
-          {
-            "feature_value": 4686.7315,
-            "shap_value": -0.031
-          },
-          {
-            "feature_value": 4880.5745,
-            "shap_value": -0.6578
-          },
-          {
-            "feature_value": 5152.9276,
-            "shap_value": -0.6484
-          },
-          {
-            "feature_value": 5527.3553,
-            "shap_value": -0.2112
-          },
-          {
-            "feature_value": 5860.3181,
-            "shap_value": 0.5272
-          },
-          {
-            "feature_value": 6200.7093,
-            "shap_value": 0.361
-          },
-          {
-            "feature_value": 7178.6454,
-            "shap_value": 0.5746
-          }
-        ]
-      }
-    },
-    {
       "feature": "day_of_week",
-      "signed_contribution": 0.8276727795600891,
+      "signed_contribution": 1.042831540107727,
       "direction": "helping",
       "phrase": "your usual day-of-week rhythm",
       "plot": {
         "kind": "categorical",
-        "current_value": 0,
-        "current_label": "Mon",
+        "current_value": 1,
+        "current_label": "Tue",
         "categories": [
           {
             "value": 0,
             "label": "Mon",
-            "mean_shap": 0.5935
+            "mean_shap": 0.5993
           },
           {
             "value": 1,
             "label": "Tue",
-            "mean_shap": 0.6847
+            "mean_shap": 0.6311
           },
           {
             "value": 2,
             "label": "Wed",
-            "mean_shap": 0.3147
+            "mean_shap": 0.2876
           },
           {
             "value": 3,
             "label": "Thu",
-            "mean_shap": 0.1014
+            "mean_shap": 0.0976
           },
           {
             "value": 4,
             "label": "Fri",
-            "mean_shap": -0.0646
+            "mean_shap": -0.0984
           },
           {
             "value": 5,
             "label": "Sat",
-            "mean_shap": -0.6036
+            "mean_shap": -0.5529
           },
           {
             "value": 6,
             "label": "Sun",
-            "mean_shap": -0.7192
-          }
-        ]
-      }
-    },
-    {
-      "feature": "trained_days_7",
-      "signed_contribution": 0.46987712383270264,
-      "direction": "helping",
-      "phrase": "how often you've trained this past week",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 6.0,
-        "current_shap": 0.4699,
-        "points": [
-          {
-            "feature_value": 1.6473,
-            "shap_value": -0.4305
-          },
-          {
-            "feature_value": 3.0,
-            "shap_value": -0.3148
-          },
-          {
-            "feature_value": 4.0,
-            "shap_value": -0.1085
-          },
-          {
-            "feature_value": 5.0,
-            "shap_value": 0.3267
-          },
-          {
-            "feature_value": 6.0,
-            "shap_value": 0.3693
-          },
-          {
-            "feature_value": 7.0,
-            "shap_value": 0.3744
-          }
-        ]
-      }
-    },
-    {
-      "feature": "today_relative_effort",
-      "signed_contribution": -0.30888229608535767,
-      "direction": "hurting",
-      "phrase": "how hard today's session was",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 0.0,
-        "current_shap": -0.3089,
-        "points": [
-          {
-            "feature_value": 0.0894,
-            "shap_value": -0.0965
-          },
-          {
-            "feature_value": 3.0,
-            "shap_value": -0.0123
-          },
-          {
-            "feature_value": 4.4839,
-            "shap_value": -0.1168
-          },
-          {
-            "feature_value": 6.76,
-            "shap_value": -0.0752
-          },
-          {
-            "feature_value": 11.25,
-            "shap_value": -0.0344
-          },
-          {
-            "feature_value": 21.6667,
-            "shap_value": -0.047
-          },
-          {
-            "feature_value": 31.2353,
-            "shap_value": -0.0181
-          },
-          {
-            "feature_value": 38.9231,
-            "shap_value": 0.094
-          },
-          {
-            "feature_value": 46.6364,
-            "shap_value": 0.3215
-          },
-          {
-            "feature_value": 55.8966,
-            "shap_value": 0.4399
-          },
-          {
-            "feature_value": 74.1935,
-            "shap_value": 0.4944
-          },
-          {
-            "feature_value": 105.25,
-            "shap_value": 0.199
-          },
-          {
-            "feature_value": 222.0,
-            "shap_value": -0.5437
-          }
-        ]
-      }
-    },
-    {
-      "feature": "trained_days_30",
-      "signed_contribution": 0.21792380511760712,
-      "direction": "helping",
-      "phrase": "your training frequency over the past month",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 20.0,
-        "current_shap": 0.2179,
-        "points": [
-          {
-            "feature_value": 4.6279,
-            "shap_value": -0.1623
-          },
-          {
-            "feature_value": 8.0,
-            "shap_value": -0.1542
-          },
-          {
-            "feature_value": 9.0,
-            "shap_value": -0.2016
-          },
-          {
-            "feature_value": 10.0,
-            "shap_value": -0.1206
-          },
-          {
-            "feature_value": 11.0,
-            "shap_value": -0.2566
-          },
-          {
-            "feature_value": 12.0,
-            "shap_value": -0.2094
-          },
-          {
-            "feature_value": 13.0,
-            "shap_value": -0.1971
-          },
-          {
-            "feature_value": 14.0,
-            "shap_value": -0.234
-          },
-          {
-            "feature_value": 15.0,
-            "shap_value": -0.2784
-          },
-          {
-            "feature_value": 16.0,
-            "shap_value": -0.2673
-          },
-          {
-            "feature_value": 17.0,
-            "shap_value": -0.0208
-          },
-          {
-            "feature_value": 18.0,
-            "shap_value": 0.2525
-          },
-          {
-            "feature_value": 19.0,
-            "shap_value": 0.1506
-          },
-          {
-            "feature_value": 20.6119,
-            "shap_value": 0.1708
-          },
-          {
-            "feature_value": 22.0,
-            "shap_value": 0.1319
-          },
-          {
-            "feature_value": 23.0,
-            "shap_value": 0.1018
-          },
-          {
-            "feature_value": 24.0,
-            "shap_value": 0.0646
-          },
-          {
-            "feature_value": 25.32,
-            "shap_value": -0.058
-          }
-        ]
-      }
-    },
-    {
-      "feature": "dow_train_rate",
-      "signed_contribution": 0.2051876038312912,
-      "direction": "helping",
-      "phrase": "your usual habit on this day of the week",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 0.5096,
-        "current_shap": 0.2052,
-        "points": [
-          {
-            "feature_value": 0.0096,
-            "shap_value": -0.4584
-          },
-          {
-            "feature_value": 0.108,
-            "shap_value": -0.5838
-          },
-          {
-            "feature_value": 0.1711,
-            "shap_value": -0.4488
-          },
-          {
-            "feature_value": 0.2509,
-            "shap_value": -0.2574
-          },
-          {
-            "feature_value": 0.2838,
-            "shap_value": -0.4259
-          },
-          {
-            "feature_value": 0.302,
-            "shap_value": -0.4402
-          },
-          {
-            "feature_value": 0.3282,
-            "shap_value": -0.542
-          },
-          {
-            "feature_value": 0.346,
-            "shap_value": -0.5351
-          },
-          {
-            "feature_value": 0.3624,
-            "shap_value": -0.4915
-          },
-          {
-            "feature_value": 0.3809,
-            "shap_value": -0.154
-          },
-          {
-            "feature_value": 0.3983,
-            "shap_value": 0.0138
-          },
-          {
-            "feature_value": 0.419,
-            "shap_value": 0.2255
-          },
-          {
-            "feature_value": 0.4379,
-            "shap_value": 0.3045
-          },
-          {
-            "feature_value": 0.4539,
-            "shap_value": 0.4131
-          },
-          {
-            "feature_value": 0.4711,
-            "shap_value": 0.556
-          },
-          {
-            "feature_value": 0.4811,
-            "shap_value": 0.4078
-          },
-          {
-            "feature_value": 0.4904,
-            "shap_value": 0.3611
-          },
-          {
-            "feature_value": 0.4994,
-            "shap_value": -0.1536
-          },
-          {
-            "feature_value": 0.5133,
-            "shap_value": 0.1537
-          },
-          {
-            "feature_value": 0.5323,
-            "shap_value": 0.2872
-          },
-          {
-            "feature_value": 0.5464,
-            "shap_value": 0.2684
-          },
-          {
-            "feature_value": 0.5593,
-            "shap_value": 0.2679
-          },
-          {
-            "feature_value": 0.5708,
-            "shap_value": 0.1088
-          },
-          {
-            "feature_value": 0.6474,
-            "shap_value": 0.156
+            "mean_shap": -0.6981
           }
         ]
       }
     },
     {
       "feature": "forecast_temp_high",
-      "signed_contribution": 0.1857243925333023,
+      "signed_contribution": 0.9450288414955139,
       "direction": "helping",
       "phrase": "the daytime temperature forecast",
       "plot": {
         "kind": "continuous",
-        "current_value": 14.8,
-        "current_shap": 0.1857,
+        "current_value": 15.3,
+        "current_shap": 0.945,
         "points": [
           {
             "feature_value": 3.9118,
-            "shap_value": -0.1424
+            "shap_value": -0.1991
           },
           {
             "feature_value": 5.9269,
-            "shap_value": -0.044
+            "shap_value": 0.0429
           },
           {
             "feature_value": 6.9931,
-            "shap_value": -0.2106
+            "shap_value": -0.1384
           },
           {
             "feature_value": 8.0933,
-            "shap_value": -0.3091
+            "shap_value": -0.2864
           },
           {
-            "feature_value": 8.9276,
-            "shap_value": -0.3369
+            "feature_value": 8.8926,
+            "shap_value": -0.3078
           },
           {
-            "feature_value": 9.7567,
-            "shap_value": -0.311
+            "feature_value": 9.7344,
+            "shap_value": -0.31
           },
           {
             "feature_value": 10.4214,
-            "shap_value": 0.0264
+            "shap_value": 0.0424
           },
           {
-            "feature_value": 11.1562,
-            "shap_value": 0.1301
+            "feature_value": 11.0926,
+            "shap_value": 0.1283
           },
           {
-            "feature_value": 11.8923,
-            "shap_value": -0.0087
+            "feature_value": 11.829,
+            "shap_value": 0.0079
           },
           {
-            "feature_value": 12.5,
-            "shap_value": -0.0782
+            "feature_value": 12.4481,
+            "shap_value": -0.1198
           },
           {
-            "feature_value": 13.5032,
-            "shap_value": -0.0247
+            "feature_value": 13.3967,
+            "shap_value": -0.1604
           },
           {
-            "feature_value": 14.4345,
-            "shap_value": 0.0589
+            "feature_value": 14.2966,
+            "shap_value": -0.0346
           },
           {
-            "feature_value": 15.4346,
-            "shap_value": 0.6894
+            "feature_value": 15.3464,
+            "shap_value": 0.6913
           },
           {
-            "feature_value": 16.42,
-            "shap_value": 0.6896
+            "feature_value": 16.4345,
+            "shap_value": 0.7608
           },
           {
-            "feature_value": 17.4724,
-            "shap_value": 0.5716
+            "feature_value": 17.4517,
+            "shap_value": 0.4837
           },
           {
-            "feature_value": 18.8484,
-            "shap_value": 0.2083
+            "feature_value": 18.7483,
+            "shap_value": 0.2101
           },
           {
-            "feature_value": 19.93,
-            "shap_value": -0.0484
+            "feature_value": 19.8906,
+            "shap_value": -0.0537
           },
           {
-            "feature_value": 20.737,
-            "shap_value": -0.0122
+            "feature_value": 20.7423,
+            "shap_value": 0.0036
           },
           {
             "feature_value": 21.78,
-            "shap_value": 0.1749
+            "shap_value": 0.1375
           },
           {
             "feature_value": 22.7393,
-            "shap_value": 0.2922
+            "shap_value": 0.2508
           },
           {
             "feature_value": 23.96,
-            "shap_value": 0.274
+            "shap_value": 0.326
           },
           {
             "feature_value": 25.4071,
-            "shap_value": -0.2257
+            "shap_value": -0.2489
           },
           {
             "feature_value": 27.12,
-            "shap_value": -0.6641
+            "shap_value": -0.7137
           },
           {
             "feature_value": 29.769,
-            "shap_value": -0.2139
+            "shap_value": -0.1969
+          }
+        ]
+      }
+    },
+    {
+      "feature": "today_relative_effort",
+      "signed_contribution": 0.7814792394638062,
+      "direction": "helping",
+      "phrase": "how hard today's session was",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 81.0,
+        "current_shap": 0.7815,
+        "points": [
+          {
+            "feature_value": 0.0907,
+            "shap_value": -0.0772
+          },
+          {
+            "feature_value": 3.0,
+            "shap_value": 0.0104
+          },
+          {
+            "feature_value": 4.4839,
+            "shap_value": -0.0442
+          },
+          {
+            "feature_value": 6.76,
+            "shap_value": -0.0193
+          },
+          {
+            "feature_value": 11.25,
+            "shap_value": -0.0084
+          },
+          {
+            "feature_value": 21.6667,
+            "shap_value": -0.0476
+          },
+          {
+            "feature_value": 31.2353,
+            "shap_value": -0.0507
+          },
+          {
+            "feature_value": 38.9231,
+            "shap_value": 0.0595
+          },
+          {
+            "feature_value": 46.6364,
+            "shap_value": 0.3406
+          },
+          {
+            "feature_value": 55.8966,
+            "shap_value": 0.4452
+          },
+          {
+            "feature_value": 72.8214,
+            "shap_value": 0.5169
+          },
+          {
+            "feature_value": 102.4,
+            "shap_value": 0.1321
+          },
+          {
+            "feature_value": 217.9032,
+            "shap_value": -0.7339
+          }
+        ]
+      }
+    },
+    {
+      "feature": "dow_train_rate",
+      "signed_contribution": 0.5566327571868896,
+      "direction": "helping",
+      "phrase": "your usual habit on this day of the week",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 0.5922,
+        "current_shap": 0.5566,
+        "points": [
+          {
+            "feature_value": 0.035,
+            "shap_value": -0.3555
+          },
+          {
+            "feature_value": 0.1226,
+            "shap_value": -0.478
+          },
+          {
+            "feature_value": 0.2083,
+            "shap_value": -0.2842
+          },
+          {
+            "feature_value": 0.2698,
+            "shap_value": -0.2047
+          },
+          {
+            "feature_value": 0.2894,
+            "shap_value": -0.4106
+          },
+          {
+            "feature_value": 0.3061,
+            "shap_value": -0.5368
+          },
+          {
+            "feature_value": 0.3311,
+            "shap_value": -0.4538
+          },
+          {
+            "feature_value": 0.3504,
+            "shap_value": -0.5062
+          },
+          {
+            "feature_value": 0.368,
+            "shap_value": -0.524
+          },
+          {
+            "feature_value": 0.3915,
+            "shap_value": -0.1069
+          },
+          {
+            "feature_value": 0.4091,
+            "shap_value": 0.1119
+          },
+          {
+            "feature_value": 0.4269,
+            "shap_value": 0.2266
+          },
+          {
+            "feature_value": 0.4459,
+            "shap_value": 0.219
+          },
+          {
+            "feature_value": 0.4606,
+            "shap_value": 0.2932
+          },
+          {
+            "feature_value": 0.4748,
+            "shap_value": 0.2664
+          },
+          {
+            "feature_value": 0.4854,
+            "shap_value": 0.18
+          },
+          {
+            "feature_value": 0.4977,
+            "shap_value": 0.1206
+          },
+          {
+            "feature_value": 0.5079,
+            "shap_value": 0.1107
+          },
+          {
+            "feature_value": 0.5227,
+            "shap_value": 0.3102
+          },
+          {
+            "feature_value": 0.5402,
+            "shap_value": 0.2543
+          },
+          {
+            "feature_value": 0.5549,
+            "shap_value": 0.3571
+          },
+          {
+            "feature_value": 0.5679,
+            "shap_value": 0.2281
+          },
+          {
+            "feature_value": 0.5787,
+            "shap_value": 0.2098
+          },
+          {
+            "feature_value": 0.7001,
+            "shap_value": 0.0998
+          }
+        ]
+      }
+    },
+    {
+      "feature": "trained_days_7",
+      "signed_contribution": 0.47432005405426025,
+      "direction": "helping",
+      "phrase": "how often you've trained this past week",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 6.0,
+        "current_shap": 0.4743,
+        "points": [
+          {
+            "feature_value": 1.6667,
+            "shap_value": -0.4265
+          },
+          {
+            "feature_value": 3.0,
+            "shap_value": -0.2822
+          },
+          {
+            "feature_value": 4.0,
+            "shap_value": -0.1525
+          },
+          {
+            "feature_value": 5.0,
+            "shap_value": 0.3387
+          },
+          {
+            "feature_value": 6.0,
+            "shap_value": 0.3758
+          },
+          {
+            "feature_value": 7.0,
+            "shap_value": 0.3976
           }
         ]
       }
     },
     {
       "feature": "forecast_temp_low",
-      "signed_contribution": 0.17817874252796173,
+      "signed_contribution": 0.319980263710022,
       "direction": "helping",
       "phrase": "the overnight low",
       "plot": {
         "kind": "continuous",
-        "current_value": 10.9,
-        "current_shap": 0.1782,
+        "current_value": 8.5,
+        "current_shap": 0.32,
         "points": [
           {
             "feature_value": -4.2,
-            "shap_value": 0.0702
+            "shap_value": 0.1048
           },
           {
             "feature_value": -1.2839,
-            "shap_value": 0.026
+            "shap_value": 0.0721
           },
           {
             "feature_value": 0.0407,
-            "shap_value": -0.0133
+            "shap_value": -0.0376
           },
           {
             "feature_value": 0.9172,
-            "shap_value": -0.0592
+            "shap_value": -0.079
           },
           {
             "feature_value": 1.8844,
-            "shap_value": -0.0779
+            "shap_value": -0.0618
           },
           {
-            "feature_value": 2.6586,
-            "shap_value": 0.0215
+            "feature_value": 2.62,
+            "shap_value": 0.0322
           },
           {
-            "feature_value": 3.2778,
-            "shap_value": 0.0242
+            "feature_value": 3.2233,
+            "shap_value": 0.0176
           },
           {
-            "feature_value": 3.9774,
-            "shap_value": 0.0327
+            "feature_value": 3.97,
+            "shap_value": 0.0172
           },
           {
             "feature_value": 4.6879,
-            "shap_value": 0.0294
+            "shap_value": 0.0394
           },
           {
-            "feature_value": 5.232,
-            "shap_value": -0.0111
+            "feature_value": 5.2259,
+            "shap_value": 0.0051
           },
           {
-            "feature_value": 5.9033,
-            "shap_value": -0.1423
+            "feature_value": 5.828,
+            "shap_value": -0.1072
           },
           {
-            "feature_value": 6.6429,
-            "shap_value": -0.115
+            "feature_value": 6.5448,
+            "shap_value": -0.0986
           },
           {
-            "feature_value": 7.12,
-            "shap_value": -0.0262
+            "feature_value": 7.0939,
+            "shap_value": -0.0394
           },
           {
-            "feature_value": 7.6138,
-            "shap_value": -0.073
+            "feature_value": 7.6036,
+            "shap_value": -0.0637
           },
           {
-            "feature_value": 8.3148,
-            "shap_value": -0.201
+            "feature_value": 8.3231,
+            "shap_value": -0.1609
           },
           {
-            "feature_value": 9.0065,
-            "shap_value": 0.103
+            "feature_value": 9.01,
+            "shap_value": 0.1328
           },
           {
-            "feature_value": 9.7778,
-            "shap_value": 0.0337
+            "feature_value": 9.8,
+            "shap_value": 0.0734
           },
           {
-            "feature_value": 10.3621,
-            "shap_value": 0.129
+            "feature_value": 10.4226,
+            "shap_value": 0.1639
           },
           {
-            "feature_value": 11.1267,
-            "shap_value": 0.2215
+            "feature_value": 11.1923,
+            "shap_value": 0.2017
           },
           {
             "feature_value": 12.1258,
-            "shap_value": 0.0359
+            "shap_value": 0.0305
           },
           {
             "feature_value": 12.7633,
-            "shap_value": -0.3218
+            "shap_value": -0.3317
           },
           {
             "feature_value": 13.4586,
-            "shap_value": -0.7824
+            "shap_value": -0.7899
           },
           {
             "feature_value": 14.3259,
-            "shap_value": -0.3065
+            "shap_value": -0.3357
           },
           {
             "feature_value": 15.8379,
-            "shap_value": 0.459
+            "shap_value": 0.4857
+          }
+        ]
+      }
+    },
+    {
+      "feature": "trained_days_30",
+      "signed_contribution": 0.20554369688034058,
+      "direction": "helping",
+      "phrase": "your training frequency over the past month",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 20.0,
+        "current_shap": 0.2055,
+        "points": [
+          {
+            "feature_value": 5.025,
+            "shap_value": -0.0889
+          },
+          {
+            "feature_value": 8.0,
+            "shap_value": -0.1019
+          },
+          {
+            "feature_value": 9.0,
+            "shap_value": -0.1412
+          },
+          {
+            "feature_value": 10.0,
+            "shap_value": -0.0167
+          },
+          {
+            "feature_value": 11.0,
+            "shap_value": -0.1965
+          },
+          {
+            "feature_value": 12.0,
+            "shap_value": -0.1662
+          },
+          {
+            "feature_value": 13.0,
+            "shap_value": -0.1597
+          },
+          {
+            "feature_value": 14.0,
+            "shap_value": -0.2414
+          },
+          {
+            "feature_value": 15.0,
+            "shap_value": -0.2556
+          },
+          {
+            "feature_value": 16.0,
+            "shap_value": -0.2568
+          },
+          {
+            "feature_value": 17.0,
+            "shap_value": -0.0182
+          },
+          {
+            "feature_value": 18.0,
+            "shap_value": 0.2481
+          },
+          {
+            "feature_value": 19.0,
+            "shap_value": 0.1932
+          },
+          {
+            "feature_value": 20.6029,
+            "shap_value": 0.1739
+          },
+          {
+            "feature_value": 22.0,
+            "shap_value": 0.1033
+          },
+          {
+            "feature_value": 23.0,
+            "shap_value": 0.0623
+          },
+          {
+            "feature_value": 24.0,
+            "shap_value": 0.0249
+          },
+          {
+            "feature_value": 25.32,
+            "shap_value": -0.0809
+          }
+        ]
+      }
+    },
+    {
+      "feature": "moving_time_chronic_28",
+      "signed_contribution": 0.1825539618730545,
+      "direction": "helping",
+      "phrase": "your training volume base over the past month",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 5395.5042,
+        "current_shap": 0.1826,
+        "points": [
+          {
+            "feature_value": 1058.0958,
+            "shap_value": -0.2443
+          },
+          {
+            "feature_value": 1491.0525,
+            "shap_value": -0.2058
+          },
+          {
+            "feature_value": 1702.6703,
+            "shap_value": -0.2214
+          },
+          {
+            "feature_value": 1897.8219,
+            "shap_value": -0.3226
+          },
+          {
+            "feature_value": 2093.3456,
+            "shap_value": -0.3271
+          },
+          {
+            "feature_value": 2265.3827,
+            "shap_value": -0.2769
+          },
+          {
+            "feature_value": 2440.0001,
+            "shap_value": -0.2346
+          },
+          {
+            "feature_value": 2616.2945,
+            "shap_value": -0.2271
+          },
+          {
+            "feature_value": 2832.3351,
+            "shap_value": -0.1854
+          },
+          {
+            "feature_value": 3066.817,
+            "shap_value": -0.0339
+          },
+          {
+            "feature_value": 3284.5221,
+            "shap_value": 0.0676
+          },
+          {
+            "feature_value": 3576.0159,
+            "shap_value": 0.1317
+          },
+          {
+            "feature_value": 3814.3352,
+            "shap_value": 0.13
+          },
+          {
+            "feature_value": 4012.2489,
+            "shap_value": 0.0733
+          },
+          {
+            "feature_value": 4173.7724,
+            "shap_value": 0.045
+          },
+          {
+            "feature_value": 4335.2574,
+            "shap_value": -0.0063
+          },
+          {
+            "feature_value": 4491.3879,
+            "shap_value": 0.0442
+          },
+          {
+            "feature_value": 4615.4325,
+            "shap_value": 0.1985
+          },
+          {
+            "feature_value": 4805.3325,
+            "shap_value": -0.3649
+          },
+          {
+            "feature_value": 5063.7065,
+            "shap_value": -0.6314
+          },
+          {
+            "feature_value": 5404.2948,
+            "shap_value": -0.1389
+          },
+          {
+            "feature_value": 5782.2295,
+            "shap_value": 0.4854
+          },
+          {
+            "feature_value": 6121.2555,
+            "shap_value": 0.4394
+          },
+          {
+            "feature_value": 6924.7541,
+            "shap_value": 0.5717
           }
         ]
       }
     },
     {
       "feature": "forecast_precip_midday",
-      "signed_contribution": 0.16145120561122894,
+      "signed_contribution": 0.08818210661411285,
       "direction": "helping",
       "phrase": "rain chances during the midday window",
       "plot": {
         "kind": "continuous",
-        "current_value": 14.2857,
-        "current_shap": 0.1615,
+        "current_value": 0.0,
+        "current_shap": 0.0882,
         "points": [
           {
-            "feature_value": 1.4189,
-            "shap_value": 0.1117
+            "feature_value": 1.4253,
+            "shap_value": 0.0919
           },
           {
-            "feature_value": 36.3946,
-            "shap_value": 0.1604
+            "feature_value": 36.3167,
+            "shap_value": 0.1987
           },
           {
-            "feature_value": 71.3043,
-            "shap_value": -0.3168
+            "feature_value": 71.1779,
+            "shap_value": -0.2803
           },
           {
             "feature_value": 100.0,
-            "shap_value": -0.7169
+            "shap_value": -0.6277
           }
         ]
       }
     },
     {
       "feature": "forecast_precip_probability_vs_seasonal",
-      "signed_contribution": -0.15485204756259918,
+      "signed_contribution": -0.04270779713988304,
       "direction": "hurting",
       "phrase": "how much rainier or drier than usual it is",
       "plot": {
         "kind": "continuous",
-        "current_value": 18.4973,
-        "current_shap": -0.1549,
+        "current_value": -18.9208,
+        "current_shap": -0.0427,
         "points": [
           {
             "feature_value": -39.5872,
-            "shap_value": 0.5796
+            "shap_value": 0.4715
           },
           {
             "feature_value": -36.7585,
-            "shap_value": 0.0726
+            "shap_value": 0.2258
           },
           {
             "feature_value": -33.6549,
-            "shap_value": 0.1097
+            "shap_value": 0.2862
           },
           {
-            "feature_value": -29.7496,
-            "shap_value": -0.0302
+            "feature_value": -29.6988,
+            "shap_value": 0.0349
           },
           {
-            "feature_value": -28.1552,
-            "shap_value": -0.1101
+            "feature_value": -28.0793,
+            "shap_value": -0.1154
           },
           {
-            "feature_value": -26.6781,
-            "shap_value": -0.1387
+            "feature_value": -26.6862,
+            "shap_value": -0.1057
           },
           {
-            "feature_value": -24.2242,
-            "shap_value": -0.0825
+            "feature_value": -24.2658,
+            "shap_value": -0.0594
           },
           {
-            "feature_value": -22.055,
-            "shap_value": -0.0507
+            "feature_value": -21.969,
+            "shap_value": -0.0457
           },
           {
-            "feature_value": -19.5816,
-            "shap_value": -0.1357
+            "feature_value": -19.4978,
+            "shap_value": -0.0693
           },
           {
-            "feature_value": -16.0912,
-            "shap_value": -0.1749
+            "feature_value": -15.8814,
+            "shap_value": -0.0995
           },
           {
-            "feature_value": -14.0249,
-            "shap_value": 0.1333
+            "feature_value": -13.8838,
+            "shap_value": 0.1845
           },
           {
-            "feature_value": -11.6552,
-            "shap_value": 0.2073
+            "feature_value": -11.6486,
+            "shap_value": 0.2734
           },
           {
-            "feature_value": -9.9272,
-            "shap_value": -0.1554
+            "feature_value": -9.8933,
+            "shap_value": -0.1828
           },
           {
-            "feature_value": -8.5465,
-            "shap_value": 0.034
+            "feature_value": -8.5477,
+            "shap_value": -0.0068
           },
           {
-            "feature_value": -7.284,
-            "shap_value": 0.0948
+            "feature_value": -7.3283,
+            "shap_value": 0.0807
           },
           {
-            "feature_value": -3.4902,
-            "shap_value": 0.0703
+            "feature_value": -3.3854,
+            "shap_value": 0.0884
           },
           {
-            "feature_value": 2.5597,
-            "shap_value": 0.0581
+            "feature_value": 2.6381,
+            "shap_value": 0.0667
           },
           {
-            "feature_value": 7.2908,
-            "shap_value": -0.1469
+            "feature_value": 7.3042,
+            "shap_value": -0.1588
           },
           {
-            "feature_value": 12.7759,
-            "shap_value": -0.2317
+            "feature_value": 12.8512,
+            "shap_value": -0.3497
           },
           {
-            "feature_value": 20.5075,
-            "shap_value": -0.1937
+            "feature_value": 20.5349,
+            "shap_value": -0.2768
           },
           {
-            "feature_value": 27.5138,
-            "shap_value": 0.037
+            "feature_value": 27.559,
+            "shap_value": 0.1125
           },
           {
-            "feature_value": 37.0965,
-            "shap_value": -0.133
+            "feature_value": 37.1802,
+            "shap_value": -0.1934
           },
           {
-            "feature_value": 46.5712,
-            "shap_value": -0.2781
+            "feature_value": 46.6544,
+            "shap_value": -0.3004
           },
           {
-            "feature_value": 60.3136,
-            "shap_value": -0.3523
+            "feature_value": 60.3876,
+            "shap_value": -0.3538
           }
         ]
       }
     }
   ],
-  "baseline_probability": 0.6163,
+  "baseline_probability": 0.6168,
   "other_contribution": 0.0,
-  "blurb": "**The Verdict:** \nCancel your lazy morning plans\u2014you\u2019re **78.7% likely to train tomorrow**, aiming for a moderate relative effort of **20.9**. \n\nHere\u2019s why your routine is about to win this argument:\n\n**Why you\u2019re going to workout:**\n* **You\u2019re a creature of habit:** Your day-of-week rhythm and recent 7-day streak are basically running the show. You literally can't break the pattern.\n* **Zero weather excuses:** The temperature forecast is looking entirely too comfortable for you to pretend it's too gross outside. \n\n**What\u2019s trying to drag you back to bed:**\n* **Your massive fatigue base:** Your heavy 28-day volume base is screaming for mercy, and today\u2019s spicy session definitely drained your battery. \n\n**Bottom line:** Your chronic fatigue is begging for a rest day, but your stubborn calendar habits are stronger. Pack your gear\u2014we both know you're doing this.",
+  "blurb": "Model says likely session (99%). Credit your usual day-of-week rhythm. Watch out for how much rainier or drier than usual it is. Target: ~27 relative-effort points.",
   "calibration": {
-    "total_samples": 6,
+    "total_samples": 7,
     "buckets": [
       {
         "lower_bound": 0.0,
@@ -873,9 +873,9 @@
       {
         "lower_bound": 0.7,
         "upper_bound": 0.8,
-        "predicted_rate": null,
-        "actual_rate": null,
-        "sample_size": 0
+        "predicted_rate": 0.7868,
+        "actual_rate": 1.0,
+        "sample_size": 1
       },
       {
         "lower_bound": 0.8,
