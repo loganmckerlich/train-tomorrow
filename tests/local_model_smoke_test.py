@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import tempfile
+from datetime import date, timedelta
 from pathlib import Path
 
 from _bootstrap import bootstrap_scripts_path
@@ -52,7 +53,10 @@ def main() -> None:
         "precip_midday": 5.0,
         "precip_evening": 0.0,
     }
-    prepared = prepare_datasets(activities=activities, tomorrow_weather=weather)
+    run_date = date.today()
+    prepared = prepare_datasets(activities=activities, tomorrow_weather=weather, run_date=run_date)
+    assert prepared.tomorrow_features.iloc[0]["as_of_date"] == run_date.isoformat()
+    assert prepared.tomorrow_features.iloc[0]["target_date"] == (run_date + timedelta(days=1)).isoformat()
     mileage_features = {"mileage_acute_7", "mileage_chronic_28"}
     assert mileage_features <= set(prepared.historical.columns)
     assert mileage_features <= set(prepared.tomorrow_features.columns)

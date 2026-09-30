@@ -205,13 +205,12 @@ def prepare_datasets(
     temp_high/temp_low/precip_probability/wind_speed (see weather_client.fetch_historical_weather).
     Dates missing from it fall back to NaN.
 
-    run_date defaults to today. The daily frame is built through yesterday (run_date - 1 day) so a
-    recent rest day with nothing logged in Strava doesn't shrink the frame and land "tomorrow"'s
-    prediction on an already-past date.
+    run_date defaults to today. The daily frame is built through run_date so today's activity
+    contributes to tomorrow's prediction, while a rest day still doesn't shrink the frame.
     """
 
-    yesterday = (run_date or date.today()) - timedelta(days=1)
-    daily = _daily_activity_frame(activities, as_of_day=yesterday)
+    as_of_day = run_date or date.today()
+    daily = _daily_activity_frame(activities, as_of_day=as_of_day)
     nonzero_effort = daily.loc[daily["day_hardest_effort"] > 0, "day_hardest_effort"]
     hard_threshold = float(nonzero_effort.quantile(hard_effort_quantile)) if not nonzero_effort.empty else 0.0
     nonzero_long_ride = daily.loc[daily["longest_day_ride"] > 0, "longest_day_ride"]

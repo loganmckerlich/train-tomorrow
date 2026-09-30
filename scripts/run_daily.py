@@ -5,6 +5,7 @@ import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import yaml
@@ -40,13 +41,14 @@ def load_params(path: Path = PARAMS_PATH) -> dict:
 
 
 def run_pipeline() -> dict[str, object]:
+    run_date = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     params = load_params()
     strava_params = params.get("strava", {})
     model_params = params.get("model", {})
     blurb_params = params.get("blurb", {})
 
     activities = fetch_activities_dataframe(days_back=strava_params.get("days_back", 730))
-    weather = fetch_tomorrow_forecast()
+    weather = fetch_tomorrow_forecast(as_of_date=run_date)
 
     activity_dates = pd.to_datetime(activities["date"], errors="coerce").dt.date.dropna()
     historical_weather = (
@@ -64,6 +66,7 @@ def run_pipeline() -> dict[str, object]:
         activities=activities,
         tomorrow_weather=weather,
         historical_weather=historical_weather,
+        run_date=run_date,
         hard_effort_quantile=model_params.get("hard_effort_quantile", 0.6),
         long_ride_quantile=model_params.get("long_ride_quantile", 0.75),
     )
