@@ -1,0 +1,12 @@
+{
+  "name": "train-tomorrow-dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "rm -rf .devvenv && python -m venv .devvenv && .devvenv/bin/pip install --upgrade pip && .devvenv/bin/pip install -r requirements-dev-cont.txt",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/.devvenv/bin/python"
+      }
+    }
+  }
+}
