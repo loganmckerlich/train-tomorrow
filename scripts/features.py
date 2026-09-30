@@ -21,6 +21,8 @@ FEATURE_COLUMNS = [
     "trained_days_30",
     "moving_time_acute_7",
     "moving_time_chronic_28",
+    "mileage_acute_7",
+    "mileage_chronic_28",
     "today_relative_effort",
     "dow_train_rate",
     "month_train_rate",
@@ -43,6 +45,16 @@ FEATURE_COLUMNS = [
     "forecast_precip_evening",
 ]
 
+# features I dont like
+EXCLUDED_FEATURES = [
+    "atl_ctl_ratio",
+    "forecast_temp_low",
+    "forecast_wind_speed",
+    "forecast_wind_speed_vs_seasonal",
+    "forecast_precip_midday",
+    "moving_time_acute_7",
+    "moving_time_chronic_28",
+]
 
 @dataclass
 class PreparedData:
@@ -84,8 +96,10 @@ def _daily_activity_frame(activities: pd.DataFrame, as_of_day: date | None = Non
         df.groupby("date", as_index=True)
         .agg(
             relative_effort=("relative_effort", "sum"),
+            day_hardest_effort=("relative_effort", "max"),
             moving_time=("moving_time", "sum"),
             distance=("distance", "sum"),
+            longest_day_ride=("distance","max")
         )
         .sort_index()
     )
@@ -143,6 +157,8 @@ def _compute_state_features(daily: pd.DataFrame, hard_threshold: float, long_thr
     state["trained_days_30"] = state["trained_today"].rolling(30, min_periods=1).sum()
     state["moving_time_acute_7"] = state["moving_time"].ewm(span=7, adjust=False).mean()
     state["moving_time_chronic_28"] = state["moving_time"].ewm(span=28, adjust=False).mean()
+    state["mileage_acute_7"] = state["distance"].ewm(span=7, adjust=False).mean()
+    state["mileage_chronic_28"] = state["distance"].ewm(span=28, adjust=False).mean()
     state["same_weekday_rate"] = _same_weekday_rate(state)
     state["same_month_rate"] = _same_month_rate(state)
     state["trained_last_weekend"] = _trained_last_weekend(state)
@@ -155,11 +171,11 @@ def _compute_state_features(daily: pd.DataFrame, hard_threshold: float, long_thr
     running_streak = 0
 
     for idx, (day, row) in enumerate(state.iterrows()):
-        if row["relative_effort"] >= hard_threshold:
+        if row["day_hardest_effort"] >= hard_threshold:
             last_hard = day
         hard_days.append((day - last_hard).days if last_hard is not None else 999)
 
-        if row["distance"] >= long_threshold and row["distance"] > 0:
+        if row["longest_day_ride"] >= long_threshold and row["longest_day_ride"] > 0:
             last_long = day
         long_days.append((day - last_long).days if last_long is not None else 999)
 
@@ -189,17 +205,16 @@ def prepare_datasets(
     temp_high/temp_low/precip_probability/wind_speed (see weather_client.fetch_historical_weather).
     Dates missing from it fall back to NaN.
 
-    run_date defaults to today. The daily frame is built through yesterday (run_date - 1 day) so a
-    recent rest day with nothing logged in Strava doesn't shrink the frame and land "tomorrow"'s
-    prediction on an already-past date.
+    run_date defaults to today. The daily frame is built through run_date so today's activity
+    contributes to tomorrow's prediction, while a rest day still doesn't shrink the frame.
     """
 
-    yesterday = (run_date or date.today()) - timedelta(days=1)
-    daily = _daily_activity_frame(activities, as_of_day=yesterday)
-    nonzero_effort = daily.loc[daily["relative_effort"] > 0, "relative_effort"]
+    as_of_day = run_date or date.today()
+    daily = _daily_activity_frame(activities, as_of_day=as_of_day)
+    nonzero_effort = daily.loc[daily["day_hardest_effort"] > 0, "day_hardest_effort"]
     hard_threshold = float(nonzero_effort.quantile(hard_effort_quantile)) if not nonzero_effort.empty else 0.0
-    nonzero_distance = daily.loc[daily["distance"] > 0, "distance"]
-    long_threshold = float(nonzero_distance.quantile(long_ride_quantile)) if not nonzero_distance.empty else 0.0
+    nonzero_long_ride = daily.loc[daily["longest_day_ride"] > 0, "longest_day_ride"]
+    long_threshold = float(nonzero_long_ride.quantile(long_ride_quantile)) if not nonzero_long_ride.empty else 0.0
     state = _compute_state_features(daily, hard_threshold, long_threshold)
 
     rows: list[dict[str, Any]] = []
@@ -247,6 +262,8 @@ def prepare_datasets(
                 "trained_days_30": float(today_row["trained_days_30"]),
                 "moving_time_acute_7": float(today_row["moving_time_acute_7"]),
                 "moving_time_chronic_28": float(today_row["moving_time_chronic_28"]),
+                "mileage_acute_7": float(today_row["mileage_acute_7"]),
+                "mileage_chronic_28": float(today_row["mileage_chronic_28"]),
                 "today_relative_effort": float(today_row["relative_effort"]),
                 "dow_train_rate": float(state.loc[next_day, "same_weekday_rate"]),
                 "month_train_rate": float(state.loc[next_day, "same_month_rate"]),
@@ -302,6 +319,8 @@ def prepare_datasets(
                 "trained_days_30": float(recent["trained_days_30"]),
                 "moving_time_acute_7": float(recent["moving_time_acute_7"]),
                 "moving_time_chronic_28": float(recent["moving_time_chronic_28"]),
+                "mileage_acute_7": float(recent["mileage_acute_7"]),
+                "mileage_chronic_28": float(recent["mileage_chronic_28"]),
                 "today_relative_effort": float(recent["relative_effort"]),
                 "dow_train_rate": target_dow_rate,
                 "month_train_rate": target_month_rate,

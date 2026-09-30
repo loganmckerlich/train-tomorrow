@@ -132,10 +132,14 @@ function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
     return null;
   }
   return parsed.toLocaleString("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "UTC",
-  }) + " UTC";
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "America/Los_Angeles",
+    timeZoneName: "short",
+  });
 }
 
 function paddedExtent(values: number[], fallbackPadding = 0.5): [number, number] | null {
@@ -647,8 +651,6 @@ export default async function Home() {
         </article>
       </section>
 
-      {prediction.calibration ? <CalibrationPlot calibration={prediction.calibration} /> : null}
-
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
         {prediction.baseline_probability !== undefined ? (
@@ -695,6 +697,8 @@ export default async function Home() {
           })}
         </ul>
       </section>
+
+      {prediction.calibration ? <CalibrationPlot calibration={prediction.calibration} /> : null}
     </main>
   );
 }

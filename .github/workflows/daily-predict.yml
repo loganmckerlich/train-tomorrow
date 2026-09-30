@@ -2,8 +2,8 @@ name: Daily Prediction
 
 on:
   schedule:
-    # 13:00 UTC = 06:00 PST / 05:00 PDT (early morning Pacific)
-    - cron: "0 13 * * *"
+    # GitHub cron is UTC: these cover 11:45 PM Pacific in both PST and PDT.
+    - cron: "45 6,7 * * *"
   workflow_dispatch:
 
 permissions:
@@ -14,18 +14,33 @@ jobs:
     runs-on: ubuntu-latest
     environment: "production - predictions"
     steps:
+      - name: Check scheduled Pacific hour
+        id: pacific_time
+        if: github.event_name == 'schedule'
+        run: |
+          local_hour="$(TZ=America/Los_Angeles date +%H)"
+          if [ "$local_hour" = "23" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Check out repository
+        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Python
+        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dependencies
+        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
         run: pip install -r requirements.txt
 
       - name: Run daily prediction script
+        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
         env:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
@@ -38,6 +53,7 @@ jobs:
         run: python scripts/run_daily.py
 
       - name: Commit latest prediction JSON
+        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

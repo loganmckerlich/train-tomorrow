@@ -5,7 +5,7 @@ blurb:
   tone: sassy
   gemini_model: gemini-3.6-flash 
   # how many top feature contributors to surface in the blurb
-  top_contributors: 10
+  top_contributors: 4
 
 strava:
   # how many days of activity history to pull from Strava on each run
@@ -20,8 +20,8 @@ model:
   # fraction of time-ordered rows used for training vs. the held-out test split
   train_test_split_frac: 0.8
   xgboost:
-    eta: 0.05
-    max_depth: 3
+    eta: 0.005
+    max_depth: 5
     subsample: 0.9
     colsample_bytree: 0.9
     n_estimators: 300
@@ -29,11 +29,18 @@ model:
   features:
     - trained_days_7
     - trained_days_30
-    - moving_time_chronic_28
-    - today_relative_effort
-    - dow_train_rate
     - day_of_week
     - forecast_temp_high
-    - forecast_temp_low
+    - dow_train_rate
     - forecast_precip_probability_vs_seasonal
-    - forecast_precip_midday
+    - days_since_last_hard
+    - today_relative_effort
+    - forecast_temp_low_vs_seasonal
+    - forecast_temp_high_vs_seasonal
+    - acute_load_7
+    - mileage_acute_7
+    - forecast_precip_morning
+    - mileage_chronic_28
+    - days_since_last_long_ride
+    - trained_days_2
+    - streak_length

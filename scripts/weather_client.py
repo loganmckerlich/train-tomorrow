@@ -117,7 +117,7 @@ def _apply_seasonal_anomalies(frame: pd.DataFrame, lat: float, lon: float) -> pd
     return frame
 
 
-def fetch_tomorrow_forecast() -> dict[str, Any]:
+def fetch_tomorrow_forecast(as_of_date: date | None = None) -> dict[str, Any]:
     """Fetch tomorrow's Open-Meteo forecast for configured/default coordinates.
 
     precip_probability is derived from precipitation_hours (predicted hours of rain / 24 * 100)
@@ -125,7 +125,7 @@ def fetch_tomorrow_forecast() -> dict[str, Any]:
     """
     lat = float(os.getenv("FORECAST_LAT", DEFAULT_LAT))
     lon = float(os.getenv("FORECAST_LON", DEFAULT_LON))
-    tomorrow = date.today() + timedelta(days=1)
+    tomorrow = (as_of_date or date.today()) + timedelta(days=1)
 
     response = requests.get(
         OPEN_METEO_URL,
