@@ -116,6 +116,8 @@ def run_pipeline() -> dict[str, object]:
             gemini_model=blurb_params.get("gemini_model", "gemini-3.6-flash"),
         )
 
+    logger.info("Generated blurb: %s", blurb)
+
     payload = {
         "date": str(prepared.tomorrow_features.iloc[0]["target_date"]),
         "generated_at": datetime.now(timezone.utc).isoformat(),
