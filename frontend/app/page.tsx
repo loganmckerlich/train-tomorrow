@@ -125,8 +125,7 @@ function formatPointChange(value: number | null): string {
   if (!isFiniteNumber(value)) {
     return "n/a";
   }
-  const rounded = Math.round(value);
-  return `${rounded >= 0 ? "+" : ""}${rounded} points`;
+  return `${value >= 0 ? "+" : ""}${value.toFixed(3)} points`;
 }
 
 function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
@@ -511,7 +510,7 @@ function ContributorSummary({
                     title={`SHAP-IQ ${formatSigned(row.signed_contribution, 3)} log odds`}
                   >
                     {formatLogOdds(row.signed_contribution)} ({formatPointChange(pointChange)})
-                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability)}`}
+                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability, 3)}`}
                   </span>
                   <p className="text-xs text-slate-500">{row.direction}</p>
                 </div>
