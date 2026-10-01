@@ -5,7 +5,7 @@ blurb:
   tone: sassy
   gemini_model: gemini-3.6-flash 
   # how many top feature contributors to surface in the blurb
-  top_contributors: 4
+  top_contributors: 10
 
 strava:
   # how many days of activity history to pull from Strava on each run

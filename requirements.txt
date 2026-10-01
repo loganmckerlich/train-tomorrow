@@ -2,6 +2,7 @@ pandas~=2.2
 numpy~=2.1
 xgboost~=3.0
 scikit-learn~=1.5
+shapiq~=1.6
 requests~=2.32
 PyGithub~=2.4
 google-genai~=1.24

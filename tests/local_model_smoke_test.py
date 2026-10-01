@@ -13,7 +13,7 @@ bootstrap_scripts_path()
 import pandas as pd
 
 from blurb import generate_blurb
-from explain import PHRASE_BANK, build_explanation
+from explain import PHRASE_BANK, _interaction_contributions, _rank_contributors, build_explanation
 from features import prepare_datasets
 from model import predict_tomorrow, train_and_save_models
 
@@ -39,7 +39,26 @@ def _synthetic_activities(days: int = 120) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _check_interaction_explanation() -> None:
+    interaction_values = type("InteractionValuesStub", (), {})()
+    interaction_values.dict_values = {(0,): 2.0, (1,): -1.0, (0, 1): 0.8}
+    main_effects, interactions = _interaction_contributions(interaction_values, ["load", "weather"])
+
+    assert main_effects == {"load": 2.0, "weather": -1.0}
+    assert interactions == {("load", "weather"): 0.8}
+    assert math.isclose(sum(main_effects.values()) + sum(interactions.values()), 1.8)
+
+    ranked = _rank_contributors(
+        {"load": 0.1, "weather": -0.2},
+        {("load", "weather"): 0.8},
+    )
+    assert ranked[0]["kind"] == "interaction"
+    assert ranked[0]["features"] == ["load", "weather"]
+    assert "interaction between" in ranked[0]["phrase"]
+
+
 def main() -> None:
+    _check_interaction_explanation()
     activities = _synthetic_activities()
     weather = {
         "temp_high": 18.0,
@@ -86,6 +105,11 @@ def main() -> None:
     assert abs(1 / (1 + math.exp(-total_log_odds)) - prediction["probability"]) < 1e-3
     assert isinstance(explanation["other_contribution"], float)
     for contributor in top_contributors:
+        assert contributor["kind"] in {"feature", "interaction"}
+        if contributor["kind"] == "interaction":
+            assert len(contributor["features"]) == 2
+            assert "×" in contributor["feature"]
+            continue
         plot = contributor["plot"]
         assert plot["kind"] in {"categorical", "continuous"}
         if plot["kind"] == "continuous":

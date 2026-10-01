@@ -36,6 +36,8 @@ type CategoricalPlot = {
 
 type Contributor = {
   feature: string;
+  kind?: "feature" | "interaction";
+  features?: [string, string];
   signed_contribution: number;
   direction: "helping" | "hurting";
   phrase: string;
@@ -206,7 +208,7 @@ function ContinuousFeaturePlot({
 
   const zeroY = scale(0, yExtent, [90, 10]);
   const historicalCount = historicalPoints.length;
-  const summary = `Historical days: ${historicalCount}. Feature values ranged from ${xExtent[0].toFixed(1)} to ${xExtent[1].toFixed(1)}. SHAP log-odds ranged from ${formatLogOdds(yExtent[0])} to ${formatLogOdds(yExtent[1])}.`;
+  const summary = `Historical days: ${historicalCount}. Feature values ranged from ${xExtent[0].toFixed(1)} to ${xExtent[1].toFixed(1)}. SHAP-IQ log-odds ranged from ${formatLogOdds(yExtent[0])} to ${formatLogOdds(yExtent[1])}.`;
   const idBase = `${feature}-continuous-plot`;
 
   return (
@@ -217,11 +219,11 @@ function ContinuousFeaturePlot({
       aria-describedby={`${idBase}-today ${idBase}-summary`}
     >
       <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
-        SHAP log odds vs. feature value. Above 0 pushes toward training; below 0 pushes away.
+        SHAP-IQ log odds vs. feature value. Above 0 pushes toward training; below 0 pushes away.
       </figcaption>
       <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
         Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)},{" "}
-        <span title={currentShap === null ? undefined : `Raw SHAP ${formatSigned(currentShap, 4)} log odds`}>
+        <span title={currentShap === null ? undefined : `Raw SHAP-IQ ${formatSigned(currentShap, 4)} log odds`}>
           {formatLogOdds(currentLogOdds)}
         </span>
         .
@@ -252,7 +254,7 @@ function ContinuousFeaturePlot({
                 fillOpacity="0.45"
               >
                 <title>
-                  {`SHAP ${formatLogOdds(effectLogOdds)}`}
+                  {`SHAP-IQ ${formatLogOdds(effectLogOdds)}`}
                 </title>
               </circle>
             );
@@ -265,7 +267,7 @@ function ContinuousFeaturePlot({
               className="fill-amber-400 stroke-slate-900"
               strokeWidth="1.5"
             >
-              <title>{`Today: SHAP ${formatLogOdds(currentLogOdds)}`}</title>
+              <title>{`Today: SHAP-IQ ${formatLogOdds(currentLogOdds)}`}</title>
             </circle>
           ) : null}
         </svg>
@@ -276,7 +278,7 @@ function ContinuousFeaturePlot({
         <span>{xExtent[1].toFixed(1)}</span>
       </div>
       <p className="mt-1 text-center text-[11px] text-slate-500">
-        SHAP log-odds range {formatLogOdds(yExtent[0])} to {formatLogOdds(yExtent[1])}
+        SHAP-IQ log-odds range {formatLogOdds(yExtent[0])} to {formatLogOdds(yExtent[1])}
       </p>
     </figure>
   );
@@ -312,7 +314,7 @@ function CategoricalFeaturePlot({
       aria-describedby={`${idBase}-today ${idBase}-values`}
     >
       <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
-        Mean SHAP log odds by category. Above 0 pushes toward training; below 0 pushes away.
+        Mean SHAP-IQ log odds by category. Above 0 pushes toward training; below 0 pushes away.
       </figcaption>
       <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
         Today&apos;s category: {currentLabel}.
@@ -322,7 +324,7 @@ function CategoricalFeaturePlot({
           const effectLogOdds = category.mean_shap;
           return (
             <li key={`summary-${category.value}`}>
-              <span title={`SHAP ${formatSigned(category.mean_shap, 4)} log odds`}>
+              <span title={`SHAP-IQ ${formatSigned(category.mean_shap, 4)} log odds`}>
                 {category.label}: {formatLogOdds(effectLogOdds)}
               </span>
               {category.value === plot.current_value ? " (today)" : ""}
@@ -359,7 +361,7 @@ function CategoricalFeaturePlot({
                 strokeWidth={isToday ? "1.2" : "0"}
               >
                 <title>
-                  {`${category.label}: SHAP ${formatLogOdds(effectLogOdds)}`}
+                  {`${category.label}: SHAP-IQ ${formatLogOdds(effectLogOdds)}`}
                 </title>
               </rect>
             );
@@ -367,14 +369,14 @@ function CategoricalFeaturePlot({
         </svg>
       </div>
       <p className="mt-1 text-center text-[11px] text-slate-500">
-        SHAP log-odds range {formatLogOdds(yExtent[0])} to {formatLogOdds(yExtent[1])}
+        SHAP-IQ log-odds range {formatLogOdds(yExtent[0])} to {formatLogOdds(yExtent[1])}
       </p>
     </figure>
   );
 }
 
 function FeaturePlot({ contributor }: { contributor: Contributor }) {
-  if (!contributor.plot) {
+  if (contributor.kind === "interaction" || !contributor.plot) {
     return null;
   }
 
@@ -445,14 +447,16 @@ function ContributorSummary({
     <>
       {baselineProbability === undefined ? null : (
         <p className="mt-1 text-sm text-slate-600">
-          Starting from the model&apos;s average day ({formatPercent(baselineProbability)}), each row applies the next SHAP contribution
+          Starting from the model&apos;s average day ({formatPercent(baselineProbability)}), each row applies the next SHAP-IQ effect
           {otherContribution === undefined ? "." : ` to reach ${formatPercent(finalProbability)}.`}
         </p>
       )}
-      <p className="mt-1 text-xs text-slate-500">Points are the change in train probability caused by each feature.</p>
+      <p className="mt-1 text-xs text-slate-500">
+        Feature rows show main effects after separating pairwise interactions; interaction rows show the pair effect.
+      </p>
       {baselineProbability === undefined ? null : (
         <figure className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
-          <figcaption className="sr-only">Waterfall showing cumulative train probability after each SHAP contribution</figcaption>
+          <figcaption className="sr-only">Waterfall showing cumulative train probability after each SHAP-IQ effect</figcaption>
           <svg
             viewBox={`0 0 100 ${chartHeight}`}
             className="w-full"
@@ -504,7 +508,7 @@ function ContributorSummary({
                         ? "font-semibold text-emerald-600"
                         : "font-semibold text-rose-600"
                     }
-                    title={`SHAP ${formatSigned(row.signed_contribution, 3)} log odds`}
+                    title={`SHAP-IQ ${formatSigned(row.signed_contribution, 3)} log odds`}
                   >
                     {formatLogOdds(row.signed_contribution)} ({formatPointChange(pointChange)})
                     {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability)}`}
