@@ -65,7 +65,7 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         models = train_and_save_models(prepared.historical, Path(tmpdir))
         prediction = predict_tomorrow(models, prepared.tomorrow_features)
-        explanation = build_explanation(models.classifier, prepared.tomorrow_features, prepared.historical, top_n=3)
+        explanation = build_explanation(models.classifier, prepared.tomorrow_features, top_n=3)
 
     top_contributors = explanation["top_contributors"]
     blurb = generate_blurb(
@@ -77,19 +77,9 @@ def main() -> None:
 
     assert top_contributors
     assert 0.0 < explanation["baseline_probability"] < 1.0
-    assert isinstance(explanation["other_contribution"], float)
-    for contributor in top_contributors:
-        plot = contributor["plot"]
-        assert plot["kind"] in {"categorical", "continuous"}
-        if plot["kind"] == "continuous":
-            assert plot["current_value"] is None or isinstance(plot["current_value"], float)
-            assert isinstance(plot["current_shap"], float)
-            assert plot["points"]
-        else:
-            assert plot["current_value"] is None or isinstance(plot["current_value"], int)
-            assert plot["current_label"] is None or isinstance(plot["current_label"], str)
-            assert plot["categories"]
-            assert all(isinstance(category["label"], str) for category in plot["categories"])
+    assert explanation["consistent"]
+    assert abs(explanation["baseline_log_odds"] + explanation["attribution_sum"] - explanation["margin"]) < 1e-5
+    assert all(len(item["indices"]) <= 2 for item in explanation["waterfall_steps"])
 
     logger.info("Local modeling smoke test passed.")
     logger.info(

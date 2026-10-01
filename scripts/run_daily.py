@@ -94,7 +94,6 @@ def run_pipeline() -> dict[str, object]:
     explanation = build_explanation(
         models.classifier,
         prepared.tomorrow_features,
-        prepared.historical,
         top_n=blurb_params.get("top_contributors", 3),
         features=model_features,
     )
@@ -120,7 +119,7 @@ def run_pipeline() -> dict[str, object]:
         "date": str(prepared.tomorrow_features.iloc[0]["target_date"]),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "will_train": bool(prediction["will_train"]),
-        "probability": round(float(prediction["probability"]), 4),
+        "probability": explanation["probability"],
         "predicted_effort": (
             round(float(prediction["predicted_effort"]), 2)
             if prediction["predicted_effort"] is not None
@@ -128,7 +127,8 @@ def run_pipeline() -> dict[str, object]:
         ),
         "top_contributors": top_contributors,
         "baseline_probability": explanation["baseline_probability"],
-        "other_contribution": explanation["other_contribution"],
+        "waterfall_steps": explanation["waterfall_steps"],
+        "explanation_plots": explanation["plots"],
         "blurb": blurb,
     }
 
