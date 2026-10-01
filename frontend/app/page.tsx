@@ -410,7 +410,7 @@ function ContributorSummary({
   finalProbability: number;
 }) {
   const steps: Contributor[] = [...topContributors];
-  if (otherContribution !== undefined && Math.abs(otherContribution) > 1e-9) {
+  if (otherContribution !== undefined) {
     steps.push({
       feature: "other_features",
       signed_contribution: otherContribution,
