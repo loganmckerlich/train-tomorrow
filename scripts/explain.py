@@ -1,4 +1,4 @@
-"""Model explainability: SHAP contributions, phrasing, and effect plots for the frontend.
+"""Model explainability: Shapley contributions and plots for the frontend.
 
 Single entrypoint is `build_explanation`; everything else here is a building block for it.
 """
@@ -126,8 +126,10 @@ def render_explanation_plots(
     waterfall_fig = waterfall_ax.figure
     waterfall_ax.set_xlabel("Attribution (log-odds)")
     baseline_ax, prediction_ax = waterfall_fig.axes[1:3]
-    baseline_ax.set_xticklabels([f"Baseline p={baseline_probability:.1%}", ""])
-    prediction_ax.set_xticklabels([f"Prediction p={probability:.1%}", ""])
+    baseline_ticks = baseline_ax.get_xticks()
+    prediction_ticks = prediction_ax.get_xticks()
+    baseline_ax.set_xticks(baseline_ticks, [f"Baseline p={baseline_probability:.1%}", ""])
+    prediction_ax.set_xticks(prediction_ticks, [f"Prediction p={probability:.1%}", ""])
     plots = {"waterfall": save_plot("waterfall", waterfall_fig)}
 
     top = attributions[:top_n]
@@ -185,10 +187,19 @@ def build_explanation(
         raise ValueError("Tree explanations must not contain interactions above order 2")
 
     attributions = _attributions(interaction_values, features)
-    baseline_log_odds = float(interaction_values.baseline_value)
     attribution_sum = math.fsum(item["signed_contribution"] for item in attributions)
     margin = float(model.predict(row, output_margin=True)[0])
     model_probability = float(model.predict_proba(row)[0, 1])
+    native_contributions = model.get_booster().predict(
+        xgb.DMatrix(row, feature_names=features), pred_contribs=True
+    )[0]
+    native_baseline = float(native_contributions[-1])
+    if not np.isclose(attribution_sum, float(np.sum(native_contributions[:-1])), rtol=1e-5, atol=1e-5):
+        raise ValueError("shapiq interactions do not reconcile with XGBoost feature contributions")
+    # Keep the InteractionValues baseline aligned with XGBoost's raw-margin empty-set value.
+    interaction_values.baseline_value = native_baseline
+    interaction_values.interactions[()] = native_baseline
+    baseline_log_odds = native_baseline
     baseline_probability = _sigmoid(baseline_log_odds)
     probability = _sigmoid(margin)
     consistent = np.isclose(
