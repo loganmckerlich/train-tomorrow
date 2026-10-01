@@ -1,4 +1,4 @@
-"""Model explainability: SHAP contributions, phrasing, and effect plots for the frontend.
+"""Model explainability: SHAP-IQ contributions, phrasing, and effect plots for the frontend.
 
 Single entrypoint is `build_explanation`; everything else here is a building block for it.
 """
@@ -8,8 +8,8 @@ from __future__ import annotations
 import math
 from typing import Any
 
-import numpy as np
 import pandas as pd
+from shapiq import TreeExplainer
 import xgboost as xgb
 
 from features import FEATURE_COLUMNS
@@ -87,6 +87,50 @@ def summarize_top_contributors(contributions: dict[str, float], top_n: int = 3) 
     return output
 
 
+def _interaction_contributions(
+    interaction_values: Any, features: list[str]
+) -> tuple[dict[str, float], dict[tuple[str, str], float]]:
+    values = interaction_values.dict_values
+    main_effects = {feature: float(values.get((index,), 0.0)) for index, feature in enumerate(features)}
+    interactions = {
+        (features[interaction[0]], features[interaction[1]]): float(value)
+        for interaction, value in values.items()
+        if len(interaction) == 2
+    }
+    return main_effects, interactions
+
+
+def _rank_contributors(
+    contributions: dict[str, float], interactions: dict[tuple[str, str], float]
+) -> list[dict[str, Any]]:
+    ranked = [
+        {
+            "feature": feature,
+            "kind": "feature",
+            "signed_contribution": value,
+            "direction": "helping" if value >= 0 else "hurting",
+            "phrase": PHRASE_BANK.get(feature, feature.replace("_", " ")),
+        }
+        for feature, value in contributions.items()
+    ]
+    ranked.extend(
+        {
+            "feature": f"{feature_a} × {feature_b}",
+            "features": [feature_a, feature_b],
+            "kind": "interaction",
+            "signed_contribution": value,
+            "direction": "helping" if value >= 0 else "hurting",
+            "phrase": (
+                f"interaction between {PHRASE_BANK.get(feature_a, feature_a.replace('_', ' '))} "
+                f"and {PHRASE_BANK.get(feature_b, feature_b.replace('_', ' '))}"
+            ),
+        }
+        for (feature_a, feature_b), value in interactions.items()
+    )
+    ranked.sort(key=lambda item: abs(item["signed_contribution"]), reverse=True)
+    return ranked
+
+
 def feature_contributions(
     model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] | None = None
 ) -> dict[str, float]:
@@ -97,16 +141,14 @@ def explain_prediction(
     model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] | None = None
 ) -> dict[str, Any]:
     features = _feature_list(features)
-    matrix = xgb.DMatrix(feature_row[features], feature_names=features)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
-    contributions = {
-        name: float(value)
-        for name, value in zip(features, contribs[:-1], strict=True)
-    }
-    baseline_log_odds = float(contribs[-1])
-    total_log_odds = baseline_log_odds + float(np.sum(contribs[:-1]))
+    explainer = TreeExplainer(model=model, class_index=1, index="k-SII", min_order=1, max_order=2)
+    interaction_values = explainer.explain(feature_row[features].iloc[0].to_numpy(dtype=float))
+    contributions, interactions = _interaction_contributions(interaction_values, features)
+    baseline_log_odds = float(interaction_values.baseline_value)
+    total_log_odds = baseline_log_odds + sum(contributions.values()) + sum(interactions.values())
     return {
         "contributions": contributions,
+        "interactions": interactions,
         "baseline_log_odds": baseline_log_odds,
         "baseline_probability": _sigmoid(baseline_log_odds),
         "probability": _sigmoid(total_log_odds),
@@ -114,16 +156,17 @@ def explain_prediction(
 
 
 def _feature_contributions_frame(
-    model: xgb.XGBModel,
+    explainer: TreeExplainer,
     feature_rows: pd.DataFrame,
-    columns: list[str] | None = None,
     features: list[str] | None = None,
 ) -> pd.DataFrame:
     features = _feature_list(features)
-    matrix = xgb.DMatrix(feature_rows[features], feature_names=features)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)
-    frame = pd.DataFrame(contribs[:, :-1], columns=features, index=feature_rows.index)
-    return frame if columns is None else frame[columns]
+    explanations = explainer.explain_X(feature_rows[features].to_numpy(dtype=float), verbose=False)
+    return pd.DataFrame(
+        [_interaction_contributions(explanation, features)[0] for explanation in explanations],
+        columns=features,
+        index=feature_rows.index,
+    )
 
 
 def _category_label(feature: str, value: float) -> str:
@@ -154,21 +197,20 @@ def _binned_continuous_points(values: pd.Series, shap_values: pd.Series) -> list
 
 
 def attach_feature_plots(
-    model: xgb.XGBModel,
     top_contributors: list[dict[str, Any]],
     historical: pd.DataFrame,
     feature_row: pd.DataFrame,
+    historical_contribs: pd.DataFrame,
     features: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     features = _feature_list(features)
     current = feature_row.iloc[0]
-    requested_features = [contributor["feature"] for contributor in top_contributors]
-    historical_contribs = _feature_contributions_frame(
-        model, historical[features], columns=requested_features, features=features
-    )
 
     enriched: list[dict[str, Any]] = []
     for contributor in top_contributors:
+        if contributor["kind"] == "interaction":
+            enriched.append(contributor)
+            continue
         feature = contributor["feature"]
         values = pd.to_numeric(historical[feature], errors="coerce")
         current_value = pd.to_numeric(pd.Series([current.get(feature)]), errors="coerce").iloc[0]
@@ -219,16 +261,25 @@ def build_explanation(
     top_n: int = 3,
     features: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Rank SHAP contributions, attach effect plots to the top N, and summarize the rest.
+    """Rank SHAP-IQ effects, attach feature plots to the top N, and summarize the rest.
 
     Single source of truth for both the contributor list and the waterfall chart: the frontend
     builds the waterfall directly from `top_contributors` + `baseline_probability` +
     `other_contribution`, instead of a separately-computed duplicate structure.
     """
     features = _feature_list(features)
-    explanation = explain_prediction(model, feature_row, features=features)
-    ranked = summarize_top_contributors(explanation["contributions"], top_n=len(explanation["contributions"]))
-    top_contributors = attach_feature_plots(model, ranked[:top_n], historical, feature_row, features=features)
+    explainer = TreeExplainer(model=model, class_index=1, index="k-SII", min_order=1, max_order=2)
+    interaction_values = explainer.explain(feature_row[features].iloc[0].to_numpy(dtype=float))
+    contributions, interactions = _interaction_contributions(interaction_values, features)
+    ranked = _rank_contributors(contributions, interactions)
+    selected = ranked[:top_n]
+    if any(contributor["kind"] == "feature" for contributor in selected):
+        historical_contribs = _feature_contributions_frame(explainer, historical, features=features)
+        top_contributors = attach_feature_plots(
+            selected, historical, feature_row, historical_contribs, features=features
+        )
+    else:
+        top_contributors = selected
 
     remainder = ranked[top_n:]
     other_contribution = sum(item["signed_contribution"] for item in remainder)
@@ -236,7 +287,8 @@ def build_explanation(
         other_contribution = 0.0
 
     return {
-        "baseline_probability": round(float(explanation["baseline_probability"]), 4),
+        "baseline_log_odds": float(interaction_values.baseline_value),
+        "baseline_probability": round(_sigmoid(float(interaction_values.baseline_value)), 4),
         "top_contributors": top_contributors,
         "other_contribution": round(float(other_contribution), 4),
     }

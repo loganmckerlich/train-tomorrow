@@ -36,6 +36,8 @@ type CategoricalPlot = {
 
 type Contributor = {
   feature: string;
+  kind?: "feature" | "interaction";
+  features?: [string, string];
   signed_contribution: number;
   direction: "helping" | "hurting";
   phrase: string;
@@ -62,6 +64,7 @@ type PredictionPayload = {
   probability: number;
   predicted_effort: number | null;
   top_contributors: Contributor[];
+  baseline_log_odds?: number;
   baseline_probability?: number;
   other_contribution?: number;
   calibration?: CalibrationSummary;
@@ -114,13 +117,16 @@ function sigmoid(value: number): number {
   return 1 / (1 + Math.exp(-value));
 }
 
-function contributionPoints(shapValue: number, probability: number): number {
-  const boundedProbability = clampProbability(probability);
-  return (boundedProbability - sigmoid(logit(boundedProbability) - shapValue)) * 100;
+function formatLogOdds(value: number | null): string {
+  return isFiniteNumber(value) ? `${formatSigned(value, 3)} log odds` : "n/a";
 }
 
-function formatContributionPoints(value: number | null, digits = 1): string {
-  return isFiniteNumber(value) ? `${value >= 0 ? "+" : ""}${value.toFixed(digits)} points` : "n/a";
+function formatPointChange(value: number | null): string {
+  if (!isFiniteNumber(value)) {
+    return "n/a";
+  }
+  const rounded = Math.round(value);
+  return `${rounded >= 0 ? "+" : ""}${rounded} points`;
 }
 
 function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
@@ -175,11 +181,9 @@ function scale(value: number, domain: [number, number], range: [number, number])
 function ContinuousFeaturePlot({
   feature,
   plot,
-  probability,
 }: {
   feature: string;
   plot: ContinuousPlot;
-  probability: number;
 }) {
   const historicalPoints = plot.points.filter(
     (point) => Number.isFinite(point.feature_value) && Number.isFinite(point.shap_value),
@@ -187,15 +191,15 @@ function ContinuousFeaturePlot({
   const currentVisible = isFiniteNumber(plot.current_value) && isFiniteNumber(plot.current_shap);
   const currentValue = currentVisible ? plot.current_value : null;
   const currentShap = currentVisible ? plot.current_shap : null;
-  const currentPoints = currentShap === null ? null : contributionPoints(currentShap, probability);
+  const currentLogOdds = currentShap;
   const xExtent = paddedExtent([
     ...historicalPoints.map((point) => point.feature_value),
     ...(currentValue === null ? [] : [currentValue]),
   ]);
-  const historicalEffects = historicalPoints.map((point) => contributionPoints(point.shap_value, probability));
+  const historicalEffects = historicalPoints.map((point) => point.shap_value);
   const yExtent = paddedExtent([
     ...historicalEffects,
-    ...(currentPoints === null ? [0] : [currentPoints, 0]),
+    ...(currentLogOdds === null ? [0] : [currentLogOdds, 0]),
   ]);
 
   if (!xExtent || !yExtent) {
@@ -204,7 +208,7 @@ function ContinuousFeaturePlot({
 
   const zeroY = scale(0, yExtent, [90, 10]);
   const historicalCount = historicalPoints.length;
-  const summary = `Historical days: ${historicalCount}. Feature values ranged from ${xExtent[0].toFixed(1)} to ${xExtent[1].toFixed(1)}. Approximate model effect ranged from ${formatContributionPoints(yExtent[0])} to ${formatContributionPoints(yExtent[1])}.`;
+  const summary = `Historical days: ${historicalCount}. Feature values ranged from ${xExtent[0].toFixed(1)} to ${xExtent[1].toFixed(1)}. SHAP-IQ log-odds ranged from ${formatLogOdds(yExtent[0])} to ${formatLogOdds(yExtent[1])}.`;
   const idBase = `${feature}-continuous-plot`;
 
   return (
@@ -215,12 +219,12 @@ function ContinuousFeaturePlot({
       aria-describedby={`${idBase}-today ${idBase}-summary`}
     >
       <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
-        Approximate training-probability lift vs. feature value. Above 0 pushes toward training; below 0 pushes away.
+        SHAP-IQ log odds vs. feature value. Above 0 pushes toward training; below 0 pushes away.
       </figcaption>
       <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
-        Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)}, about{" "}
-        <span title={currentShap === null ? undefined : `Raw SHAP ${formatSigned(currentShap, 4)} log-odds`}>
-          {formatContributionPoints(currentPoints)}
+        Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)},{" "}
+        <span title={currentShap === null ? undefined : `Raw SHAP-IQ ${formatSigned(currentShap, 4)} log odds`}>
+          {formatLogOdds(currentLogOdds)}
         </span>
         .
       </p>
@@ -239,31 +243,31 @@ function ContinuousFeaturePlot({
             strokeWidth="1"
           />
           {historicalPoints.map((point, index) => {
-            const effectPoints = contributionPoints(point.shap_value, probability);
+            const effectLogOdds = point.shap_value;
             return (
               <circle
                 key={`${point.feature_value}-${point.shap_value}-${index}`}
                 cx={scale(point.feature_value, xExtent, [8, 96])}
-                cy={scale(effectPoints, yExtent, [90, 10])}
+                cy={scale(effectLogOdds, yExtent, [90, 10])}
                 r="1.9"
                 className="fill-slate-500"
                 fillOpacity="0.45"
               >
                 <title>
-                  {`Approx. ${formatContributionPoints(effectPoints)} (raw SHAP ${formatSigned(point.shap_value, 4)})`}
+                  {`SHAP-IQ ${formatLogOdds(effectLogOdds)}`}
                 </title>
               </circle>
             );
           })}
-          {currentValue !== null && currentShap !== null && currentPoints !== null ? (
+          {currentValue !== null && currentShap !== null && currentLogOdds !== null ? (
             <circle
               cx={scale(currentValue, xExtent, [8, 96])}
-              cy={scale(currentPoints, yExtent, [90, 10])}
+              cy={scale(currentLogOdds, yExtent, [90, 10])}
               r="3.4"
               className="fill-amber-400 stroke-slate-900"
               strokeWidth="1.5"
             >
-              <title>{`Today: ${formatContributionPoints(currentPoints)} (raw SHAP ${formatSigned(currentShap, 4)})`}</title>
+              <title>{`Today: SHAP-IQ ${formatLogOdds(currentLogOdds)}`}</title>
             </circle>
           ) : null}
         </svg>
@@ -274,7 +278,7 @@ function ContinuousFeaturePlot({
         <span>{xExtent[1].toFixed(1)}</span>
       </div>
       <p className="mt-1 text-center text-[11px] text-slate-500">
-        Approx. effect range {formatContributionPoints(yExtent[0])} to {formatContributionPoints(yExtent[1])}
+        SHAP-IQ log-odds range {formatLogOdds(yExtent[0])} to {formatLogOdds(yExtent[1])}
       </p>
     </figure>
   );
@@ -283,19 +287,15 @@ function ContinuousFeaturePlot({
 function CategoricalFeaturePlot({
   feature,
   plot,
-  probability,
 }: {
   feature: string;
   plot: CategoricalPlot;
-  probability: number;
 }) {
   if (plot.categories.length === 0) {
     return null;
   }
 
-  const categoryEffects = plot.categories.map((category) =>
-    contributionPoints(category.mean_shap, probability),
-  );
+  const categoryEffects = plot.categories.map((category) => category.mean_shap);
   const yExtent = paddedExtent([...categoryEffects, 0]);
   if (!yExtent) {
     return null;
@@ -314,18 +314,18 @@ function CategoricalFeaturePlot({
       aria-describedby={`${idBase}-today ${idBase}-values`}
     >
       <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
-        Approximate mean training-probability lift by category. Above 0 pushes toward training; below 0 pushes away.
+        Mean SHAP-IQ log odds by category. Above 0 pushes toward training; below 0 pushes away.
       </figcaption>
       <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
         Today&apos;s category: {currentLabel}.
       </p>
       <ul id={`${idBase}-values`} className="mt-1 space-y-1 text-xs text-slate-500">
         {plot.categories.map((category) => {
-          const effectPoints = contributionPoints(category.mean_shap, probability);
+          const effectLogOdds = category.mean_shap;
           return (
             <li key={`summary-${category.value}`}>
-              <span title={`Raw SHAP ${formatSigned(category.mean_shap, 4)} log-odds`}>
-                {category.label}: {formatContributionPoints(effectPoints)}
+              <span title={`SHAP-IQ ${formatSigned(category.mean_shap, 4)} log odds`}>
+                {category.label}: {formatLogOdds(effectLogOdds)}
               </span>
               {category.value === plot.current_value ? " (today)" : ""}
             </li>
@@ -345,8 +345,8 @@ function CategoricalFeaturePlot({
           />
           {plot.categories.map((category, index) => {
             const x = 8 + index * barWidth + barWidth * 0.15;
-            const effectPoints = contributionPoints(category.mean_shap, probability);
-            const y = scale(effectPoints, yExtent, [90, 10]);
+            const effectLogOdds = category.mean_shap;
+            const y = scale(effectLogOdds, yExtent, [90, 10]);
             const isToday = category.value === plot.current_value;
             return (
               <rect
@@ -361,7 +361,7 @@ function CategoricalFeaturePlot({
                 strokeWidth={isToday ? "1.2" : "0"}
               >
                 <title>
-                  {`${category.label}: ${formatContributionPoints(effectPoints)} (raw SHAP ${formatSigned(category.mean_shap, 4)})`}
+                  {`${category.label}: SHAP-IQ ${formatLogOdds(effectLogOdds)}`}
                 </title>
               </rect>
             );
@@ -369,14 +369,14 @@ function CategoricalFeaturePlot({
         </svg>
       </div>
       <p className="mt-1 text-center text-[11px] text-slate-500">
-        Approx. effect range {formatContributionPoints(yExtent[0])} to {formatContributionPoints(yExtent[1])}
+        SHAP-IQ log-odds range {formatLogOdds(yExtent[0])} to {formatLogOdds(yExtent[1])}
       </p>
     </figure>
   );
 }
 
-function FeaturePlot({ contributor, probability }: { contributor: Contributor; probability: number }) {
-  if (!contributor.plot) {
+function FeaturePlot({ contributor }: { contributor: Contributor }) {
+  if (contributor.kind === "interaction" || !contributor.plot) {
     return null;
   }
 
@@ -389,34 +389,30 @@ function FeaturePlot({ contributor, probability }: { contributor: Contributor; p
         <ContinuousFeaturePlot
           feature={contributor.feature}
           plot={contributor.plot}
-          probability={probability}
         />
       ) : (
         <CategoricalFeaturePlot
           feature={contributor.feature}
           plot={contributor.plot}
-          probability={probability}
         />
       )}
     </details>
   );
 }
 
-function WaterfallPlot({
+function ContributorSummary({
   topContributors,
-  baselineProbability,
+  baselineLogOdds,
   otherContribution,
   finalProbability,
 }: {
   topContributors: Contributor[];
-  baselineProbability: number;
-  otherContribution: number;
+  baselineLogOdds?: number;
+  otherContribution?: number;
   finalProbability: number;
 }) {
-  const steps: Array<Pick<Contributor, "feature" | "signed_contribution" | "direction" | "phrase">> = [
-    ...topContributors,
-  ];
-  if (Math.abs(otherContribution) > 1e-9) {
+  const steps: Contributor[] = [...topContributors];
+  if (otherContribution !== undefined) {
     steps.push({
       feature: "other_features",
       signed_contribution: otherContribution,
@@ -424,101 +420,117 @@ function WaterfallPlot({
       phrase: "all other features",
     });
   }
-  if (steps.length === 0) {
-    return null;
-  }
-
-  const segments = steps.reduce<{
-    items: Array<
-      (typeof steps)[number] & {
-        startProbability: number;
-        endProbability: number;
-        deltaPoints: number;
-      }
-    >;
-    runningLogOdds: number;
-  }>(
-    (state, step) => {
-      const startProbability = sigmoid(state.runningLogOdds);
-      const nextLogOdds = state.runningLogOdds + step.signed_contribution;
-      const endProbability = sigmoid(nextLogOdds);
-      return {
-        runningLogOdds: nextLogOdds,
-        items: [
-          ...state.items,
-          {
-            ...step,
-            startProbability,
-            endProbability,
-            deltaPoints: (endProbability - startProbability) * 100,
-          },
-        ],
-      };
-    },
-    { items: [], runningLogOdds: logit(baselineProbability) },
-  ).items;
-  const chartHeight = 16 + segments.length * 12;
+  let runningLogOdds = baselineLogOdds;
+  const rows = steps.map((step) => {
+    if (runningLogOdds === undefined) {
+      return { ...step, startProbability: null, endProbability: null, pointChange: null };
+    }
+    const startProbability = sigmoid(runningLogOdds);
+    runningLogOdds += step.signed_contribution;
+    const endProbability = sigmoid(runningLogOdds);
+    return {
+      ...step,
+      startProbability,
+      endProbability,
+      pointChange: (endProbability - startProbability) * 100,
+    };
+  });
+  const maxContributionMagnitude = Math.max(
+    ...rows.map((row) => Math.abs(row.pointChange ?? 0)),
+    1,
+  );
+  const baselineProbability =
+    baselineLogOdds === undefined ? undefined : sigmoid(baselineLogOdds);
+  const chartHeight = 16 + rows.length * 12;
 
   return (
-    <figure className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <figcaption className="text-sm font-medium text-slate-800">How the model got here</figcaption>
+    <>
+      {baselineProbability === undefined ? null : (
+        <p className="mt-1 text-sm text-slate-600">
+          Starting from the model&apos;s average day ({formatPercent(baselineProbability)}), each row applies the next SHAP-IQ effect
+          {otherContribution === undefined ? "." : ` to reach ${formatPercent(finalProbability)}.`}
+        </p>
+      )}
       <p className="mt-1 text-xs text-slate-500">
-        Starts from the model&apos;s average day ({formatPercent(baselineProbability)})
-        and walks through today&apos;s biggest pushes to land at{" "}
-        {formatPercent(finalProbability)}.
+        Feature rows show main effects after separating pairwise interactions; interaction rows show the pair effect.
       </p>
-      <div className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
-        <svg
-          viewBox={`0 0 100 ${chartHeight}`}
-          className="w-full"
-          style={{ height: `${Math.max(180, segments.length * 28)}px` }}
-          aria-hidden="true"
-        >
-          {segments.map((segment, index) => {
-            const y = 10 + index * 12;
-            const startX = scale(segment.startProbability, [0, 1], [8, 96]);
-            const endX = scale(segment.endProbability, [0, 1], [8, 96]);
-            return (
-              <g key={`${segment.feature}-${index}`}>
-                <line
-                  x1={startX}
-                  x2={endX}
-                  y1={y}
-                  y2={y}
-                  className={segment.direction === "helping" ? "stroke-emerald-500" : "stroke-rose-500"}
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                />
-                <circle cx={startX} cy={y} r="1.5" className="fill-white stroke-slate-400" strokeWidth="0.8" />
-                <circle cx={endX} cy={y} r="1.8" className="fill-slate-900" />
-              </g>
-            );
-          })}
-        </svg>
-        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-          <span>0%</span>
-          <span>train probability</span>
-          <span>100%</span>
-        </div>
-      </div>
-      <ol className="mt-4 space-y-2">
-        {segments.map((segment, index) => (
-          <li key={`${segment.feature}-summary-${index}`} className="flex items-start justify-between gap-4 text-sm">
-            <span className="text-slate-700">{segment.phrase}</span>
-            <span
-              className={
-                segment.direction === "helping"
-                  ? "text-right font-medium text-emerald-600"
-                  : "text-right font-medium text-rose-600"
+      {baselineProbability === undefined ? null : (
+        <figure className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
+          <figcaption className="sr-only">Waterfall showing cumulative train probability after each SHAP-IQ effect</figcaption>
+          <svg
+            viewBox={`0 0 100 ${chartHeight}`}
+            className="w-full"
+            style={{ height: `${Math.max(180, rows.length * 28)}px` }}
+            aria-hidden="true"
+          >
+            {rows.map((row, index) => {
+              if (row.startProbability === null || row.endProbability === null) {
+                return null;
               }
-              title={`Raw SHAP ${formatSigned(segment.signed_contribution, 4)} log-odds`}
-            >
-              {formatContributionPoints(segment.deltaPoints)} → {formatPercent(segment.endProbability)}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </figure>
+              const y = 10 + index * 12;
+              const startX = scale(row.startProbability, [0, 1], [8, 96]);
+              const endX = scale(row.endProbability, [0, 1], [8, 96]);
+              return (
+                <g key={`${row.feature}-${index}`}>
+                  <line
+                    x1={startX}
+                    x2={endX}
+                    y1={y}
+                    y2={y}
+                    className={row.direction === "helping" ? "stroke-emerald-500" : "stroke-rose-500"}
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                  />
+                  <circle cx={startX} cy={y} r="1.5" className="fill-white stroke-slate-400" strokeWidth="0.8" />
+                  <circle cx={endX} cy={y} r="1.8" className="fill-slate-900" />
+                </g>
+              );
+            })}
+          </svg>
+          <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+            <span>0%</span>
+            <span>train probability</span>
+            <span>100%</span>
+          </div>
+        </figure>
+      )}
+      <ul className="mt-4 space-y-4">
+        {rows.map((row) => {
+          const pointChange = row.pointChange;
+          return (
+            <li key={row.feature}>
+              <div className="mb-1 flex items-center justify-between gap-4 text-sm">
+                <span className="font-medium text-slate-800">{row.phrase}</span>
+                <div className="text-right">
+                  <span
+                    className={
+                      row.direction === "helping"
+                        ? "font-semibold text-emerald-600"
+                        : "font-semibold text-rose-600"
+                    }
+                    title={`SHAP-IQ ${formatSigned(row.signed_contribution, 3)} log odds`}
+                  >
+                    {formatLogOdds(row.signed_contribution)} ({formatPointChange(pointChange)})
+                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability)}`}
+                  </span>
+                  <p className="text-xs text-slate-500">{row.direction}</p>
+                </div>
+              </div>
+              <div className="h-2 rounded-full bg-slate-200">
+                <div
+                  className={`h-2 rounded-full ${
+                    row.direction === "helping" ? "bg-emerald-500" : "bg-rose-500"
+                  }`}
+                  style={{ width: contributorBarWidth(pointChange ?? 0, maxContributionMagnitude) }}
+                  title={`Probability change ${formatPointChange(pointChange)}`}
+                />
+              </div>
+              <FeaturePlot contributor={row} />
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }
 
@@ -611,10 +623,6 @@ export default async function Home() {
     );
   }
 
-  const contributionMagnitudes = prediction.top_contributors.map((item) =>
-    Math.abs(contributionPoints(item.signed_contribution, prediction.probability)),
-  );
-  const maxContributionMagnitude = Math.max(...contributionMagnitudes, 1);
   const generatedAt = formatGeneratedAt(prediction.generated_at);
 
   return (
@@ -653,49 +661,18 @@ export default async function Home() {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
-        {prediction.baseline_probability !== undefined ? (
-          <WaterfallPlot
-            topContributors={prediction.top_contributors}
-            baselineProbability={prediction.baseline_probability}
-            otherContribution={prediction.other_contribution ?? 0}
-            finalProbability={prediction.probability}
-          />
-        ) : null}
-        <ul className="mt-4 space-y-4">
-          {prediction.top_contributors.map((item) => {
-            const effectPoints = contributionPoints(item.signed_contribution, prediction.probability);
-            return (
-              <li key={item.feature}>
-                <div className="mb-1 flex items-center justify-between gap-4 text-sm">
-                  <span className="font-medium text-slate-800">{item.phrase}</span>
-                  <div className="text-right">
-                    <span
-                      className={
-                        item.direction === "helping"
-                          ? "font-semibold text-emerald-600"
-                          : "font-semibold text-rose-600"
-                      }
-                      title={`Raw SHAP ${formatSigned(item.signed_contribution, 4)} log-odds`}
-                    >
-                      {formatContributionPoints(effectPoints)}
-                    </span>
-                    <p className="text-xs text-slate-500">{item.direction}</p>
-                  </div>
-                </div>
-                <div className="h-2 rounded-full bg-slate-200">
-                  <div
-                    className={`h-2 rounded-full ${
-                      item.direction === "helping" ? "bg-emerald-500" : "bg-rose-500"
-                    }`}
-                    style={{ width: contributorBarWidth(effectPoints, maxContributionMagnitude) }}
-                    title={`Raw SHAP ${formatSigned(item.signed_contribution, 4)} log-odds`}
-                  />
-                </div>
-                <FeaturePlot contributor={item} probability={prediction.probability} />
-              </li>
-            );
-          })}
-        </ul>
+        <ContributorSummary
+          topContributors={prediction.top_contributors}
+          baselineLogOdds={
+            prediction.baseline_log_odds ?? (
+              prediction.baseline_probability === undefined
+                ? undefined
+                : logit(prediction.baseline_probability)
+            )
+          }
+          otherContribution={prediction.other_contribution}
+          finalProbability={prediction.probability}
+        />
       </section>
 
       {prediction.calibration ? <CalibrationPlot calibration={prediction.calibration} /> : null}

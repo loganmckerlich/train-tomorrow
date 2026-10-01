@@ -129,6 +129,7 @@ def run_pipeline() -> dict[str, object]:
             else None
         ),
         "top_contributors": top_contributors,
+        "baseline_log_odds": explanation["baseline_log_odds"],
         "baseline_probability": explanation["baseline_probability"],
         "other_contribution": explanation["other_contribution"],
         "blurb": blurb,
