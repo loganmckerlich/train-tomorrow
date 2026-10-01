@@ -7,4 +7,3 @@ frontend/.next/
 .ipynb_checkpoints/
 local_data/
 .devvenv/
-shapiq_demo_output/

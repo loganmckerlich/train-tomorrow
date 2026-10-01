@@ -18,7 +18,7 @@ Open-Meteo tomorrow forecast
 scripts/run_daily.py
   - feature engineering + leakage-safe labels
   - XGBoost classifier/regressor training
-  - shapiq k-SII explanations through order 2
+  - pred_contribs extraction (no shap package)
   - blurb generation
         |
         v
@@ -69,14 +69,6 @@ jupyter lab notebooks/modeling_exploration.ipynb
 ```
 
 The smoke test uses synthetic activities and writes temporary model artifacts only.
-
-Run the standalone shapiq demo to generate waterfall, top-N, network, and force plots:
-
-```bash
-python scripts/shapiq_demo.py
-```
-
-Plots are saved to `shapiq_demo_output/` by default. Use `--output-dir` to change the destination.
 
 ## Frontend setup
 
