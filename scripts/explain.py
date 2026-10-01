@@ -236,6 +236,7 @@ def build_explanation(
         other_contribution = 0.0
 
     return {
+        "baseline_log_odds": float(explanation["baseline_log_odds"]),
         "baseline_probability": round(float(explanation["baseline_probability"]), 4),
         "top_contributors": top_contributors,
         "other_contribution": round(float(other_contribution), 4),

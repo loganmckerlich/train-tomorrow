@@ -62,6 +62,7 @@ type PredictionPayload = {
   probability: number;
   predicted_effort: number | null;
   top_contributors: Contributor[];
+  baseline_log_odds?: number;
   baseline_probability?: number;
   other_contribution?: number;
   calibration?: CalibrationSummary;
@@ -114,9 +115,8 @@ function sigmoid(value: number): number {
   return 1 / (1 + Math.exp(-value));
 }
 
-function contributionPoints(shapValue: number, probability: number): number {
-  const boundedProbability = clampProbability(probability);
-  return (boundedProbability - sigmoid(logit(boundedProbability) - shapValue)) * 100;
+function shapPoints(shapValue: number): number {
+  return shapValue * 100;
 }
 
 function formatContributionPoints(value: number | null, digits = 1): string {
@@ -175,11 +175,9 @@ function scale(value: number, domain: [number, number], range: [number, number])
 function ContinuousFeaturePlot({
   feature,
   plot,
-  probability,
 }: {
   feature: string;
   plot: ContinuousPlot;
-  probability: number;
 }) {
   const historicalPoints = plot.points.filter(
     (point) => Number.isFinite(point.feature_value) && Number.isFinite(point.shap_value),
@@ -187,12 +185,12 @@ function ContinuousFeaturePlot({
   const currentVisible = isFiniteNumber(plot.current_value) && isFiniteNumber(plot.current_shap);
   const currentValue = currentVisible ? plot.current_value : null;
   const currentShap = currentVisible ? plot.current_shap : null;
-  const currentPoints = currentShap === null ? null : contributionPoints(currentShap, probability);
+  const currentPoints = currentShap === null ? null : shapPoints(currentShap);
   const xExtent = paddedExtent([
     ...historicalPoints.map((point) => point.feature_value),
     ...(currentValue === null ? [] : [currentValue]),
   ]);
-  const historicalEffects = historicalPoints.map((point) => contributionPoints(point.shap_value, probability));
+  const historicalEffects = historicalPoints.map((point) => shapPoints(point.shap_value));
   const yExtent = paddedExtent([
     ...historicalEffects,
     ...(currentPoints === null ? [0] : [currentPoints, 0]),
@@ -215,7 +213,7 @@ function ContinuousFeaturePlot({
       aria-describedby={`${idBase}-today ${idBase}-summary`}
     >
       <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
-        Approximate training-probability lift vs. feature value. Above 0 pushes toward training; below 0 pushes away.
+        SHAP log-odds effect × 100 (points) vs. feature value. Above 0 pushes toward training; below 0 pushes away.
       </figcaption>
       <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
         Today: value {currentValue === null ? "n/a" : currentValue.toFixed(1)}, about{" "}
@@ -239,7 +237,7 @@ function ContinuousFeaturePlot({
             strokeWidth="1"
           />
           {historicalPoints.map((point, index) => {
-            const effectPoints = contributionPoints(point.shap_value, probability);
+            const effectPoints = shapPoints(point.shap_value);
             return (
               <circle
                 key={`${point.feature_value}-${point.shap_value}-${index}`}
@@ -283,19 +281,15 @@ function ContinuousFeaturePlot({
 function CategoricalFeaturePlot({
   feature,
   plot,
-  probability,
 }: {
   feature: string;
   plot: CategoricalPlot;
-  probability: number;
 }) {
   if (plot.categories.length === 0) {
     return null;
   }
 
-  const categoryEffects = plot.categories.map((category) =>
-    contributionPoints(category.mean_shap, probability),
-  );
+  const categoryEffects = plot.categories.map((category) => shapPoints(category.mean_shap));
   const yExtent = paddedExtent([...categoryEffects, 0]);
   if (!yExtent) {
     return null;
@@ -314,14 +308,14 @@ function CategoricalFeaturePlot({
       aria-describedby={`${idBase}-today ${idBase}-values`}
     >
       <figcaption id={`${idBase}-title`} className="text-xs text-slate-500">
-        Approximate mean training-probability lift by category. Above 0 pushes toward training; below 0 pushes away.
+        Mean SHAP log-odds × 100 (points) by category. Above 0 pushes toward training; below 0 pushes away.
       </figcaption>
       <p id={`${idBase}-today`} className="mt-1 text-xs text-slate-500">
         Today&apos;s category: {currentLabel}.
       </p>
       <ul id={`${idBase}-values`} className="mt-1 space-y-1 text-xs text-slate-500">
         {plot.categories.map((category) => {
-          const effectPoints = contributionPoints(category.mean_shap, probability);
+          const effectPoints = shapPoints(category.mean_shap);
           return (
             <li key={`summary-${category.value}`}>
               <span title={`Raw SHAP ${formatSigned(category.mean_shap, 4)} log-odds`}>
@@ -345,7 +339,7 @@ function CategoricalFeaturePlot({
           />
           {plot.categories.map((category, index) => {
             const x = 8 + index * barWidth + barWidth * 0.15;
-            const effectPoints = contributionPoints(category.mean_shap, probability);
+            const effectPoints = shapPoints(category.mean_shap);
             const y = scale(effectPoints, yExtent, [90, 10]);
             const isToday = category.value === plot.current_value;
             return (
@@ -375,7 +369,7 @@ function CategoricalFeaturePlot({
   );
 }
 
-function FeaturePlot({ contributor, probability }: { contributor: Contributor; probability: number }) {
+function FeaturePlot({ contributor }: { contributor: Contributor }) {
   if (!contributor.plot) {
     return null;
   }
@@ -389,13 +383,11 @@ function FeaturePlot({ contributor, probability }: { contributor: Contributor; p
         <ContinuousFeaturePlot
           feature={contributor.feature}
           plot={contributor.plot}
-          probability={probability}
         />
       ) : (
         <CategoricalFeaturePlot
           feature={contributor.feature}
           plot={contributor.plot}
-          probability={probability}
         />
       )}
     </details>
@@ -404,15 +396,16 @@ function FeaturePlot({ contributor, probability }: { contributor: Contributor; p
 
 function WaterfallPlot({
   topContributors,
-  baselineProbability,
+  baselineLogOdds,
   otherContribution,
   finalProbability,
 }: {
   topContributors: Contributor[];
-  baselineProbability: number;
+  baselineLogOdds: number;
   otherContribution: number;
   finalProbability: number;
 }) {
+  const baselineProbability = sigmoid(baselineLogOdds);
   const steps: Array<Pick<Contributor, "feature" | "signed_contribution" | "direction" | "phrase">> = [
     ...topContributors,
   ];
@@ -450,12 +443,12 @@ function WaterfallPlot({
             ...step,
             startProbability,
             endProbability,
-            deltaPoints: (endProbability - startProbability) * 100,
+            deltaPoints: shapPoints(step.signed_contribution),
           },
         ],
       };
     },
-    { items: [], runningLogOdds: logit(baselineProbability) },
+    { items: [], runningLogOdds: baselineLogOdds },
   ).items;
   const chartHeight = 16 + segments.length * 12;
 
@@ -467,6 +460,7 @@ function WaterfallPlot({
         and walks through today&apos;s biggest pushes to land at{" "}
         {formatPercent(finalProbability)}.
       </p>
+      <p className="mt-1 text-xs text-slate-500">Points are SHAP log-odds × 100.</p>
       <div className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
         <svg
           viewBox={`0 0 100 ${chartHeight}`}
@@ -612,7 +606,7 @@ export default async function Home() {
   }
 
   const contributionMagnitudes = prediction.top_contributors.map((item) =>
-    Math.abs(contributionPoints(item.signed_contribution, prediction.probability)),
+    Math.abs(shapPoints(item.signed_contribution)),
   );
   const maxContributionMagnitude = Math.max(...contributionMagnitudes, 1);
   const generatedAt = formatGeneratedAt(prediction.generated_at);
@@ -653,17 +647,19 @@ export default async function Home() {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
-        {prediction.baseline_probability !== undefined ? (
+        {prediction.baseline_log_odds !== undefined || prediction.baseline_probability !== undefined ? (
           <WaterfallPlot
             topContributors={prediction.top_contributors}
-            baselineProbability={prediction.baseline_probability}
+            baselineLogOdds={
+              prediction.baseline_log_odds ?? logit(prediction.baseline_probability!)
+            }
             otherContribution={prediction.other_contribution ?? 0}
             finalProbability={prediction.probability}
           />
         ) : null}
         <ul className="mt-4 space-y-4">
           {prediction.top_contributors.map((item) => {
-            const effectPoints = contributionPoints(item.signed_contribution, prediction.probability);
+            const effectPoints = shapPoints(item.signed_contribution);
             return (
               <li key={item.feature}>
                 <div className="mb-1 flex items-center justify-between gap-4 text-sm">
@@ -691,7 +687,7 @@ export default async function Home() {
                     title={`Raw SHAP ${formatSigned(item.signed_contribution, 4)} log-odds`}
                   />
                 </div>
-                <FeaturePlot contributor={item} probability={prediction.probability} />
+                <FeaturePlot contributor={item} />
               </li>
             );
           })}

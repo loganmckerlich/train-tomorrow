@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import tempfile
 from datetime import date, timedelta
 from pathlib import Path
@@ -77,6 +78,12 @@ def main() -> None:
 
     assert top_contributors
     assert 0.0 < explanation["baseline_probability"] < 1.0
+    total_log_odds = (
+        explanation["baseline_log_odds"]
+        + sum(item["signed_contribution"] for item in top_contributors)
+        + explanation["other_contribution"]
+    )
+    assert abs(1 / (1 + math.exp(-total_log_odds)) - prediction["probability"]) < 1e-3
     assert isinstance(explanation["other_contribution"], float)
     for contributor in top_contributors:
         plot = contributor["plot"]
