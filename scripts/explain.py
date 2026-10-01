@@ -1,25 +1,23 @@
-"""Model explainability: SHAP contributions, phrasing, and effect plots for the frontend.
+"""Model explainability: Shapley contributions and plots for the frontend.
 
 Single entrypoint is `build_explanation`; everything else here is a building block for it.
 """
 
 from __future__ import annotations
 
+import base64
+import io
 import math
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 import xgboost as xgb
+from shapiq import TreeExplainer
+from shapiq.interaction_values import InteractionValues
 
 from features import FEATURE_COLUMNS
-
-CATEGORICAL_FEATURES = {"day_of_week", "month", "season"}
-DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-SEASON_LABELS = ["Winter", "Spring", "Summer", "Fall"]
-
-CONTINUOUS_BIN_COUNT = 24  # caps historical scatter points; ceiling is coarser resolution, raise if plots look chunky
 
 PHRASE_BANK: dict[str, str] = {
     "acute_load_7": "recent training load in your legs",
@@ -60,10 +58,6 @@ PHRASE_BANK: dict[str, str] = {
 }
 
 
-def _feature_list(features: list[str] | None) -> list[str]:
-    return FEATURE_COLUMNS if features is None else features
-
-
 def _sigmoid(value: float) -> float:
     if value >= 0:
         exp_term = math.exp(-value)
@@ -72,171 +66,173 @@ def _sigmoid(value: float) -> float:
     return exp_term / (1.0 + exp_term)
 
 
-def summarize_top_contributors(contributions: dict[str, float], top_n: int = 3) -> list[dict[str, Any]]:
-    ranked = sorted(contributions.items(), key=lambda item: abs(item[1]), reverse=True)[:top_n]
+def _feature_list(features: list[str] | None) -> list[str]:
+    return FEATURE_COLUMNS if features is None else features
+
+
+def _attributions(interaction_values: InteractionValues, features: list[str]) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
-    for feature, value in ranked:
+    for indices, value in interaction_values.dict_values.items():
+        if not indices:
+            continue
+        if len(indices) > 2:
+            raise ValueError("Tree explanations must not contain interactions above order 2")
+        names = [features[index] for index in indices]
+        is_interaction = len(names) == 2
+        phrase = " × ".join(PHRASE_BANK.get(name, name.replace("_", " ")) for name in names)
+        if is_interaction:
+            phrase += " (interaction)"
         output.append(
             {
-                "feature": feature,
+                "indices": list(indices),
+                "feature": " × ".join(names),
+                "phrase": phrase,
+                "is_interaction": is_interaction,
                 "signed_contribution": float(value),
                 "direction": "helping" if value >= 0 else "hurting",
-                "phrase": PHRASE_BANK.get(feature, feature.replace("_", " ")),
             }
         )
-    return output
+    return sorted(output, key=lambda item: abs(item["signed_contribution"]), reverse=True)
 
 
-def feature_contributions(
-    model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] | None = None
-) -> dict[str, float]:
-    return explain_prediction(model, feature_row, features)["contributions"]
+def render_explanation_plots(
+    interaction_values: InteractionValues,
+    features: list[str],
+    attributions: list[dict[str, Any]],
+    baseline_probability: float,
+    probability: float,
+    top_n: int,
+    output_dir: Path | None = None,
+) -> dict[str, str]:
+    import matplotlib.pyplot as plt
 
+    if output_dir is not None:
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-def explain_prediction(
-    model: xgb.XGBModel, feature_row: pd.DataFrame, features: list[str] | None = None
-) -> dict[str, Any]:
-    features = _feature_list(features)
-    matrix = xgb.DMatrix(feature_row[features], feature_names=features)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)[0]
-    contributions = {
-        name: float(value)
-        for name, value in zip(features, contribs[:-1], strict=True)
-    }
-    baseline_log_odds = float(contribs[-1])
-    total_log_odds = baseline_log_odds + float(np.sum(contribs[:-1]))
-    return {
-        "contributions": contributions,
-        "baseline_log_odds": baseline_log_odds,
-        "baseline_probability": _sigmoid(baseline_log_odds),
-        "probability": _sigmoid(total_log_odds),
-    }
+    def save_plot(name: str, figure: Any) -> str:
+        buffer = io.BytesIO()
+        figure.savefig(buffer, format="png", bbox_inches="tight", dpi=140)
+        image = buffer.getvalue()
+        if output_dir is not None:
+            (output_dir / f"{name}.png").write_bytes(image)
+        plt.close(figure)
+        return "data:image/png;base64," + base64.b64encode(image).decode("ascii")
 
-
-def _feature_contributions_frame(
-    model: xgb.XGBModel,
-    feature_rows: pd.DataFrame,
-    columns: list[str] | None = None,
-    features: list[str] | None = None,
-) -> pd.DataFrame:
-    features = _feature_list(features)
-    matrix = xgb.DMatrix(feature_rows[features], feature_names=features)
-    contribs = model.get_booster().predict(matrix, pred_contribs=True)
-    frame = pd.DataFrame(contribs[:, :-1], columns=features, index=feature_rows.index)
-    return frame if columns is None else frame[columns]
-
-
-def _category_label(feature: str, value: float) -> str:
-    numeric = int(value) if float(value).is_integer() else round(float(value), 4)
-    if feature == "day_of_week":
-        return DAY_LABELS[int(numeric)] if 0 <= int(numeric) < len(DAY_LABELS) else str(numeric)
-    if feature == "month":
-        month_index = int(numeric) - 1
-        return MONTH_LABELS[month_index] if 0 <= month_index < len(MONTH_LABELS) else str(numeric)
-    if feature == "season":
-        return SEASON_LABELS[int(numeric)] if 0 <= int(numeric) < len(SEASON_LABELS) else str(numeric)
-    return str(numeric)
-
-
-def _binned_continuous_points(values: pd.Series, shap_values: pd.Series) -> list[dict[str, float]]:
-    """Average SHAP into quantile buckets so plot size doesn't grow with history length."""
-    combined = pd.DataFrame({"value": values, "shap": shap_values}).dropna()
-    if combined.empty:
-        return []
-    if len(combined) > CONTINUOUS_BIN_COUNT and combined["value"].nunique() > 1:
-        bins = min(CONTINUOUS_BIN_COUNT, combined["value"].nunique())
-        combined["bucket"] = pd.qcut(combined["value"], q=bins, duplicates="drop")
-        combined = combined.groupby("bucket", observed=True)[["value", "shap"]].mean()
-    return [
-        {"feature_value": round(float(value), 4), "shap_value": round(float(shap), 4)}
-        for value, shap in zip(combined["value"], combined["shap"], strict=True)
-    ]
-
-
-def attach_feature_plots(
-    model: xgb.XGBModel,
-    top_contributors: list[dict[str, Any]],
-    historical: pd.DataFrame,
-    feature_row: pd.DataFrame,
-    features: list[str] | None = None,
-) -> list[dict[str, Any]]:
-    features = _feature_list(features)
-    current = feature_row.iloc[0]
-    requested_features = [contributor["feature"] for contributor in top_contributors]
-    historical_contribs = _feature_contributions_frame(
-        model, historical[features], columns=requested_features, features=features
+    waterfall_ax = interaction_values.plot_waterfall(
+        feature_names=features, show=False, max_display=10
     )
+    if waterfall_ax is None:
+        raise RuntimeError("shapiq did not return a waterfall plot")
+    waterfall_fig = waterfall_ax.figure
+    waterfall_ax.set_xlabel("Attribution (log-odds)")
+    baseline_ax, prediction_ax = waterfall_fig.axes[1:3]
+    baseline_ticks = baseline_ax.get_xticks()
+    prediction_ticks = prediction_ax.get_xticks()
+    baseline_ax.set_xticks(baseline_ticks, [f"Baseline p={baseline_probability:.1%}", ""])
+    prediction_ax.set_xticks(prediction_ticks, [f"Prediction p={probability:.1%}", ""])
+    plots = {"waterfall": save_plot("waterfall", waterfall_fig)}
 
-    enriched: list[dict[str, Any]] = []
-    for contributor in top_contributors:
-        feature = contributor["feature"]
-        values = pd.to_numeric(historical[feature], errors="coerce")
-        current_value = pd.to_numeric(pd.Series([current.get(feature)]), errors="coerce").iloc[0]
-        shap_values = pd.to_numeric(historical_contribs[feature], errors="coerce")
+    top = attributions[:top_n]
+    figure, ax = plt.subplots(figsize=(9, max(2.5, len(top) * 0.55)))
+    ax.barh(
+        [item["phrase"] for item in top],
+        [item["signed_contribution"] for item in top],
+        color=["#059669" if item["signed_contribution"] >= 0 else "#e11d48" for item in top],
+    )
+    ax.invert_yaxis()
+    ax.set_xlabel("Attribution (log-odds)")
+    ax.set_title(f"Top {len(top)} contributions")
+    figure.tight_layout()
+    plots["top_n"] = save_plot("top_n", figure)
 
-        if feature in CATEGORICAL_FEATURES:
-            categories = (
-                pd.DataFrame({"value": values, "shap": shap_values})
-                .dropna()
-                .groupby("value", sort=True)["shap"]
-                .mean()
-                .items()
-            )
-            plot: dict[str, Any] = {
-                "kind": "categorical",
-                "current_value": int(current_value) if not pd.isna(current_value) else None,
-                "current_label": _category_label(feature, float(current_value)) if not pd.isna(current_value) else None,
-                "categories": [
-                    {
-                        "value": int(value) if float(value).is_integer() else round(float(value), 4),
-                        "label": _category_label(feature, float(value)),
-                        "mean_shap": round(float(mean_shap), 4),
-                    }
-                    for value, mean_shap in categories
-                ],
-            }
-        else:
-            plot = {
-                "kind": "continuous",
-                "current_value": round(float(current_value), 4) if not pd.isna(current_value) else None,
-                "current_shap": round(float(contributor["signed_contribution"]), 4),
-                "points": _binned_continuous_points(values, shap_values),
-            }
+    force_fig = interaction_values.plot_force(feature_names=features, show=False)
+    if force_fig is None:
+        raise RuntimeError("shapiq did not return a force plot")
+    force_ax = force_fig.axes[0]
+    baseline_log_odds = float(interaction_values.baseline_value)
+    margin = baseline_log_odds + math.fsum(item["signed_contribution"] for item in attributions)
+    for label in force_ax.texts:
+        x_position, y_position = label.get_position()
+        if math.isclose(y_position, 0.25) and math.isclose(x_position, baseline_log_odds):
+            label.set_text(f"Baseline p={baseline_probability:.1%}")
+        elif math.isclose(y_position, 0.25) and math.isclose(x_position, margin):
+            label.set_text(f"Prediction p={probability:.1%}")
+    force_ax.set_xlabel("Attribution (log-odds)")
+    plots["force"] = save_plot("force", force_fig)
 
-        enriched.append(
-            {
-                **contributor,
-                "plot": plot,
-            }
-        )
-    return enriched
+    network_result = interaction_values.plot_network(feature_names=features, show=False)
+    if network_result is None:
+        raise RuntimeError("shapiq did not return a network plot")
+    network_fig, network_ax = network_result
+    network_ax.set_title("Feature attributions and interactions (log-odds)")
+    plots["network"] = save_plot("network", network_fig)
+    return plots
 
 
 def build_explanation(
-    model: xgb.XGBModel,
+    model: xgb.XGBClassifier,
     feature_row: pd.DataFrame,
-    historical: pd.DataFrame,
     top_n: int = 3,
     features: list[str] | None = None,
+    output_dir: Path | None = None,
+    render_plots: bool = True,
 ) -> dict[str, Any]:
-    """Rank SHAP contributions, attach effect plots to the top N, and summarize the rest.
-
-    Single source of truth for both the contributor list and the waterfall chart: the frontend
-    builds the waterfall directly from `top_contributors` + `baseline_probability` +
-    `other_contribution`, instead of a separately-computed duplicate structure.
-    """
     features = _feature_list(features)
-    explanation = explain_prediction(model, feature_row, features=features)
-    ranked = summarize_top_contributors(explanation["contributions"], top_n=len(explanation["contributions"]))
-    top_contributors = attach_feature_plots(model, ranked[:top_n], historical, feature_row, features=features)
+    row = feature_row[features]
+    # XGBoost classifiers return raw-margin (log-odds) contributions, not probability deltas.
+    interaction_values = TreeExplainer(
+        model=model, index="k-SII", min_order=0, max_order=2, class_index=1
+    ).explain(row.to_numpy()[0])
+    if interaction_values.max_order > 2:
+        raise ValueError("Tree explanations must not contain interactions above order 2")
 
-    remainder = ranked[top_n:]
-    other_contribution = sum(item["signed_contribution"] for item in remainder)
-    if abs(other_contribution) <= 1e-9:
-        other_contribution = 0.0
+    attributions = _attributions(interaction_values, features)
+    attribution_sum = math.fsum(item["signed_contribution"] for item in attributions)
+    margin = float(model.predict(row, output_margin=True)[0])
+    model_probability = float(model.predict_proba(row)[0, 1])
+    native_contributions = model.get_booster().predict(
+        xgb.DMatrix(row, feature_names=features), pred_contribs=True
+    )[0]
+    native_baseline = float(native_contributions[-1])
+    if not np.isclose(attribution_sum, float(np.sum(native_contributions[:-1])), rtol=1e-5, atol=1e-5):
+        raise ValueError("shapiq interactions do not reconcile with XGBoost feature contributions")
+    # Keep the InteractionValues baseline aligned with XGBoost's raw-margin empty-set value.
+    interaction_values.baseline_value = native_baseline
+    interaction_values.interactions[()] = native_baseline
+    baseline_log_odds = native_baseline
+    baseline_probability = _sigmoid(baseline_log_odds)
+    probability = _sigmoid(margin)
+    consistent = np.isclose(
+        baseline_log_odds + attribution_sum, margin, rtol=1e-5, atol=1e-5
+    ) and np.isclose(probability, model_probability, rtol=1e-5, atol=1e-5)
+    if not consistent:
+        raise ValueError("shapiq attributions do not reconcile with the XGBoost prediction")
 
+    if top_n < 0:
+        raise ValueError("top_n must be non-negative")
+    plots = (
+        render_explanation_plots(
+            interaction_values,
+            features,
+            attributions,
+            baseline_probability,
+            probability,
+            top_n,
+            output_dir=output_dir,
+        )
+        if render_plots
+        else {}
+    )
     return {
-        "baseline_probability": round(float(explanation["baseline_probability"]), 4),
-        "top_contributors": top_contributors,
-        "other_contribution": round(float(other_contribution), 4),
+        "interaction_values": interaction_values,
+        "baseline_log_odds": baseline_log_odds,
+        "baseline_probability": baseline_probability,
+        "attribution_sum": attribution_sum,
+        "margin": margin,
+        "probability": probability,
+        "model_probability": model_probability,
+        "consistent": bool(consistent),
+        "waterfall_steps": attributions,
+        "top_contributors": attributions[:top_n],
+        "plots": plots,
     }
