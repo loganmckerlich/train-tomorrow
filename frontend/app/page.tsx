@@ -394,22 +394,19 @@ function FeaturePlot({ contributor }: { contributor: Contributor }) {
   );
 }
 
-function WaterfallPlot({
+function ContributorSummary({
   topContributors,
   baselineLogOdds,
   otherContribution,
   finalProbability,
 }: {
   topContributors: Contributor[];
-  baselineLogOdds: number;
-  otherContribution: number;
+  baselineLogOdds?: number;
+  otherContribution?: number;
   finalProbability: number;
 }) {
-  const baselineProbability = sigmoid(baselineLogOdds);
-  const steps: Array<Pick<Contributor, "feature" | "signed_contribution" | "direction" | "phrase">> = [
-    ...topContributors,
-  ];
-  if (Math.abs(otherContribution) > 1e-9) {
+  const steps: Contributor[] = [...topContributors];
+  if (otherContribution !== undefined && Math.abs(otherContribution) > 1e-9) {
     steps.push({
       feature: "other_features",
       signed_contribution: otherContribution,
@@ -417,102 +414,67 @@ function WaterfallPlot({
       phrase: "all other features",
     });
   }
-  if (steps.length === 0) {
-    return null;
-  }
-
-  const segments = steps.reduce<{
-    items: Array<
-      (typeof steps)[number] & {
-        startProbability: number;
-        endProbability: number;
-        deltaPoints: number;
-      }
-    >;
-    runningLogOdds: number;
-  }>(
-    (state, step) => {
-      const startProbability = sigmoid(state.runningLogOdds);
-      const nextLogOdds = state.runningLogOdds + step.signed_contribution;
-      const endProbability = sigmoid(nextLogOdds);
-      return {
-        runningLogOdds: nextLogOdds,
-        items: [
-          ...state.items,
-          {
-            ...step,
-            startProbability,
-            endProbability,
-            deltaPoints: shapPoints(step.signed_contribution),
-          },
-        ],
-      };
-    },
-    { items: [], runningLogOdds: baselineLogOdds },
-  ).items;
-  const chartHeight = 16 + segments.length * 12;
+  let runningLogOdds = baselineLogOdds;
+  const rows = steps.map((step) => {
+    if (runningLogOdds === undefined) {
+      return { ...step, endProbability: null };
+    }
+    runningLogOdds += step.signed_contribution;
+    return { ...step, endProbability: sigmoid(runningLogOdds) };
+  });
+  const maxContributionMagnitude = Math.max(
+    ...steps.map((step) => Math.abs(shapPoints(step.signed_contribution))),
+    1,
+  );
+  const baselineProbability =
+    baselineLogOdds === undefined ? undefined : sigmoid(baselineLogOdds);
 
   return (
-    <figure className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <figcaption className="text-sm font-medium text-slate-800">How the model got here</figcaption>
-      <p className="mt-1 text-xs text-slate-500">
-        Starts from the model&apos;s average day ({formatPercent(baselineProbability)})
-        and walks through today&apos;s biggest pushes to land at{" "}
-        {formatPercent(finalProbability)}.
-      </p>
+    <>
+      {baselineProbability === undefined ? null : (
+        <p className="mt-1 text-sm text-slate-600">
+          Starting from the model&apos;s average day ({formatPercent(baselineProbability)}), each row applies the next SHAP contribution
+          {otherContribution === undefined ? "." : ` to reach ${formatPercent(finalProbability)}.`}
+        </p>
+      )}
       <p className="mt-1 text-xs text-slate-500">Points are SHAP log-odds × 100.</p>
-      <div className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
-        <svg
-          viewBox={`0 0 100 ${chartHeight}`}
-          className="w-full"
-          style={{ height: `${Math.max(180, segments.length * 28)}px` }}
-          aria-hidden="true"
-        >
-          {segments.map((segment, index) => {
-            const y = 10 + index * 12;
-            const startX = scale(segment.startProbability, [0, 1], [8, 96]);
-            const endX = scale(segment.endProbability, [0, 1], [8, 96]);
-            return (
-              <g key={`${segment.feature}-${index}`}>
-                <line
-                  x1={startX}
-                  x2={endX}
-                  y1={y}
-                  y2={y}
-                  className={segment.direction === "helping" ? "stroke-emerald-500" : "stroke-rose-500"}
-                  strokeWidth="6"
-                  strokeLinecap="round"
+      <ul className="mt-4 space-y-4">
+        {rows.map((row) => {
+          const effectPoints = shapPoints(row.signed_contribution);
+          return (
+            <li key={row.feature}>
+              <div className="mb-1 flex items-center justify-between gap-4 text-sm">
+                <span className="font-medium text-slate-800">{row.phrase}</span>
+                <div className="text-right">
+                  <span
+                    className={
+                      row.direction === "helping"
+                        ? "font-semibold text-emerald-600"
+                        : "font-semibold text-rose-600"
+                    }
+                    title={`Raw SHAP ${formatSigned(row.signed_contribution, 4)} log-odds`}
+                  >
+                    {formatContributionPoints(effectPoints)}
+                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability)}`}
+                  </span>
+                  <p className="text-xs text-slate-500">{row.direction}</p>
+                </div>
+              </div>
+              <div className="h-2 rounded-full bg-slate-200">
+                <div
+                  className={`h-2 rounded-full ${
+                    row.direction === "helping" ? "bg-emerald-500" : "bg-rose-500"
+                  }`}
+                  style={{ width: contributorBarWidth(effectPoints, maxContributionMagnitude) }}
+                  title={`Raw SHAP ${formatSigned(row.signed_contribution, 4)} log-odds`}
                 />
-                <circle cx={startX} cy={y} r="1.5" className="fill-white stroke-slate-400" strokeWidth="0.8" />
-                <circle cx={endX} cy={y} r="1.8" className="fill-slate-900" />
-              </g>
-            );
-          })}
-        </svg>
-        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-          <span>0%</span>
-          <span>train probability</span>
-          <span>100%</span>
-        </div>
-      </div>
-      <ol className="mt-4 space-y-2">
-        {segments.map((segment, index) => (
-          <li key={`${segment.feature}-summary-${index}`} className="flex items-start justify-between gap-4 text-sm">
-            <span className="text-slate-700">{segment.phrase}</span>
-            <span
-              className={
-                segment.direction === "helping"
-                  ? "text-right font-medium text-emerald-600"
-                  : "text-right font-medium text-rose-600"
-              }
-              title={`Raw SHAP ${formatSigned(segment.signed_contribution, 4)} log-odds`}
-            >
-              {formatContributionPoints(segment.deltaPoints)} → {formatPercent(segment.endProbability)}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </figure>
+              </div>
+              <FeaturePlot contributor={row} />
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }
 
@@ -605,10 +567,6 @@ export default async function Home() {
     );
   }
 
-  const contributionMagnitudes = prediction.top_contributors.map((item) =>
-    Math.abs(shapPoints(item.signed_contribution)),
-  );
-  const maxContributionMagnitude = Math.max(...contributionMagnitudes, 1);
   const generatedAt = formatGeneratedAt(prediction.generated_at);
 
   return (
@@ -647,51 +605,18 @@ export default async function Home() {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
-        {prediction.baseline_log_odds !== undefined || prediction.baseline_probability !== undefined ? (
-          <WaterfallPlot
-            topContributors={prediction.top_contributors}
-            baselineLogOdds={
-              prediction.baseline_log_odds ?? logit(prediction.baseline_probability!)
-            }
-            otherContribution={prediction.other_contribution ?? 0}
-            finalProbability={prediction.probability}
-          />
-        ) : null}
-        <ul className="mt-4 space-y-4">
-          {prediction.top_contributors.map((item) => {
-            const effectPoints = shapPoints(item.signed_contribution);
-            return (
-              <li key={item.feature}>
-                <div className="mb-1 flex items-center justify-between gap-4 text-sm">
-                  <span className="font-medium text-slate-800">{item.phrase}</span>
-                  <div className="text-right">
-                    <span
-                      className={
-                        item.direction === "helping"
-                          ? "font-semibold text-emerald-600"
-                          : "font-semibold text-rose-600"
-                      }
-                      title={`Raw SHAP ${formatSigned(item.signed_contribution, 4)} log-odds`}
-                    >
-                      {formatContributionPoints(effectPoints)}
-                    </span>
-                    <p className="text-xs text-slate-500">{item.direction}</p>
-                  </div>
-                </div>
-                <div className="h-2 rounded-full bg-slate-200">
-                  <div
-                    className={`h-2 rounded-full ${
-                      item.direction === "helping" ? "bg-emerald-500" : "bg-rose-500"
-                    }`}
-                    style={{ width: contributorBarWidth(effectPoints, maxContributionMagnitude) }}
-                    title={`Raw SHAP ${formatSigned(item.signed_contribution, 4)} log-odds`}
-                  />
-                </div>
-                <FeaturePlot contributor={item} />
-              </li>
-            );
-          })}
-        </ul>
+        <ContributorSummary
+          topContributors={prediction.top_contributors}
+          baselineLogOdds={
+            prediction.baseline_log_odds ?? (
+              prediction.baseline_probability === undefined
+                ? undefined
+                : logit(prediction.baseline_probability)
+            )
+          }
+          otherContribution={prediction.other_contribution}
+          finalProbability={prediction.probability}
+        />
       </section>
 
       {prediction.calibration ? <CalibrationPlot calibration={prediction.calibration} /> : null}
