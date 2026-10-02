@@ -1,44 +1,44 @@
 {
-  "date": "2026-10-01",
-  "generated_at": "2026-10-01T03:42:56.888103+00:00",
+  "date": "2026-10-02",
+  "generated_at": "2026-10-02T02:07:51.608998+00:00",
   "will_train": true,
-  "probability": 0.8423,
-  "predicted_effort": 36.74,
+  "probability": 0.6992,
+  "predicted_effort": 33.18,
   "top_contributors": [
     {
       "feature": "trained_days_7",
       "kind": "feature",
-      "signed_contribution": 0.1569651772427762,
+      "signed_contribution": 0.17262786284992737,
       "direction": "helping",
       "phrase": "how often you've trained this past week",
       "plot": {
         "kind": "continuous",
         "current_value": 6.0,
-        "current_shap": 0.157,
+        "current_shap": 0.1726,
         "points": [
           {
             "feature_value": 1.6667,
-            "shap_value": -0.1715
+            "shap_value": -0.186
           },
           {
             "feature_value": 3.0,
-            "shap_value": -0.1693
+            "shap_value": -0.184
           },
           {
             "feature_value": 4.0,
-            "shap_value": -0.1521
+            "shap_value": -0.1708
           },
           {
             "feature_value": 5.0,
-            "shap_value": 0.1667
+            "shap_value": 0.1768
           },
           {
             "feature_value": 6.0,
-            "shap_value": 0.1659
+            "shap_value": 0.1757
           },
           {
             "feature_value": 7.0,
-            "shap_value": 0.1679
+            "shap_value": 0.1768
           }
         ]
       }
@@ -46,220 +46,155 @@
     {
       "feature": "dow_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.1509217502560232,
+      "signed_contribution": 0.1530339234029621,
       "direction": "helping",
       "phrase": "regular train rate for this day of the week",
       "plot": {
         "kind": "continuous",
-        "current_value": 0.5631,
-        "current_shap": 0.1509,
+        "current_value": 0.5825,
+        "current_shap": 0.153,
         "points": [
           {
             "feature_value": 0.035,
-            "shap_value": -0.3754
+            "shap_value": -0.3631
           },
           {
             "feature_value": 0.1226,
-            "shap_value": -0.3858
+            "shap_value": -0.3721
           },
           {
             "feature_value": 0.2083,
-            "shap_value": -0.3796
+            "shap_value": -0.3668
           },
           {
             "feature_value": 0.2698,
-            "shap_value": -0.3684
+            "shap_value": -0.3649
           },
           {
-            "feature_value": 0.2894,
-            "shap_value": -0.419
+            "feature_value": 0.2897,
+            "shap_value": -0.4265
           },
           {
-            "feature_value": 0.3061,
-            "shap_value": -0.4305
+            "feature_value": 0.3063,
+            "shap_value": -0.4375
           },
           {
             "feature_value": 0.3315,
-            "shap_value": -0.3833
+            "shap_value": -0.3866
           },
           {
             "feature_value": 0.3509,
-            "shap_value": -0.3513
+            "shap_value": -0.3632
           },
           {
             "feature_value": 0.3693,
-            "shap_value": -0.2318
+            "shap_value": -0.2649
           },
           {
             "feature_value": 0.3928,
-            "shap_value": 0.0053
+            "shap_value": 0.0034
           },
           {
             "feature_value": 0.4102,
-            "shap_value": 0.0997
+            "shap_value": 0.1181
           },
           {
             "feature_value": 0.4284,
-            "shap_value": 0.1397
+            "shap_value": 0.1416
           },
           {
             "feature_value": 0.4461,
-            "shap_value": 0.1433
+            "shap_value": 0.1457
           },
           {
             "feature_value": 0.4608,
-            "shap_value": 0.1469
+            "shap_value": 0.1467
           },
           {
             "feature_value": 0.4752,
-            "shap_value": 0.1433
+            "shap_value": 0.1454
           },
           {
-            "feature_value": 0.4859,
-            "shap_value": 0.1445
+            "feature_value": 0.4862,
+            "shap_value": 0.1464
           },
           {
-            "feature_value": 0.4979,
-            "shap_value": 0.1458
+            "feature_value": 0.4982,
+            "shap_value": 0.1473
           },
           {
             "feature_value": 0.5085,
-            "shap_value": 0.1502
+            "shap_value": 0.151
           },
           {
             "feature_value": 0.5242,
-            "shap_value": 0.1507
+            "shap_value": 0.1523
           },
           {
-            "feature_value": 0.5411,
-            "shap_value": 0.1552
+            "feature_value": 0.5413,
+            "shap_value": 0.1546
           },
           {
-            "feature_value": 0.5558,
-            "shap_value": 0.1577
+            "feature_value": 0.5563,
+            "shap_value": 0.1572
           },
           {
             "feature_value": 0.5687,
-            "shap_value": 0.1516
+            "shap_value": 0.1509
           },
           {
             "feature_value": 0.5795,
-            "shap_value": 0.1491
+            "shap_value": 0.1499
           },
           {
             "feature_value": 0.7008,
-            "shap_value": 0.0996
+            "shap_value": 0.1038
           }
         ]
       }
-    },
-    {
-      "feature": "days_since_last_hard",
-      "kind": "feature",
-      "signed_contribution": 0.10374482564213214,
-      "direction": "helping",
-      "phrase": "time since your last hard effort",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 2.0,
-        "current_shap": 0.1037,
-        "points": [
-          {
-            "feature_value": 0.4452,
-            "shap_value": 0.1006
-          },
-          {
-            "feature_value": 2.0,
-            "shap_value": 0.1012
-          },
-          {
-            "feature_value": 3.0,
-            "shap_value": 0.0921
-          },
-          {
-            "feature_value": 4.0,
-            "shap_value": 0.0775
-          },
-          {
-            "feature_value": 5.0,
-            "shap_value": 0.0663
-          },
-          {
-            "feature_value": 6.0,
-            "shap_value": -0.3116
-          },
-          {
-            "feature_value": 7.0,
-            "shap_value": -0.311
-          },
-          {
-            "feature_value": 8.4375,
-            "shap_value": -0.3048
-          },
-          {
-            "feature_value": 10.8462,
-            "shap_value": -0.3075
-          },
-          {
-            "feature_value": 179.1,
-            "shap_value": -0.2829
-          }
-        ]
-      }
-    },
-    {
-      "feature": "trained_days_7 \u00d7 day_of_week",
-      "features": [
-        "trained_days_7",
-        "day_of_week"
-      ],
-      "kind": "interaction",
-      "signed_contribution": 0.09635889012427723,
-      "direction": "helping",
-      "phrase": "interaction between how often you've trained this past week and the day of the week"
     },
     {
       "feature": "trained_days_30",
       "kind": "feature",
-      "signed_contribution": 0.09411815402462335,
+      "signed_contribution": 0.09885055389982143,
       "direction": "helping",
       "phrase": "your training frequency over the past month",
       "plot": {
         "kind": "continuous",
         "current_value": 21.0,
-        "current_shap": 0.0941,
+        "current_shap": 0.0989,
         "points": [
           {
             "feature_value": 5.025,
-            "shap_value": -0.2487
+            "shap_value": -0.2304
           },
           {
             "feature_value": 8.0,
-            "shap_value": -0.2474
+            "shap_value": -0.2285
           },
           {
             "feature_value": 9.0,
-            "shap_value": -0.249
+            "shap_value": -0.2291
           },
           {
             "feature_value": 10.0,
-            "shap_value": -0.2423
+            "shap_value": -0.2217
           },
           {
             "feature_value": 11.0,
-            "shap_value": -0.2619
+            "shap_value": -0.253
           },
           {
             "feature_value": 12.0,
-            "shap_value": -0.26
+            "shap_value": -0.2524
           },
           {
             "feature_value": 13.0,
-            "shap_value": -0.2489
+            "shap_value": -0.2481
           },
           {
             "feature_value": 14.0,
-            "shap_value": -0.2416
+            "shap_value": -0.2428
           },
           {
             "feature_value": 15.0,
@@ -267,124 +202,167 @@
           },
           {
             "feature_value": 16.0,
-            "shap_value": -0.2088
+            "shap_value": -0.2082
           },
           {
             "feature_value": 17.0,
-            "shap_value": 0.0191
+            "shap_value": 0.0192
           },
           {
             "feature_value": 18.0,
-            "shap_value": 0.0844
+            "shap_value": 0.0817
           },
           {
             "feature_value": 19.0,
-            "shap_value": 0.0715
+            "shap_value": 0.0679
           },
           {
             "feature_value": 20.0,
-            "shap_value": 0.0873
+            "shap_value": 0.091
           },
           {
             "feature_value": 21.0,
-            "shap_value": 0.1007
+            "shap_value": 0.0986
           },
           {
             "feature_value": 22.0,
-            "shap_value": 0.0913
+            "shap_value": 0.092
           },
           {
             "feature_value": 23.0,
-            "shap_value": 0.0901
+            "shap_value": 0.0918
           },
           {
             "feature_value": 24.0,
-            "shap_value": 0.0818
+            "shap_value": 0.0825
           },
           {
             "feature_value": 25.32,
-            "shap_value": 0.0831
+            "shap_value": 0.0834
           }
         ]
       }
     },
     {
-      "feature": "days_since_last_long_ride",
+      "feature": "forecast_temp_high_vs_seasonal",
       "kind": "feature",
-      "signed_contribution": -0.08363116119276916,
+      "signed_contribution": -0.09652940438914445,
       "direction": "hurting",
-      "phrase": "time since your last really long session",
+      "phrase": "how the temp high compares to normal for this time of year",
       "plot": {
         "kind": "continuous",
-        "current_value": 7.0,
-        "current_shap": -0.0836,
+        "current_value": 1.861,
+        "current_shap": -0.0965,
         "points": [
           {
-            "feature_value": 0.4606,
-            "shap_value": 0.0371
+            "feature_value": -5.7536,
+            "shap_value": 0.0908
           },
           {
-            "feature_value": 2.0,
-            "shap_value": 0.0271
+            "feature_value": -4.1049,
+            "shap_value": 0.0924
           },
           {
-            "feature_value": 3.0,
-            "shap_value": 0.0229
+            "feature_value": -3.3207,
+            "shap_value": 0.0863
           },
           {
-            "feature_value": 4.0,
-            "shap_value": 0.0043
+            "feature_value": -2.7555,
+            "shap_value": 0.0798
           },
           {
-            "feature_value": 5.0,
-            "shap_value": 0.0056
+            "feature_value": -2.2844,
+            "shap_value": 0.0791
           },
           {
-            "feature_value": 6.0,
-            "shap_value": -0.0719
+            "feature_value": -1.8979,
+            "shap_value": 0.0634
           },
           {
-            "feature_value": 7.0,
-            "shap_value": -0.0715
+            "feature_value": -1.621,
+            "shap_value": 0.0685
           },
           {
-            "feature_value": 8.0,
-            "shap_value": -0.0725
+            "feature_value": -1.3204,
+            "shap_value": 0.0702
           },
           {
-            "feature_value": 9.4694,
-            "shap_value": -0.0709
+            "feature_value": -1.0465,
+            "shap_value": 0.0624
           },
           {
-            "feature_value": 11.0,
-            "shap_value": -0.0676
+            "feature_value": -0.7001,
+            "shap_value": 0.0574
           },
           {
-            "feature_value": 12.5,
-            "shap_value": -0.0714
+            "feature_value": -0.4007,
+            "shap_value": 0.0463
           },
           {
-            "feature_value": 14.0,
-            "shap_value": -0.0664
+            "feature_value": -0.0965,
+            "shap_value": -0.0532
           },
           {
-            "feature_value": 15.4444,
-            "shap_value": 0.0052
+            "feature_value": 0.3306,
+            "shap_value": -0.0781
           },
           {
-            "feature_value": 18.3,
-            "shap_value": 0.0065
+            "feature_value": 0.7476,
+            "shap_value": -0.0851
           },
           {
-            "feature_value": 23.2,
-            "shap_value": 0.0117
+            "feature_value": 1.1287,
+            "shap_value": -0.0876
           },
           {
-            "feature_value": 188.5806,
-            "shap_value": 0.0098
+            "feature_value": 1.4303,
+            "shap_value": -0.0896
+          },
+          {
+            "feature_value": 1.8554,
+            "shap_value": -0.0935
+          },
+          {
+            "feature_value": 2.356,
+            "shap_value": -0.0948
+          },
+          {
+            "feature_value": 2.8116,
+            "shap_value": -0.0865
+          },
+          {
+            "feature_value": 3.2351,
+            "shap_value": -0.0759
+          },
+          {
+            "feature_value": 3.8434,
+            "shap_value": -0.0734
+          },
+          {
+            "feature_value": 4.8152,
+            "shap_value": -0.0702
+          },
+          {
+            "feature_value": 5.9777,
+            "shap_value": -0.0566
+          },
+          {
+            "feature_value": 8.2796,
+            "shap_value": -0.0004
           }
         ]
       }
+    },
+    {
+      "feature": "trained_days_7 \u00d7 forecast_temp_high_vs_seasonal",
+      "features": [
+        "trained_days_7",
+        "forecast_temp_high_vs_seasonal"
+      ],
+      "kind": "interaction",
+      "signed_contribution": 0.0933125549362923,
+      "direction": "helping",
+      "phrase": "interaction between how often you've trained this past week and how the temp high compares to normal for this time of year"
     },
     {
       "feature": "day_of_week \u00d7 days_since_last_long_ride",
@@ -393,55 +371,60 @@
         "days_since_last_long_ride"
       ],
       "kind": "interaction",
-      "signed_contribution": 0.08359358789068377,
-      "direction": "helping",
+      "signed_contribution": -0.08179934954138936,
+      "direction": "hurting",
       "phrase": "interaction between the day of the week and time since your last really long session"
     },
     {
-      "feature": "day_of_week",
+      "feature": "days_since_last_hard",
       "kind": "feature",
-      "signed_contribution": 0.07420693713933627,
+      "signed_contribution": 0.07570514487141164,
       "direction": "helping",
-      "phrase": "the day of the week",
+      "phrase": "time since your last hard effort",
       "plot": {
-        "kind": "categorical",
-        "current_value": 3,
-        "current_label": "Thu",
-        "categories": [
+        "kind": "continuous",
+        "current_value": 0.0,
+        "current_shap": 0.0757,
+        "points": [
           {
-            "value": 0,
-            "label": "Mon",
-            "mean_shap": 0.2516
+            "feature_value": 0.4453,
+            "shap_value": 0.0691
           },
           {
-            "value": 1,
-            "label": "Tue",
-            "mean_shap": 0.2374
+            "feature_value": 2.0,
+            "shap_value": 0.0726
           },
           {
-            "value": 2,
-            "label": "Wed",
-            "mean_shap": 0.12
+            "feature_value": 3.0,
+            "shap_value": 0.0667
           },
           {
-            "value": 3,
-            "label": "Thu",
-            "mean_shap": 0.0942
+            "feature_value": 4.0,
+            "shap_value": 0.0537
           },
           {
-            "value": 4,
-            "label": "Fri",
-            "mean_shap": -0.0688
+            "feature_value": 5.0,
+            "shap_value": 0.0314
           },
           {
-            "value": 5,
-            "label": "Sat",
-            "mean_shap": -0.3341
+            "feature_value": 6.0,
+            "shap_value": -0.2197
           },
           {
-            "value": 6,
-            "label": "Sun",
-            "mean_shap": -0.3365
+            "feature_value": 7.0,
+            "shap_value": -0.2199
+          },
+          {
+            "feature_value": 8.4444,
+            "shap_value": -0.2193
+          },
+          {
+            "feature_value": 10.8621,
+            "shap_value": -0.2196
+          },
+          {
+            "feature_value": 155.6571,
+            "shap_value": -0.1456
           }
         ]
       }
@@ -453,28 +436,144 @@
         "dow_train_rate"
       ],
       "kind": "interaction",
-      "signed_contribution": 0.07293245279947169,
+      "signed_contribution": 0.07074037754260143,
       "direction": "helping",
       "phrase": "interaction between the temp high forecast and regular train rate for this day of the week"
     },
     {
-      "feature": "trained_days_30 \u00d7 day_of_week",
-      "features": [
-        "trained_days_30",
-        "day_of_week"
-      ],
-      "kind": "interaction",
-      "signed_contribution": 0.04826551140656101,
-      "direction": "helping",
-      "phrase": "interaction between your training frequency over the past month and the day of the week"
+      "feature": "days_since_last_long_ride",
+      "kind": "feature",
+      "signed_contribution": -0.06300771061814558,
+      "direction": "hurting",
+      "phrase": "time since your last really long session",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 8.0,
+        "current_shap": -0.063,
+        "points": [
+          {
+            "feature_value": 0.4606,
+            "shap_value": 0.0424
+          },
+          {
+            "feature_value": 2.0,
+            "shap_value": 0.0326
+          },
+          {
+            "feature_value": 3.0,
+            "shap_value": 0.0287
+          },
+          {
+            "feature_value": 4.0,
+            "shap_value": 0.0101
+          },
+          {
+            "feature_value": 5.0,
+            "shap_value": 0.0111
+          },
+          {
+            "feature_value": 6.0,
+            "shap_value": -0.0701
+          },
+          {
+            "feature_value": 7.0,
+            "shap_value": -0.0707
+          },
+          {
+            "feature_value": 8.0,
+            "shap_value": -0.0722
+          },
+          {
+            "feature_value": 9.4694,
+            "shap_value": -0.0709
+          },
+          {
+            "feature_value": 11.0,
+            "shap_value": -0.0676
+          },
+          {
+            "feature_value": 12.5,
+            "shap_value": -0.0749
+          },
+          {
+            "feature_value": 14.0,
+            "shap_value": -0.0656
+          },
+          {
+            "feature_value": 15.4444,
+            "shap_value": -0.0025
+          },
+          {
+            "feature_value": 18.3,
+            "shap_value": -0.0027
+          },
+          {
+            "feature_value": 23.2,
+            "shap_value": 0.0028
+          },
+          {
+            "feature_value": 188.5806,
+            "shap_value": 0.0009
+          }
+        ]
+      }
+    },
+    {
+      "feature": "day_of_week",
+      "kind": "feature",
+      "signed_contribution": -0.06002643750592295,
+      "direction": "hurting",
+      "phrase": "the day of the week",
+      "plot": {
+        "kind": "categorical",
+        "current_value": 4,
+        "current_label": "Fri",
+        "categories": [
+          {
+            "value": 0,
+            "label": "Mon",
+            "mean_shap": 0.2524
+          },
+          {
+            "value": 1,
+            "label": "Tue",
+            "mean_shap": 0.2372
+          },
+          {
+            "value": 2,
+            "label": "Wed",
+            "mean_shap": 0.1276
+          },
+          {
+            "value": 3,
+            "label": "Thu",
+            "mean_shap": 0.0973
+          },
+          {
+            "value": 4,
+            "label": "Fri",
+            "mean_shap": -0.0695
+          },
+          {
+            "value": 5,
+            "label": "Sat",
+            "mean_shap": -0.3374
+          },
+          {
+            "value": 6,
+            "label": "Sun",
+            "mean_shap": -0.3415
+          }
+        ]
+      }
     }
   ],
-  "baseline_log_odds": 0.5068095527822152,
-  "baseline_probability": 0.6241,
-  "other_contribution": 0.3711,
-  "blurb": "**The Verdict:** Lace up. You\u2019re training tomorrow. \n\nWe\u2019re **84.2% sure** you\u2019re getting after it, with a targeted effort of **36.7 units**\u2014so a solid session, but nothing that warrants a dramatic collapse on the floor.\n\n### Why you\u2019re not getting a pass tomorrow:\n\n* **Predictable Much?** You\u2019ve been riding high on momentum all week, and let\u2019s be honest\u2014you *always* train on this day of the week. You are a creature of habit, and the math knows it.\n* **Out of Excuses:** It\u2019s been plenty of time since your last brutally hard effort. You're fresh enough that the \"I'm still sore\" card won't fly. \n\nSure, it's been a minute since your last long ride, but that little detail isn't going to save you from getting your sweat in tomorrow. Put your kit out tonight!",
+  "baseline_log_odds": 0.512552346335724,
+  "baseline_probability": 0.6254,
+  "other_contribution": -0.0317,
+  "blurb": "Well, well, well. Look who\u2019s getting off the couch tomorrow. \n\nThe data has spoken: **You\u2019re training tomorrow.** \n\nThere\u2019s a **69.9% chance** you\u2019ll actually do it, but don't start dramatics about suffering\u2014we\u2019re predicting a modest effort score of **33.2**, so it\u2019s basically a breeze.\n\nHere is why the algorithm knows you better than you know yourself:\n\n* **You\u2019re a Creature of Habit:** The absolute biggest reason you're training? You\u2019ve been grinding all week (`trained_days_7`), and let's be honest, you *always* work out on this day of the week (`dow_train_rate`). Momentum is carrying your lazy side across the finish line.\n* **No Excuses Left:** It\u2019s been long enough since your last actual hard effort (`days_since_last_hard`), so you can't play the \"I'm still recovering\" card. \n* **The Drama That Tried to Stop You:** The forecast is looking a bit weird for this time of year (`forecast_temp_high_vs_seasonal`), and you've been dragging your feet on taking a long ride, both of which tried to talk you into a rest day. But your recent habit streak overpowered the bad weather excuses.\n\nSet your alarm. See you tomorrow.",
   "calibration": {
-    "total_samples": 9,
+    "total_samples": 10,
     "buckets": [
       {
         "lower_bound": 0.0,
@@ -535,9 +634,9 @@
       {
         "lower_bound": 0.8,
         "upper_bound": 0.9,
-        "predicted_rate": 0.8385,
+        "predicted_rate": 0.8395,
         "actual_rate": 1.0,
-        "sample_size": 3
+        "sample_size": 4
       },
       {
         "lower_bound": 0.9,
