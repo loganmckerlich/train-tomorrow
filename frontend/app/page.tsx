@@ -3,6 +3,9 @@ import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
 import WaterfallPlot from "./WaterfallPlot";
 
+const WATERFALL_CHART_MIN_HEIGHT = 180;
+const WATERFALL_CHART_ROW_HEIGHT = 28;
+
 const blurbMarkdownComponents: Components = {
   p: ({ children }) => <p className="mt-3 leading-relaxed first:mt-0">{children}</p>,
   strong: ({ children }) => <strong className="font-semibold text-amber-300">{children}</strong>,
@@ -479,7 +482,10 @@ function ContributorSummary({
       percentage,
       x: scale(percentage / 100, chartProbabilityDomain, [8, 96]),
     }));
-  const chartHeightPx = Math.max(180, rows.length * 28);
+  const chartHeightPx = Math.max(
+    WATERFALL_CHART_MIN_HEIGHT,
+    rows.length * WATERFALL_CHART_ROW_HEIGHT,
+  );
 
   return (
     <>

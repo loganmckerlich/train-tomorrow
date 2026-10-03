@@ -11,7 +11,7 @@ type WaterfallRow = {
 
 const PLOT_LAYOUT = {
   leftMargin: 32,
-  leftMarginFraction: 0.12,
+  maxLeftMarginFraction: 0.12,
   rightMargin: 12,
   topMargin: 12,
   bottomMargin: 20,
@@ -54,14 +54,17 @@ export default function WaterfallPlot({
     return () => observer.disconnect();
   }, []);
 
-  const left = Math.min(PLOT_LAYOUT.leftMargin, width * PLOT_LAYOUT.leftMarginFraction);
+  const left = Math.min(PLOT_LAYOUT.leftMargin, width * PLOT_LAYOUT.maxLeftMarginFraction);
   const right = width - PLOT_LAYOUT.rightMargin;
   const top = PLOT_LAYOUT.topMargin;
   const axisY = height - PLOT_LAYOUT.bottomMargin;
   const rowSpacing = (axisY - top) / (rows.length + 1);
   const barWidth = Math.min(PLOT_LAYOUT.maxBarWidth, rowSpacing * 0.3);
+  const probabilitySpan = probabilityDomain[1] - probabilityDomain[0];
   const x = (probability: number) =>
-    left + ((probability - probabilityDomain[0]) / (probabilityDomain[1] - probabilityDomain[0])) * (right - left);
+    probabilitySpan === 0
+      ? (left + right) / 2
+      : left + ((probability - probabilityDomain[0]) / probabilitySpan) * (right - left);
   const rowY = (index: number) => top + rowSpacing * (index + 1);
 
   return (
