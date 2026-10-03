@@ -1,0 +1,958 @@
+{
+  "date": "2026-10-03",
+  "generated_at": "2026-10-03T06:40:21.627946+00:00",
+  "will_train": true,
+  "probability": 0.8505,
+  "predicted_effort": 27.06,
+  "top_contributors": [
+    {
+      "feature": "dow_train_rate",
+      "kind": "feature",
+      "signed_contribution": 0.45823217635746066,
+      "direction": "helping",
+      "phrase": "regular train rate for this day of the week",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 0.3718,
+        "current_shap": 0.4582,
+        "points": [
+          {
+            "feature_value": 0.0015,
+            "shap_value": -0.7899
+          },
+          {
+            "feature_value": 0.0807,
+            "shap_value": -0.7948
+          },
+          {
+            "feature_value": 0.12,
+            "shap_value": -0.7946
+          },
+          {
+            "feature_value": 0.1398,
+            "shap_value": -0.7966
+          },
+          {
+            "feature_value": 0.1703,
+            "shap_value": -0.7943
+          },
+          {
+            "feature_value": 0.2031,
+            "shap_value": -0.7956
+          },
+          {
+            "feature_value": 0.2184,
+            "shap_value": -0.7842
+          },
+          {
+            "feature_value": 0.237,
+            "shap_value": -0.7058
+          },
+          {
+            "feature_value": 0.2608,
+            "shap_value": -0.4896
+          },
+          {
+            "feature_value": 0.2802,
+            "shap_value": -0.3989
+          },
+          {
+            "feature_value": 0.2938,
+            "shap_value": -0.2949
+          },
+          {
+            "feature_value": 0.3095,
+            "shap_value": -0.0997
+          },
+          {
+            "feature_value": 0.3322,
+            "shap_value": 0.001
+          },
+          {
+            "feature_value": 0.3455,
+            "shap_value": 0.0019
+          },
+          {
+            "feature_value": 0.3597,
+            "shap_value": 0.1877
+          },
+          {
+            "feature_value": 0.3826,
+            "shap_value": 0.5331
+          },
+          {
+            "feature_value": 0.4044,
+            "shap_value": 0.5639
+          },
+          {
+            "feature_value": 0.4283,
+            "shap_value": 0.5472
+          },
+          {
+            "feature_value": 0.4619,
+            "shap_value": 0.5025
+          }
+        ]
+      }
+    },
+    {
+      "feature": "trained_days_7",
+      "kind": "feature",
+      "signed_contribution": 0.18583132245595257,
+      "direction": "helping",
+      "phrase": "how often you've trained this past week",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 6.0,
+        "current_shap": 0.1858,
+        "points": [
+          {
+            "feature_value": 0.2222,
+            "shap_value": -0.211
+          },
+          {
+            "feature_value": 2.0,
+            "shap_value": -0.2128
+          },
+          {
+            "feature_value": 3.0,
+            "shap_value": -0.1703
+          },
+          {
+            "feature_value": 4.0,
+            "shap_value": -0.1333
+          },
+          {
+            "feature_value": 5.0,
+            "shap_value": 0.1777
+          },
+          {
+            "feature_value": 6.0,
+            "shap_value": 0.1876
+          },
+          {
+            "feature_value": 7.0,
+            "shap_value": 0.1884
+          }
+        ]
+      }
+    },
+    {
+      "feature": "acute_load_7",
+      "kind": "feature",
+      "signed_contribution": 0.16986532890076572,
+      "direction": "helping",
+      "phrase": "recent training load in your legs",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 52.7663,
+        "current_shap": 0.1699,
+        "points": [
+          {
+            "feature_value": 0.1294,
+            "shap_value": -0.1715
+          },
+          {
+            "feature_value": 4.2549,
+            "shap_value": -0.1726
+          },
+          {
+            "feature_value": 7.3158,
+            "shap_value": -0.1715
+          },
+          {
+            "feature_value": 9.6934,
+            "shap_value": -0.1398
+          },
+          {
+            "feature_value": 12.109,
+            "shap_value": -0.1355
+          },
+          {
+            "feature_value": 14.503,
+            "shap_value": -0.1292
+          },
+          {
+            "feature_value": 16.5283,
+            "shap_value": -0.0576
+          },
+          {
+            "feature_value": 18.59,
+            "shap_value": 0.0141
+          },
+          {
+            "feature_value": 20.8509,
+            "shap_value": 0.0219
+          },
+          {
+            "feature_value": 23.1137,
+            "shap_value": 0.0267
+          },
+          {
+            "feature_value": 25.8165,
+            "shap_value": 0.0418
+          },
+          {
+            "feature_value": 28.8579,
+            "shap_value": 0.0672
+          },
+          {
+            "feature_value": 31.5423,
+            "shap_value": 0.1177
+          },
+          {
+            "feature_value": 35.5282,
+            "shap_value": 0.1667
+          },
+          {
+            "feature_value": 39.2938,
+            "shap_value": 0.1724
+          },
+          {
+            "feature_value": 44.6092,
+            "shap_value": 0.1691
+          },
+          {
+            "feature_value": 52.6038,
+            "shap_value": 0.1698
+          },
+          {
+            "feature_value": 61.7789,
+            "shap_value": 0.1695
+          },
+          {
+            "feature_value": 86.4676,
+            "shap_value": 0.1696
+          }
+        ]
+      }
+    },
+    {
+      "feature": "forecast_temp_high",
+      "kind": "feature",
+      "signed_contribution": 0.11972643605896821,
+      "direction": "helping",
+      "phrase": "the temp high forecast",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 22.6,
+        "current_shap": 0.1197,
+        "points": [
+          {
+            "feature_value": 3.5592,
+            "shap_value": -0.1442
+          },
+          {
+            "feature_value": 5.9976,
+            "shap_value": -0.1443
+          },
+          {
+            "feature_value": 7.1426,
+            "shap_value": -0.1446
+          },
+          {
+            "feature_value": 8.0841,
+            "shap_value": -0.1446
+          },
+          {
+            "feature_value": 8.8295,
+            "shap_value": -0.1442
+          },
+          {
+            "feature_value": 9.5432,
+            "shap_value": -0.1439
+          },
+          {
+            "feature_value": 10.2622,
+            "shap_value": -0.1242
+          },
+          {
+            "feature_value": 10.9333,
+            "shap_value": -0.0845
+          },
+          {
+            "feature_value": 11.6556,
+            "shap_value": -0.094
+          },
+          {
+            "feature_value": 12.3545,
+            "shap_value": -0.1031
+          },
+          {
+            "feature_value": 13.28,
+            "shap_value": -0.1045
+          },
+          {
+            "feature_value": 14.2156,
+            "shap_value": -0.0549
+          },
+          {
+            "feature_value": 15.2786,
+            "shap_value": 0.1377
+          },
+          {
+            "feature_value": 16.3043,
+            "shap_value": 0.1737
+          },
+          {
+            "feature_value": 17.3047,
+            "shap_value": 0.1502
+          },
+          {
+            "feature_value": 18.4432,
+            "shap_value": 0.0338
+          },
+          {
+            "feature_value": 19.6152,
+            "shap_value": -0.0566
+          },
+          {
+            "feature_value": 20.5455,
+            "shap_value": -0.0256
+          },
+          {
+            "feature_value": 21.6652,
+            "shap_value": 0.0576
+          },
+          {
+            "feature_value": 22.7976,
+            "shap_value": 0.1436
+          },
+          {
+            "feature_value": 23.9913,
+            "shap_value": 0.1529
+          },
+          {
+            "feature_value": 25.6651,
+            "shap_value": 0.0358
+          },
+          {
+            "feature_value": 27.4178,
+            "shap_value": 0.0298
+          },
+          {
+            "feature_value": 30.3279,
+            "shap_value": 0.0297
+          }
+        ]
+      }
+    },
+    {
+      "feature": "forecast_precip_probability",
+      "kind": "feature",
+      "signed_contribution": 0.10734390049730913,
+      "direction": "helping",
+      "phrase": "rain in the forecast",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 0.0,
+        "current_shap": 0.1073,
+        "points": [
+          {
+            "feature_value": 0.3431,
+            "shap_value": 0.1081
+          },
+          {
+            "feature_value": 8.3333,
+            "shap_value": 0.1082
+          },
+          {
+            "feature_value": 12.5,
+            "shap_value": 0.0574
+          },
+          {
+            "feature_value": 18.9167,
+            "shap_value": -0.0209
+          },
+          {
+            "feature_value": 25.0,
+            "shap_value": -0.0731
+          },
+          {
+            "feature_value": 29.1667,
+            "shap_value": -0.1381
+          },
+          {
+            "feature_value": 35.6061,
+            "shap_value": -0.166
+          },
+          {
+            "feature_value": 41.6667,
+            "shap_value": -0.1935
+          },
+          {
+            "feature_value": 47.9545,
+            "shap_value": -0.1983
+          },
+          {
+            "feature_value": 56.25,
+            "shap_value": -0.2069
+          },
+          {
+            "feature_value": 62.5,
+            "shap_value": -0.2074
+          },
+          {
+            "feature_value": 69.0041,
+            "shap_value": -0.2079
+          },
+          {
+            "feature_value": 78.6859,
+            "shap_value": -0.2068
+          },
+          {
+            "feature_value": 93.4524,
+            "shap_value": -0.2072
+          }
+        ]
+      }
+    },
+    {
+      "feature": "forecast_temp_high_vs_seasonal",
+      "kind": "feature",
+      "signed_contribution": -0.1058489299355434,
+      "direction": "hurting",
+      "phrase": "how the temp high compares to normal for this time of year",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 4.4718,
+        "current_shap": -0.1058,
+        "points": [
+          {
+            "feature_value": -6.4668,
+            "shap_value": 0.119
+          },
+          {
+            "feature_value": -4.4587,
+            "shap_value": 0.1193
+          },
+          {
+            "feature_value": -3.4957,
+            "shap_value": 0.1197
+          },
+          {
+            "feature_value": -2.8537,
+            "shap_value": 0.1127
+          },
+          {
+            "feature_value": -2.388,
+            "shap_value": 0.138
+          },
+          {
+            "feature_value": -1.967,
+            "shap_value": 0.1523
+          },
+          {
+            "feature_value": -1.6259,
+            "shap_value": 0.1003
+          },
+          {
+            "feature_value": -1.3054,
+            "shap_value": 0.0902
+          },
+          {
+            "feature_value": -1.0613,
+            "shap_value": 0.1229
+          },
+          {
+            "feature_value": -0.77,
+            "shap_value": 0.1119
+          },
+          {
+            "feature_value": -0.3633,
+            "shap_value": 0.101
+          },
+          {
+            "feature_value": 0.0169,
+            "shap_value": 0.0288
+          },
+          {
+            "feature_value": 0.3973,
+            "shap_value": -0.0472
+          },
+          {
+            "feature_value": 0.7283,
+            "shap_value": -0.1061
+          },
+          {
+            "feature_value": 1.1433,
+            "shap_value": -0.1444
+          },
+          {
+            "feature_value": 1.5013,
+            "shap_value": -0.2084
+          },
+          {
+            "feature_value": 1.973,
+            "shap_value": -0.1964
+          },
+          {
+            "feature_value": 2.4065,
+            "shap_value": -0.1795
+          },
+          {
+            "feature_value": 2.8806,
+            "shap_value": -0.1279
+          },
+          {
+            "feature_value": 3.3519,
+            "shap_value": -0.1024
+          },
+          {
+            "feature_value": 3.9898,
+            "shap_value": -0.1085
+          },
+          {
+            "feature_value": 4.9151,
+            "shap_value": -0.1057
+          },
+          {
+            "feature_value": 6.0441,
+            "shap_value": -0.1022
+          },
+          {
+            "feature_value": 8.6079,
+            "shap_value": -0.1024
+          }
+        ]
+      }
+    },
+    {
+      "feature": "trained_days_30",
+      "kind": "feature",
+      "signed_contribution": 0.09742941382986077,
+      "direction": "helping",
+      "phrase": "your training frequency over the past month",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 21.0,
+        "current_shap": 0.0974,
+        "points": [
+          {
+            "feature_value": 0.5689,
+            "shap_value": -0.1433
+          },
+          {
+            "feature_value": 8.6344,
+            "shap_value": -0.1455
+          },
+          {
+            "feature_value": 10.5823,
+            "shap_value": -0.145
+          },
+          {
+            "feature_value": 12.0,
+            "shap_value": -0.1417
+          },
+          {
+            "feature_value": 13.0,
+            "shap_value": -0.1282
+          },
+          {
+            "feature_value": 14.0,
+            "shap_value": -0.1281
+          },
+          {
+            "feature_value": 15.0,
+            "shap_value": -0.1158
+          },
+          {
+            "feature_value": 16.0,
+            "shap_value": -0.1025
+          },
+          {
+            "feature_value": 17.0,
+            "shap_value": -0.043
+          },
+          {
+            "feature_value": 18.0,
+            "shap_value": 0.0968
+          },
+          {
+            "feature_value": 19.0,
+            "shap_value": 0.0897
+          },
+          {
+            "feature_value": 20.6111,
+            "shap_value": 0.0962
+          },
+          {
+            "feature_value": 22.0,
+            "shap_value": 0.0811
+          },
+          {
+            "feature_value": 23.44,
+            "shap_value": 0.0732
+          },
+          {
+            "feature_value": 25.32,
+            "shap_value": 0.0735
+          }
+        ]
+      }
+    },
+    {
+      "feature": "days_since_last_hard",
+      "kind": "feature",
+      "signed_contribution": 0.08955643488090298,
+      "direction": "helping",
+      "phrase": "time since your last hard effort",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 0.0,
+        "current_shap": 0.0896,
+        "points": [
+          {
+            "feature_value": 0.4321,
+            "shap_value": 0.0881
+          },
+          {
+            "feature_value": 2.0,
+            "shap_value": 0.1211
+          },
+          {
+            "feature_value": 3.0,
+            "shap_value": 0.1238
+          },
+          {
+            "feature_value": 4.0,
+            "shap_value": 0.0743
+          },
+          {
+            "feature_value": 5.0,
+            "shap_value": 0.0429
+          },
+          {
+            "feature_value": 6.0,
+            "shap_value": -0.2162
+          },
+          {
+            "feature_value": 7.4138,
+            "shap_value": -0.2167
+          },
+          {
+            "feature_value": 9.4595,
+            "shap_value": -0.1842
+          },
+          {
+            "feature_value": 13.5625,
+            "shap_value": -0.1839
+          },
+          {
+            "feature_value": 995.2308,
+            "shap_value": -0.1851
+          }
+        ]
+      }
+    },
+    {
+      "feature": "month_train_rate",
+      "kind": "feature",
+      "signed_contribution": 0.08915690672301999,
+      "direction": "helping",
+      "phrase": "regular train rate for this month",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 0.2717,
+        "current_shap": 0.0892,
+        "points": [
+          {
+            "feature_value": 0.0045,
+            "shap_value": 0.0389
+          },
+          {
+            "feature_value": 0.0771,
+            "shap_value": 0.0395
+          },
+          {
+            "feature_value": 0.1133,
+            "shap_value": 0.0397
+          },
+          {
+            "feature_value": 0.146,
+            "shap_value": 0.04
+          },
+          {
+            "feature_value": 0.186,
+            "shap_value": 0.0405
+          },
+          {
+            "feature_value": 0.206,
+            "shap_value": 0.0381
+          },
+          {
+            "feature_value": 0.2245,
+            "shap_value": 0.0477
+          },
+          {
+            "feature_value": 0.2545,
+            "shap_value": 0.0803
+          },
+          {
+            "feature_value": 0.2824,
+            "shap_value": 0.1029
+          },
+          {
+            "feature_value": 0.3249,
+            "shap_value": 0.124
+          },
+          {
+            "feature_value": 0.3833,
+            "shap_value": 0.1129
+          },
+          {
+            "feature_value": 0.4788,
+            "shap_value": 0.1043
+          },
+          {
+            "feature_value": 0.517,
+            "shap_value": 0.0688
+          },
+          {
+            "feature_value": 0.545,
+            "shap_value": 0.0553
+          },
+          {
+            "feature_value": 0.5735,
+            "shap_value": -0.1468
+          },
+          {
+            "feature_value": 0.6169,
+            "shap_value": -0.2138
+          },
+          {
+            "feature_value": 0.6549,
+            "shap_value": -0.2208
+          },
+          {
+            "feature_value": 0.7659,
+            "shap_value": -0.2217
+          }
+        ]
+      }
+    },
+    {
+      "feature": "days_since_last_long_ride",
+      "kind": "feature",
+      "signed_contribution": 0.06423527638543221,
+      "direction": "helping",
+      "phrase": "time since your last really long session",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 0.0,
+        "current_shap": 0.0642,
+        "points": [
+          {
+            "feature_value": 0.451,
+            "shap_value": 0.0654
+          },
+          {
+            "feature_value": 2.0,
+            "shap_value": 0.0672
+          },
+          {
+            "feature_value": 3.0,
+            "shap_value": 0.0624
+          },
+          {
+            "feature_value": 4.0,
+            "shap_value": 0.061
+          },
+          {
+            "feature_value": 5.0,
+            "shap_value": 0.0597
+          },
+          {
+            "feature_value": 6.0,
+            "shap_value": -0.0525
+          },
+          {
+            "feature_value": 7.0,
+            "shap_value": -0.0665
+          },
+          {
+            "feature_value": 8.0,
+            "shap_value": -0.0579
+          },
+          {
+            "feature_value": 9.4815,
+            "shap_value": -0.0489
+          },
+          {
+            "feature_value": 11.0,
+            "shap_value": -0.063
+          },
+          {
+            "feature_value": 12.9839,
+            "shap_value": -0.0871
+          },
+          {
+            "feature_value": 15.4375,
+            "shap_value": -0.0841
+          },
+          {
+            "feature_value": 19.0652,
+            "shap_value": -0.0844
+          },
+          {
+            "feature_value": 890.758,
+            "shap_value": -0.0821
+          }
+        ]
+      }
+    }
+  ],
+  "baseline_log_odds": 0.4347240615506962,
+  "baseline_probability": 0.607,
+  "other_contribution": 0.0282,
+  "blurb": "**The Verdict:** Cancel your lazy morning plans\u2014you\u2019re training tomorrow. We are **85% certain** you'll be putting in work, targeting a solid effort score of around **27.1**. \n\nHere\u2019s why you don't get to sleep in:\n\n* **You\u2019re a Creature of Habit:** It\u2019s this specific day of the week, and let's be honest, you *always* train today. Don't act surprised.\n* **You've Got Momentum:** You\u2019ve been consistently showing up all week, so the algorithm knows you aren't about to break the streak now.\n* **Your Legs are Primed:** Your recent training load proves your body is ready to handle the stress, so no fake fatigue excuses.\n\nEven the forecast couldn't bail you out. Set your alarm, lace up, and get it done.",
+  "impact_tracking": {
+    "deployment_date": "2026-09-27",
+    "significance_level": 0.05,
+    "baseline_created_at": "2026-10-03T06:40:21.630581+00:00",
+    "comparisons": [
+      {
+        "lower_bound": 0.0,
+        "upper_bound": 0.3333333333333333,
+        "direction": "false_negative",
+        "baseline_n": 106,
+        "baseline_rate": 0.6226415094339622,
+        "live_n": 1,
+        "live_rate": 0.0,
+        "p_value": 1.0,
+        "significant": false
+      },
+      {
+        "lower_bound": 0.0,
+        "upper_bound": 0.3333333333333333,
+        "direction": "false_positive",
+        "baseline_n": 0,
+        "baseline_rate": null,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
+      },
+      {
+        "lower_bound": 0.3333333333333333,
+        "upper_bound": 0.6666666666666666,
+        "direction": "false_negative",
+        "baseline_n": 172,
+        "baseline_rate": 0.5755813953488372,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
+      },
+      {
+        "lower_bound": 0.3333333333333333,
+        "upper_bound": 0.6666666666666666,
+        "direction": "false_positive",
+        "baseline_n": 63,
+        "baseline_rate": 0.3333333333333333,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
+      },
+      {
+        "lower_bound": 0.6666666666666666,
+        "upper_bound": 1.0,
+        "direction": "false_negative",
+        "baseline_n": 0,
+        "baseline_rate": null,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
+      },
+      {
+        "lower_bound": 0.6666666666666666,
+        "upper_bound": 1.0,
+        "direction": "false_positive",
+        "baseline_n": 18,
+        "baseline_rate": 0.0,
+        "live_n": 5,
+        "live_rate": 0.0,
+        "p_value": 1.0,
+        "significant": false
+      }
+    ],
+    "rolling": [
+      {
+        "lower_bound": 0.0,
+        "upper_bound": 0.3333333333333333,
+        "direction": "false_negative",
+        "baseline_rate": 0.6226415094339622,
+        "points": [
+          {
+            "date": "2026-09-27",
+            "n": 1,
+            "rate": 0.0
+          }
+        ]
+      },
+      {
+        "lower_bound": 0.0,
+        "upper_bound": 0.3333333333333333,
+        "direction": "false_positive",
+        "baseline_rate": null,
+        "points": []
+      },
+      {
+        "lower_bound": 0.3333333333333333,
+        "upper_bound": 0.6666666666666666,
+        "direction": "false_negative",
+        "baseline_rate": 0.5755813953488372,
+        "points": []
+      },
+      {
+        "lower_bound": 0.3333333333333333,
+        "upper_bound": 0.6666666666666666,
+        "direction": "false_positive",
+        "baseline_rate": 0.3333333333333333,
+        "points": []
+      },
+      {
+        "lower_bound": 0.6666666666666666,
+        "upper_bound": 1.0,
+        "direction": "false_negative",
+        "baseline_rate": null,
+        "points": []
+      },
+      {
+        "lower_bound": 0.6666666666666666,
+        "upper_bound": 1.0,
+        "direction": "false_positive",
+        "baseline_rate": 0.0,
+        "points": [
+          {
+            "date": "2026-09-28",
+            "n": 1,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-09-29",
+            "n": 2,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-09-30",
+            "n": 3,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-10-01",
+            "n": 4,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-10-02",
+            "n": 5,
+            "rate": 0.0
+          }
+        ]
+      }
+    ]
+  }
+}
