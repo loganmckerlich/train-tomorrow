@@ -90,6 +90,9 @@ def _check_impact_tracking() -> None:
         {"date": f"2026-09-{day:02}", "probability": 0.9, "actual_will_train": True}
         for day in range(1, 5)
     ]
+    baseline_predictions.append(
+        {"date": LIVE_DEPLOYMENT_DATE, "probability": 0.1, "actual_will_train": True}
+    )
     with tempfile.TemporaryDirectory() as tmpdir:
         baseline_path = Path(tmpdir) / "baseline_rates.json"
         baseline = load_or_create_baseline(baseline_path, baseline_predictions)
