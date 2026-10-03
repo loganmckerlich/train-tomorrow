@@ -16,8 +16,9 @@ from features import FEATURE_COLUMNS, prepare_datasets
 from model import predict_tomorrow, train_and_save_models
 from predictions_log import (
     backfill_outcomes,
-    build_calibration_summary,
+    build_impact_summary,
     load_entries,
+    load_or_create_baseline,
     save_entries,
     upsert_entry,
 )
@@ -28,6 +29,7 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 MODELS_DIR = ROOT_DIR / "models"
 LATEST_JSON_PATH = ROOT_DIR / "data" / "latest.json"
 PREDICTIONS_HISTORY_PATH = ROOT_DIR / "data" / "predictions_history.jsonl"
+BASELINE_RATES_PATH = ROOT_DIR / "data" / "baseline_rates.json"
 PARAMS_PATH = ROOT_DIR / "params.yaml"
 
 logger = logging.getLogger(__name__)
@@ -139,8 +141,9 @@ def run_pipeline() -> dict[str, object]:
     # past predictions' actual results without any extra Strava calls.
     entries = load_entries(PREDICTIONS_HISTORY_PATH)
     entries = backfill_outcomes(entries, prepared.historical)
-    payload["calibration"] = build_calibration_summary(entries)
+    baseline = load_or_create_baseline(BASELINE_RATES_PATH, models.validation_predictions or [])
     entries = upsert_entry(entries, payload, as_of_date=str(prepared.tomorrow_features.iloc[0]["as_of_date"]))
+    payload["impact_tracking"] = build_impact_summary(entries, baseline)
     save_entries(entries, PREDICTIONS_HISTORY_PATH)
 
     return payload

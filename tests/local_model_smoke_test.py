@@ -84,6 +84,11 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory() as tmpdir:
         models = train_and_save_models(prepared.historical, Path(tmpdir))
+        assert models.validation_predictions
+        assert all(
+            set(prediction) == {"date", "probability", "actual_will_train"}
+            for prediction in models.validation_predictions
+        )
         prediction = predict_tomorrow(models, prepared.tomorrow_features)
         explanation = build_explanation(models.classifier, prepared.tomorrow_features, prepared.historical, top_n=3)
 
