@@ -11,7 +11,7 @@ import pandas as pd
 from scipy.stats import fisher_exact
 
 LIVE_DEPLOYMENT_DATE = "2026-09-22"
-BUCKET_COUNT = 5
+BUCKET_COUNT = 3
 SIGNIFICANCE_LEVEL = 0.05
 
 
@@ -59,7 +59,9 @@ def load_or_create_baseline(path: Path, validation_predictions: list[dict]) -> d
     """Keep the first pre-deployment validation-set rates as a fixed baseline."""
     if path.exists():
         with path.open(encoding="utf-8") as fp:
-            return json.load(fp)
+            existing = json.load(fp)
+        if len(existing.get("buckets", [])) == BUCKET_COUNT:
+            return existing
 
     pre_deployment = [
         {

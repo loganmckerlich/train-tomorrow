@@ -73,11 +73,11 @@ The smoke test uses synthetic activities and writes temporary model artifacts on
 ## Prediction impact tracking
 
 The daily pipeline saves classifier predictions from its chronological validation split as a fixed baseline in
-`data/baseline_rates.json` on its first run with this feature. Rates are counted in five 20-point probability buckets;
+`data/baseline_rates.json` on its first run with this feature. Rates are counted in three equal probability buckets;
 only pre-deployment validation targets are included. The live comparison uses resolved prediction-history entries
 from the first `daily-predict.yml` run on **2026-09-22** onward and is recomputed as outcomes are backfilled.
-The baseline file is committed by the daily workflow and is never recalculated once present, even though the
-production model continues to retrain on all available data.
+The baseline file is committed by the daily workflow and is reused unless its probability-bucket schema changes,
+even though the production model continues to retrain on all available data.
 
 False-negative rates are compared in predicted-low buckets and false-positive rates in predicted-high buckets,
 using one-sided Fisher exact tests. The UI reports both sample sizes and p-values and shows cumulative live rates

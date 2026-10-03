@@ -15,7 +15,7 @@ import pandas as pd
 from blurb import generate_blurb
 from explain import PHRASE_BANK, _interaction_contributions, _rank_contributors, build_explanation
 from features import prepare_datasets
-from model import predict_tomorrow, train_and_save_models
+from model import _time_split, predict_tomorrow, train_and_save_models
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +57,18 @@ def _check_interaction_explanation() -> None:
     assert "interaction between" in ranked[0]["phrase"]
 
 
+def _check_validation_period() -> None:
+    dates = pd.date_range("2025-01-01", periods=400, freq="D")
+    dataset = pd.DataFrame({"as_of_date": dates})
+    train, validation = _time_split(dataset, validation_period_days=365)
+    assert len(validation) == 365
+    assert validation["as_of_date"].min() == dates[-365]
+    assert (validation["as_of_date"].min() - train["as_of_date"].max()).days == 1
+
+
 def main() -> None:
     _check_interaction_explanation()
+    _check_validation_period()
     activities = _synthetic_activities()
     weather = {
         "temp_high": 18.0,
@@ -83,7 +93,9 @@ def main() -> None:
     assert mileage_features <= PHRASE_BANK.keys()
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        models = train_and_save_models(prepared.historical, Path(tmpdir))
+        models = train_and_save_models(
+            prepared.historical, Path(tmpdir), validation_period_days=30
+        )
         assert models.validation_predictions
         assert all(
             set(prediction) == {"date", "probability", "actual_will_train"}

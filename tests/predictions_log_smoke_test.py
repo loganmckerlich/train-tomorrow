@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import sys
 import tempfile
@@ -98,10 +99,16 @@ def _check_impact_tracking() -> None:
         baseline = load_or_create_baseline(baseline_path, baseline_predictions)
         assert baseline["deployment_date"] == LIVE_DEPLOYMENT_DATE
         assert baseline["buckets"][0]["false_negative"] == {"n": 4, "events": 0, "rate": 0.0}
-        assert baseline["buckets"][4]["false_positive"] == {"n": 4, "events": 0, "rate": 0.0}
+        assert len(baseline["buckets"]) == 3
+        assert baseline["buckets"][2]["false_positive"] == {"n": 4, "events": 0, "rate": 0.0}
 
         changed_baseline = load_or_create_baseline(baseline_path, [])
         assert changed_baseline == baseline
+
+        obsolete_path = Path(tmpdir) / "obsolete_baseline_rates.json"
+        obsolete_path.write_text(json.dumps({"buckets": [{}] * 5}), encoding="utf-8")
+        refreshed_baseline = load_or_create_baseline(obsolete_path, baseline_predictions)
+        assert len(refreshed_baseline["buckets"]) == 3
 
     live_entries = [
         {"date": f"2026-09-{day:02}", "probability": 0.1, "actual_will_train": True}
@@ -116,7 +123,7 @@ def _check_impact_tracking() -> None:
         row for row in summary["comparisons"] if row["direction"] == "false_negative" and row["lower_bound"] == 0
     )
     false_positive = next(
-        row for row in summary["comparisons"] if row["direction"] == "false_positive" and row["lower_bound"] == 0.8
+        row for row in summary["comparisons"] if row["direction"] == "false_positive" and row["lower_bound"] == 2 / 3
     )
     assert false_negative["baseline_n"] == false_positive["baseline_n"] == 4
     assert false_negative["live_n"] == false_positive["live_n"] == 3
