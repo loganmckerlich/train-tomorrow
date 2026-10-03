@@ -125,7 +125,7 @@ function formatPointChange(value: number | null): string {
   if (!isFiniteNumber(value)) {
     return "n/a";
   }
-  return `${value >= 0 ? "+" : ""}${value.toFixed(3)} points`;
+  return `${value >= 0 ? "+" : ""}${value.toFixed(1)} points`;
 }
 
 function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
@@ -441,13 +441,31 @@ function ContributorSummary({
   const baselineProbability =
     baselineLogOdds === undefined ? undefined : sigmoid(baselineLogOdds);
   const chartHeight = 16 + rows.length * 12;
+  const chartProbabilityExtent = paddedExtent(
+    [
+      baselineProbability ?? 0,
+      finalProbability,
+      ...rows.flatMap((row) => [row.startProbability, row.endProbability]),
+    ].filter(isFiniteNumber),
+    0.05,
+  ) ?? [0, 1];
+  const chartProbabilityDomain: [number, number] = [
+    Math.max(0, chartProbabilityExtent[0]),
+    Math.min(1, chartProbabilityExtent[1]),
+  ];
+  const chartTicks = Array.from({ length: 5 }, (_, index) => {
+    const value =
+      chartProbabilityDomain[0] +
+      ((chartProbabilityDomain[1] - chartProbabilityDomain[0]) * index) / 4;
+    return { value, x: scale(value, chartProbabilityDomain, [8, 96]) };
+  });
 
   return (
     <>
       {baselineProbability === undefined ? null : (
         <p className="mt-1 text-sm text-slate-600">
-          Starting from the model&apos;s average day ({formatPercent(baselineProbability)}), each row applies the next SHAP-IQ effect
-          {otherContribution === undefined ? "." : ` to reach ${formatPercent(finalProbability)}.`}
+          Starting from the model&apos;s average day ({formatPercent(baselineProbability, 1)}), each row applies the next SHAP-IQ effect
+          {otherContribution === undefined ? "." : ` to reach ${formatPercent(finalProbability, 1)}.`}
         </p>
       )}
       <p className="mt-1 text-xs text-slate-500">
@@ -462,13 +480,48 @@ function ContributorSummary({
             style={{ height: `${Math.max(180, rows.length * 28)}px` }}
             aria-hidden="true"
           >
+            {chartTicks.map((tick) => (
+              <line
+                key={`grid-${tick.value}`}
+                x1={tick.x}
+                x2={tick.x}
+                y1="6"
+                y2={chartHeight - 6}
+                className="stroke-slate-200"
+                strokeWidth="0.5"
+              />
+            ))}
+            {baselineProbability === undefined ? null : (
+              <line
+                x1={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
+                x2={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
+                y1="6"
+                y2={chartHeight - 6}
+                className="stroke-slate-500"
+                strokeDasharray="1 2"
+                strokeWidth="1"
+              >
+                <title>{`Model average: ${formatPercent(baselineProbability, 1)}`}</title>
+              </line>
+            )}
+            <line
+              x1={scale(finalProbability, chartProbabilityDomain, [8, 96])}
+              x2={scale(finalProbability, chartProbabilityDomain, [8, 96])}
+              y1="6"
+              y2={chartHeight - 6}
+              className="stroke-amber-500"
+              strokeDasharray="1 2"
+              strokeWidth="1"
+            >
+              <title>{`Final prediction: ${formatPercent(finalProbability, 1)}`}</title>
+            </line>
             {rows.map((row, index) => {
               if (row.startProbability === null || row.endProbability === null) {
                 return null;
               }
               const y = 10 + index * 12;
-              const startX = scale(row.startProbability, [0, 1], [8, 96]);
-              const endX = scale(row.endProbability, [0, 1], [8, 96]);
+              const startX = scale(row.startProbability, chartProbabilityDomain, [8, 96]);
+              const endX = scale(row.endProbability, chartProbabilityDomain, [8, 96]);
               return (
                 <g key={`${row.feature}-${index}`}>
                   <line
@@ -487,9 +540,13 @@ function ContributorSummary({
             })}
           </svg>
           <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-            <span>0%</span>
+            <span>{formatPercent(chartProbabilityDomain[0], 1)}</span>
             <span>train probability</span>
-            <span>100%</span>
+            <span>{formatPercent(chartProbabilityDomain[1], 1)}</span>
+          </div>
+          <div className="mt-1 flex justify-center gap-4 text-[11px] text-slate-500">
+            <span><span className="mr-1 inline-block w-3 border-t border-dotted border-slate-500 align-middle" />Model average</span>
+            <span><span className="mr-1 inline-block w-3 border-t border-dotted border-amber-500 align-middle" />Final prediction</span>
           </div>
         </figure>
       )}
@@ -510,7 +567,7 @@ function ContributorSummary({
                     title={`SHAP-IQ ${formatSigned(row.signed_contribution, 3)} log odds`}
                   >
                     {formatLogOdds(row.signed_contribution)} ({formatPointChange(pointChange)})
-                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability, 3)}`}
+                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability, 1)}`}
                   </span>
                   <p className="text-xs text-slate-500">{row.direction}</p>
                 </div>
