@@ -498,6 +498,7 @@ function ContributorSummary({
           <figcaption className="sr-only">Waterfall showing cumulative train probability after each SHAP-IQ effect</figcaption>
           <svg
             viewBox={`0 0 100 ${axisViewHeight}`}
+            preserveAspectRatio="none"
             className="w-full"
             style={{ height: `${Math.max(180, rows.length * 28)}px` }}
             aria-hidden="true"
