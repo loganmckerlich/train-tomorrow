@@ -416,10 +416,18 @@ function ContributorSummary({
 }) {
   const steps: Contributor[] = [...topContributors];
   if (otherContribution !== undefined) {
+    const topContributionTotal = topContributors.reduce(
+      (total, contributor) => total + contributor.signed_contribution,
+      baselineLogOdds ?? 0,
+    );
+    const remainderContribution =
+      baselineLogOdds === undefined
+        ? otherContribution
+        : logit(finalProbability) - topContributionTotal;
     steps.push({
       feature: "other_features",
-      signed_contribution: otherContribution,
-      direction: otherContribution >= 0 ? "helping" : "hurting",
+      signed_contribution: remainderContribution,
+      direction: remainderContribution >= 0 ? "helping" : "hurting",
       phrase: "all other features",
     });
   }
@@ -451,8 +459,8 @@ function ContributorSummary({
       finalProbability,
       ...rows.flatMap((row) => [row.startProbability, row.endProbability]),
     ].filter(isFiniteNumber),
-    0.001,
-    0,
+    0.01,
+    0.02,
   ) ?? [0, 1];
   const chartProbabilityDomain: [number, number] = [
     Math.max(0, chartProbabilityExtent[0]),
@@ -496,30 +504,6 @@ function ContributorSummary({
                 strokeWidth="0.5"
               />
             ))}
-            {baselineProbability === undefined ? null : (
-              <line
-                x1={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
-                x2={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
-                y1="6"
-                y2={chartHeight - 6}
-                className="stroke-slate-500"
-                strokeDasharray="1 2"
-                strokeWidth="1"
-              >
-                <title>{`Model average: ${formatPercent(baselineProbability, 1)}`}</title>
-              </line>
-            )}
-            <line
-              x1={scale(finalProbability, chartProbabilityDomain, [8, 96])}
-              x2={scale(finalProbability, chartProbabilityDomain, [8, 96])}
-              y1="6"
-              y2={chartHeight - 6}
-              className="stroke-amber-500"
-              strokeDasharray="1 2"
-              strokeWidth="1"
-            >
-              <title>{`Final prediction: ${formatPercent(finalProbability, 1)}`}</title>
-            </line>
             {rows.map((row, index) => {
               if (row.startProbability === null || row.endProbability === null) {
                 return null;
@@ -543,6 +527,30 @@ function ContributorSummary({
                 </g>
               );
             })}
+            {baselineProbability === undefined ? null : (
+              <line
+                x1={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
+                x2={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
+                y1="6"
+                y2={chartHeight - 6}
+                className="stroke-slate-500"
+                strokeDasharray="2 2"
+                strokeWidth="1.5"
+              >
+                <title>{`Model average: ${formatPercent(baselineProbability, 1)}`}</title>
+              </line>
+            )}
+            <line
+              x1={scale(finalProbability, chartProbabilityDomain, [8, 96])}
+              x2={scale(finalProbability, chartProbabilityDomain, [8, 96])}
+              y1="6"
+              y2={chartHeight - 6}
+              className="stroke-amber-500"
+              strokeDasharray="2 2"
+              strokeWidth="1.5"
+            >
+              <title>{`Final prediction: ${formatPercent(finalProbability, 1)}`}</title>
+            </line>
           </svg>
           <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
             <span>{formatPercent(chartProbabilityDomain[0], 1)}</span>
