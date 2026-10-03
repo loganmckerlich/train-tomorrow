@@ -1,14 +1,14 @@
 {
   "deployment_date": "2026-09-22",
-  "created_at": "2026-10-03T04:43:21.621406+00:00",
+  "created_at": "2026-10-03T05:10:13.795319+00:00",
   "buckets": [
     {
       "lower_bound": 0.0,
-      "upper_bound": 0.2,
+      "upper_bound": 0.3333333333333333,
       "false_negative": {
-        "n": 0,
-        "events": 0,
-        "rate": null
+        "n": 63,
+        "events": 40,
+        "rate": 0.6349206349206349
       },
       "false_positive": {
         "n": 0,
@@ -17,49 +17,21 @@
       }
     },
     {
-      "lower_bound": 0.2,
-      "upper_bound": 0.4,
+      "lower_bound": 0.3333333333333333,
+      "upper_bound": 0.6666666666666666,
       "false_negative": {
-        "n": 7,
-        "events": 3,
-        "rate": 0.42857142857142855
-      },
-      "false_positive": {
-        "n": 0,
-        "events": 0,
-        "rate": null
-      }
-    },
-    {
-      "lower_bound": 0.4,
-      "upper_bound": 0.6,
-      "false_negative": {
-        "n": 30,
-        "events": 14,
-        "rate": 0.4666666666666667
+        "n": 238,
+        "events": 136,
+        "rate": 0.5714285714285714
       },
       "false_positive": {
         "n": 41,
-        "events": 10,
-        "rate": 0.24390243902439024
-      }
-    },
-    {
-      "lower_bound": 0.6,
-      "upper_bound": 0.8,
-      "false_negative": {
-        "n": 0,
-        "events": 0,
-        "rate": null
-      },
-      "false_positive": {
-        "n": 57,
         "events": 9,
-        "rate": 0.15789473684210525
+        "rate": 0.21951219512195122
       }
     },
     {
-      "lower_bound": 0.8,
+      "lower_bound": 0.6666666666666666,
       "upper_bound": 1.0,
       "false_negative": {
         "n": 0,
@@ -67,9 +39,9 @@
         "rate": null
       },
       "false_positive": {
-        "n": 0,
+        "n": 12,
         "events": 0,
-        "rate": null
+        "rate": 0.0
       }
     }
   ]
