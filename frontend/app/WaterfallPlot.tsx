@@ -9,6 +9,17 @@ type WaterfallRow = {
   direction: "helping" | "hurting";
 };
 
+const PLOT_LAYOUT = {
+  leftMargin: 32,
+  leftMarginFraction: 0.12,
+  rightMargin: 12,
+  topMargin: 12,
+  bottomMargin: 20,
+  axisTickLength: 4,
+  tickLabelOffset: 16,
+  maxBarWidth: 6,
+} as const;
+
 export default function WaterfallPlot({
   rows,
   baselineProbability,
@@ -43,13 +54,15 @@ export default function WaterfallPlot({
     return () => observer.disconnect();
   }, []);
 
-  const left = Math.min(32, width * 0.12);
-  const right = width - 12;
-  const top = 12;
-  const axisY = height - 20;
+  const left = Math.min(PLOT_LAYOUT.leftMargin, width * PLOT_LAYOUT.leftMarginFraction);
+  const right = width - PLOT_LAYOUT.rightMargin;
+  const top = PLOT_LAYOUT.topMargin;
+  const axisY = height - PLOT_LAYOUT.bottomMargin;
+  const rowSpacing = (axisY - top) / (rows.length + 1);
+  const barWidth = Math.min(PLOT_LAYOUT.maxBarWidth, rowSpacing * 0.3);
   const x = (probability: number) =>
     left + ((probability - probabilityDomain[0]) / (probabilityDomain[1] - probabilityDomain[0])) * (right - left);
-  const rowY = (index: number) => top + ((axisY - top) * (index + 1)) / (rows.length + 1);
+  const rowY = (index: number) => top + rowSpacing * (index + 1);
 
   return (
     <div ref={containerRef} className="relative w-full" style={{ height }}>
@@ -86,11 +99,11 @@ export default function WaterfallPlot({
                   y1={y}
                   y2={y}
                   className={row.direction === "helping" ? "stroke-emerald-500" : "stroke-rose-500"}
-                  strokeWidth="6"
+                  strokeWidth={barWidth}
                   strokeLinecap="round"
                 />
-                <circle cx={startX} cy={y} r="2.5" className="fill-white stroke-slate-400" strokeWidth="1" />
-                <circle cx={endX} cy={y} r="3" className="fill-slate-900" />
+                <circle cx={startX} cy={y} r={barWidth * 0.4} className="fill-white stroke-slate-400" strokeWidth="1" />
+                <circle cx={endX} cy={y} r={barWidth * 0.5} className="fill-slate-900" />
               </g>
             );
           })}
@@ -123,13 +136,13 @@ export default function WaterfallPlot({
                 x1={x(percentage / 100)}
                 x2={x(percentage / 100)}
                 y1={axisY}
-                y2={axisY + 4}
+                y2={axisY + PLOT_LAYOUT.axisTickLength}
                 className="stroke-slate-500"
                 strokeWidth="1"
               />
               <text
                 x={x(percentage / 100)}
-                y={axisY + 16}
+                y={axisY + PLOT_LAYOUT.tickLabelOffset}
                 textAnchor="middle"
                 className="fill-slate-600"
                 fontSize="11"
