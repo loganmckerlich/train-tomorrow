@@ -111,6 +111,7 @@ def walk_forward_evaluate(
         clf = xgb.XGBClassifier(objective="binary:logistic", eval_metric="logloss", **merged_xgb_params)
         clf.fit(train[features], train["will_train_tomorrow"], sample_weight=_recency_weights(train["as_of_date"]))
         probs = clf.predict_proba(test[features])[:, 1]
+        train_probs = clf.predict_proba(train[features])[:, 1]
         y_test = test["will_train_tomorrow"].to_numpy()
         preds = (probs >= 0.5).astype(int)
 
@@ -120,6 +121,7 @@ def walk_forward_evaluate(
                 "n_train": len(train),
                 "n_test": len(test),
                 "positive_rate": float(y_test.mean()),
+                "train_auc": _binary_auc(train["will_train_tomorrow"].to_numpy(), train_probs),
                 "auc": _binary_auc(y_test, probs),
                 "accuracy": float((preds == y_test).mean()),
                 "baseline_accuracy": float(max(y_test.mean(), 1 - y_test.mean())),
@@ -237,17 +239,36 @@ def evaluate_models(
     dataset: pd.DataFrame,
     features: list[str] | None = None,
     validation_period_days: int | None = None,
+    half_life_days: float = 180.0,
+    xgb_params: dict[str, Any] | None = None,
 ) -> dict[str, np.ndarray]:
-    """Reproduce the same time-based test split used during training, for notebook analysis."""
+    """Score the held-out split with models fit on the train split only.
+
+    `models` is refit on all rows when saved, so scoring it here would be in-sample; it is kept
+    in the signature for notebook compatibility but unused.
+    """
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
     features = _feature_list(features)
+    merged_xgb_params = {**DEFAULT_XGB_PARAMS, **(xgb_params or {})}
 
-    _, clf_test = _time_split(ordered, validation_period_days=validation_period_days)
-    probs = models.classifier.predict_proba(clf_test[features])[:, 1]
+    clf_train, clf_test = _time_split(ordered, validation_period_days=validation_period_days)
+    classifier = xgb.XGBClassifier(objective="binary:logistic", eval_metric="logloss", **merged_xgb_params)
+    classifier.fit(
+        clf_train[features],
+        clf_train["will_train_tomorrow"],
+        sample_weight=_recency_weights(clf_train["as_of_date"], half_life_days),
+    )
+    probs = classifier.predict_proba(clf_test[features])[:, 1]
 
     reg_rows = ordered[ordered["will_train_tomorrow"] == 1].copy()
-    _, reg_test = _time_split(reg_rows, validation_period_days=validation_period_days)
-    reg_preds = models.regressor.predict(reg_test[features])
+    reg_train, reg_test = _time_split(reg_rows, validation_period_days=validation_period_days)
+    regressor = xgb.XGBRegressor(objective="reg:absoluteerror", **merged_xgb_params)
+    regressor.fit(
+        reg_train[features],
+        reg_train["next_day_relative_effort"],
+        sample_weight=_recency_weights(reg_train["as_of_date"], half_life_days),
+    )
+    reg_preds = regressor.predict(reg_test[features])
 
     return {
         "y_test": clf_test["will_train_tomorrow"].to_numpy(),

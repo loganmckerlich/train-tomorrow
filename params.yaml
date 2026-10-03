@@ -9,38 +9,40 @@ blurb:
 
 strava:
   # how many days of activity history to pull from Strava on each run
-  days_back: 1095
+  days_back: 365
 
 model:
   # nonzero-effort/distance quantile above which a day counts as "hard"/"long" for streak features
   hard_effort_quantile: 0.6
   long_ride_quantile: 0.75
+  # number of recent calendar days held out for validation
+  validation_period_days: 1095
   # exponential recency-weighting half-life (days): downweights old rows so training tracks current habits
   recency_half_life_days: 180
-  # number of recent calendar days held out for validation
-  validation_period_days: 365
   xgboost:
-    eta: 0.005
-    max_depth: 5
-    subsample: 0.9
-    colsample_bytree: 0.9
-    n_estimators: 300
+    eta: 0.005477444762659259
+    max_depth: 4
+    subsample: 0.5129768272115813
+    colsample_bytree: 0.9818997151469016
+    n_estimators: 600
     random_state: 42
+    min_child_weight: 4
+    reg_lambda: 0.1
+
   features:
-    - trained_days_7
+    - acute_load_7
+    - chronic_load_28
+    - month_train_rate
     - trained_days_30
-    - day_of_week
+    - mileage_chronic_28
+    - trained_days_7
     - forecast_temp_high
     - dow_train_rate
-    - forecast_precip_probability_vs_seasonal
     - days_since_last_hard
-    - today_relative_effort
     - forecast_temp_low_vs_seasonal
+    - forecast_precip_evening
+    - forecast_precip_probability
     - forecast_temp_high_vs_seasonal
-    - acute_load_7
-    - mileage_acute_7
-    - forecast_precip_morning
-    - mileage_chronic_28
+    - streak_length
     - days_since_last_long_ride
     - trained_days_2
-    - streak_length
