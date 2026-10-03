@@ -10,7 +10,7 @@ from pathlib import Path
 import pandas as pd
 from scipy.stats import fisher_exact
 
-LIVE_DEPLOYMENT_DATE = "2026-09-22"
+LIVE_DEPLOYMENT_DATE = "2026-09-27"
 BUCKET_COUNT = 3
 SIGNIFICANCE_LEVEL = 0.05
 
