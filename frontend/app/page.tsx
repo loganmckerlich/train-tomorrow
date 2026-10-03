@@ -1,6 +1,10 @@
 import { unstable_noStore as noStore } from "next/cache";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
+import WaterfallPlot from "./WaterfallPlot";
+
+const WATERFALL_CHART_MIN_HEIGHT = 180;
+const WATERFALL_CHART_ROW_HEIGHT = 28;
 
 const blurbMarkdownComponents: Components = {
   p: ({ children }) => <p className="mt-3 leading-relaxed first:mt-0">{children}</p>,
@@ -125,8 +129,7 @@ function formatPointChange(value: number | null): string {
   if (!isFiniteNumber(value)) {
     return "n/a";
   }
-  const rounded = Math.round(value);
-  return `${rounded >= 0 ? "+" : ""}${rounded} points`;
+  return `${value >= 0 ? "+" : ""}${value.toFixed(1)} points`;
 }
 
 function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
@@ -148,7 +151,11 @@ function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
   });
 }
 
-function paddedExtent(values: number[], fallbackPadding = 0.5): [number, number] | null {
+function paddedExtent(
+  values: number[],
+  fallbackPadding = 0.5,
+  paddingFraction = 0.08,
+): [number, number] | null {
   if (values.length === 0) {
     return null;
   }
@@ -168,7 +175,7 @@ function paddedExtent(values: number[], fallbackPadding = 0.5): [number, number]
     return [min - fallbackPadding, max + fallbackPadding];
   }
 
-  const padding = (max - min) * 0.08;
+  const padding = (max - min) * paddingFraction;
   return [min - padding, max + padding];
 }
 
@@ -413,10 +420,18 @@ function ContributorSummary({
 }) {
   const steps: Contributor[] = [...topContributors];
   if (otherContribution !== undefined) {
+    const topContributionTotal = topContributors.reduce(
+      (total, contributor) => total + contributor.signed_contribution,
+      baselineLogOdds ?? 0,
+    );
+    const remainderContribution =
+      baselineLogOdds === undefined
+        ? otherContribution
+        : logit(finalProbability) - topContributionTotal;
     steps.push({
       feature: "other_features",
-      signed_contribution: otherContribution,
-      direction: otherContribution >= 0 ? "helping" : "hurting",
+      signed_contribution: remainderContribution,
+      direction: remainderContribution >= 0 ? "helping" : "hurting",
       phrase: "all other features",
     });
   }
@@ -441,14 +456,43 @@ function ContributorSummary({
   );
   const baselineProbability =
     baselineLogOdds === undefined ? undefined : sigmoid(baselineLogOdds);
-  const chartHeight = 16 + rows.length * 12;
+  const chartProbabilityExtent = paddedExtent(
+    [
+      baselineProbability ?? 0,
+      finalProbability,
+      ...rows.flatMap((row) => [row.startProbability, row.endProbability]),
+    ].filter(isFiniteNumber),
+    0.01,
+    0.02,
+  ) ?? [0, 1];
+  const chartProbabilityDomain: [number, number] = [
+    Math.max(0, Math.floor(chartProbabilityExtent[0] * 100) / 100),
+    Math.min(1, Math.ceil(chartProbabilityExtent[1] * 100) / 100),
+  ];
+  const firstTick = Math.round(chartProbabilityDomain[0] * 100);
+  const lastTick = Math.round(chartProbabilityDomain[1] * 100);
+  const tickStep = Math.max(1, Math.ceil((lastTick - firstTick) / 12));
+  const chartTicks = Array.from(
+    { length: Math.floor((lastTick - firstTick) / tickStep) + 1 },
+    (_, index) => firstTick + index * tickStep,
+  )
+    .concat(lastTick)
+    .filter((tick, index, ticks) => ticks.indexOf(tick) === index)
+    .map((percentage) => ({
+      percentage,
+      x: scale(percentage / 100, chartProbabilityDomain, [8, 96]),
+    }));
+  const chartHeightPx = Math.max(
+    WATERFALL_CHART_MIN_HEIGHT,
+    rows.length * WATERFALL_CHART_ROW_HEIGHT,
+  );
 
   return (
     <>
       {baselineProbability === undefined ? null : (
         <p className="mt-1 text-sm text-slate-600">
-          Starting from the model&apos;s average day ({formatPercent(baselineProbability)}), each row applies the next SHAP-IQ effect
-          {otherContribution === undefined ? "." : ` to reach ${formatPercent(finalProbability)}.`}
+          Starting from the model&apos;s average day ({formatPercent(baselineProbability, 1)}), each row applies the next SHAP-IQ effect
+          {otherContribution === undefined ? "." : ` to reach ${formatPercent(finalProbability, 1)}.`}
         </p>
       )}
       <p className="mt-1 text-xs text-slate-500">
@@ -457,40 +501,25 @@ function ContributorSummary({
       {baselineProbability === undefined ? null : (
         <figure className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
           <figcaption className="sr-only">Waterfall showing cumulative train probability after each SHAP-IQ effect</figcaption>
-          <svg
-            viewBox={`0 0 100 ${chartHeight}`}
-            className="w-full"
-            style={{ height: `${Math.max(180, rows.length * 28)}px` }}
-            aria-hidden="true"
-          >
-            {rows.map((row, index) => {
-              if (row.startProbability === null || row.endProbability === null) {
-                return null;
-              }
-              const y = 10 + index * 12;
-              const startX = scale(row.startProbability, [0, 1], [8, 96]);
-              const endX = scale(row.endProbability, [0, 1], [8, 96]);
-              return (
-                <g key={`${row.feature}-${index}`}>
-                  <line
-                    x1={startX}
-                    x2={endX}
-                    y1={y}
-                    y2={y}
-                    className={row.direction === "helping" ? "stroke-emerald-500" : "stroke-rose-500"}
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                  />
-                  <circle cx={startX} cy={y} r="1.5" className="fill-white stroke-slate-400" strokeWidth="0.8" />
-                  <circle cx={endX} cy={y} r="1.8" className="fill-slate-900" />
-                </g>
-              );
-            })}
-          </svg>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-            <span>0%</span>
-            <span>train probability</span>
-            <span>100%</span>
+          <WaterfallPlot
+            rows={rows.map((row) => ({
+              feature: row.feature,
+              startProbability: row.startProbability,
+              endProbability: row.endProbability,
+              direction: row.direction,
+            }))}
+            baselineProbability={baselineProbability}
+            baselineLabel={`Model average: ${formatPercent(baselineProbability, 1)}`}
+            finalProbability={finalProbability}
+            finalLabel={`Final prediction: ${formatPercent(finalProbability, 1)}`}
+            probabilityDomain={chartProbabilityDomain}
+            ticks={chartTicks.map((tick) => tick.percentage)}
+            height={chartHeightPx}
+          />
+          <p className="mt-1 text-center text-[11px] text-slate-500">train probability (%)</p>
+          <div className="mt-1 flex justify-center gap-4 text-[11px] text-slate-500">
+            <span><span className="mr-1 inline-block w-3 border-t border-dotted border-slate-500 align-middle" />Model average</span>
+            <span><span className="mr-1 inline-block w-3 border-t border-dotted border-amber-500 align-middle" />Final prediction</span>
           </div>
         </figure>
       )}
@@ -511,7 +540,7 @@ function ContributorSummary({
                     title={`SHAP-IQ ${formatSigned(row.signed_contribution, 3)} log odds`}
                   >
                     {formatLogOdds(row.signed_contribution)} ({formatPointChange(pointChange)})
-                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability)}`}
+                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability, 1)}`}
                   </span>
                   <p className="text-xs text-slate-500">{row.direction}</p>
                 </div>
