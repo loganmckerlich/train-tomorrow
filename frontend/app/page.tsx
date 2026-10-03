@@ -147,7 +147,11 @@ function formatGeneratedAt(isoTimestamp: string | undefined): string | null {
   });
 }
 
-function paddedExtent(values: number[], fallbackPadding = 0.5): [number, number] | null {
+function paddedExtent(
+  values: number[],
+  fallbackPadding = 0.5,
+  paddingFraction = 0.08,
+): [number, number] | null {
   if (values.length === 0) {
     return null;
   }
@@ -167,7 +171,7 @@ function paddedExtent(values: number[], fallbackPadding = 0.5): [number, number]
     return [min - fallbackPadding, max + fallbackPadding];
   }
 
-  const padding = (max - min) * 0.08;
+  const padding = (max - min) * paddingFraction;
   return [min - padding, max + padding];
 }
 
@@ -447,7 +451,8 @@ function ContributorSummary({
       finalProbability,
       ...rows.flatMap((row) => [row.startProbability, row.endProbability]),
     ].filter(isFiniteNumber),
-    0.05,
+    0.01,
+    0.02,
   ) ?? [0, 1];
   const chartProbabilityDomain: [number, number] = [
     Math.max(0, chartProbabilityExtent[0]),
