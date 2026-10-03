@@ -1,14 +1,14 @@
 {
   "date": "2026-10-03",
-  "generated_at": "2026-10-03T02:08:33.432152+00:00",
+  "generated_at": "2026-10-03T04:43:21.602938+00:00",
   "will_train": true,
   "probability": 0.6563,
-  "predicted_effort": 24.88,
+  "predicted_effort": 24.92,
   "top_contributors": [
     {
       "feature": "day_of_week",
       "kind": "feature",
-      "signed_contribution": -0.32452513464447097,
+      "signed_contribution": -0.3248082638284237,
       "direction": "hurting",
       "phrase": "the day of the week",
       "plot": {
@@ -57,13 +57,13 @@
     {
       "feature": "trained_days_7",
       "kind": "feature",
-      "signed_contribution": 0.18018693608606073,
+      "signed_contribution": 0.17986719208637222,
       "direction": "helping",
       "phrase": "how often you've trained this past week",
       "plot": {
         "kind": "continuous",
         "current_value": 6.0,
-        "current_shap": 0.1802,
+        "current_shap": 0.1799,
         "points": [
           {
             "feature_value": 1.6667,
@@ -95,7 +95,7 @@
     {
       "feature": "dow_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.141396775880285,
+      "signed_contribution": 0.14142971788540232,
       "direction": "helping",
       "phrase": "regular train rate for this day of the week",
       "plot": {
@@ -319,20 +319,20 @@
         "day_of_week"
       ],
       "kind": "interaction",
-      "signed_contribution": -0.11960331062671255,
+      "signed_contribution": -0.1182472822254535,
       "direction": "hurting",
       "phrase": "interaction between how often you've trained this past week and the day of the week"
     },
     {
       "feature": "trained_days_30",
       "kind": "feature",
-      "signed_contribution": 0.1003393675075564,
+      "signed_contribution": 0.10038390688259702,
       "direction": "helping",
       "phrase": "your training frequency over the past month",
       "plot": {
         "kind": "continuous",
         "current_value": 21.0,
-        "current_shap": 0.1003,
+        "current_shap": 0.1004,
         "points": [
           {
             "feature_value": 5.025,
@@ -427,13 +427,13 @@
     {
       "feature": "acute_load_7",
       "kind": "feature",
-      "signed_contribution": 0.08523063118618747,
+      "signed_contribution": 0.0852957408105588,
       "direction": "helping",
       "phrase": "recent training load in your legs",
       "plot": {
         "kind": "continuous",
         "current_value": 52.7663,
-        "current_shap": 0.0852,
+        "current_shap": 0.0853,
         "points": [
           {
             "feature_value": 2.5156,
@@ -595,87 +595,260 @@
         "day_of_week"
       ],
       "kind": "interaction",
-      "signed_contribution": -0.0782703221198922,
+      "signed_contribution": -0.07851629691151636,
       "direction": "hurting",
       "phrase": "interaction between your training frequency over the past month and the day of the week"
     }
   ],
   "baseline_log_odds": 0.518130691954866,
   "baseline_probability": 0.6267,
-  "other_contribution": 0.0243,
-  "blurb": "**Tomorrow\u2019s Verdict: Lace up, buttercup. You\u2019re training.**\n\nWe give you a **65.6% chance** of actually getting off the couch tomorrow, with a predicted effort of **24.9 relative-effort units**. \n\nHere\u2019s why the algorithm knows you better than you know yourself:\n\n### Why you\u2019re going to train:\n* **You\u2019re on a roll:** Your solid training consistency over the last week (and month) has built momentum that\u2019s hard to break.\n* **No weather excuses:** The forecast high temp is looking way too nice for you to pretend it's \"too miserable\" outside.\n* **Fresh-ish legs:** It\u2019s been long enough since your last soul-crushing workout, so your legs are officially out of excuses.\n\n### What\u2019s trying to talk you out of it:\n* **The Calendar:** Frankly, this specific day of the week has massive \"stay in bed\" energy and is fighting hard to sabotage you. \n\nSorry to ruin your rest-day fantasies, but the data says you're working out. See you out there!",
-  "calibration": {
-    "total_samples": 11,
-    "buckets": [
+  "other_contribution": 0.0237,
+  "blurb": "Well, look who\u2019s getting off the couch tomorrow. \n\nThe numbers are in, and there\u2019s a **65.6% chance you\u2019re training tomorrow** with a predicted relative effort of **24.9**. So go ahead and lay out your gear\u2014you don't really have an excuse.\n\nHere is why the algorithm called you out:\n\n**Why you're going to train:**\n* **You\u2019ve actually been consistent:** Your recent habit streak over the past week (and month) is carrying you. You\u2019ve built momentum, so your brain is basically on autopilot.\n* **It\u2019s your usual gig:** You historically train on this day of the week anyway, so why break character now?\n* **No weather excuses:** The temperature forecast is looking cute, removing your favorite \"it's too gross outside\" cop-out.\n* **Your legs are ready:** It\u2019s been long enough since your last hard effort that your body is refreshed and due for some work.\n\n**The only thing trying to stop you:**\n* **Calendar vibes:** Whatever specific day of the week tomorrow is, it\u2019s actively trying to drag you down into rest-day mode (contribution: -0.325). \n\n**The Verdict:** The day of the week is trying to give you an excuse to slack off, but your recent consistency and nice weather are winning. See you out there.",
+  "impact_tracking": {
+    "deployment_date": "2026-09-22",
+    "significance_level": 0.05,
+    "baseline_created_at": "2026-10-03T04:43:21.621406+00:00",
+    "comparisons": [
       {
         "lower_bound": 0.0,
-        "upper_bound": 0.1,
-        "predicted_rate": null,
-        "actual_rate": null,
-        "sample_size": 0
+        "upper_bound": 0.2,
+        "direction": "false_negative",
+        "baseline_n": 0,
+        "baseline_rate": null,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
       },
       {
-        "lower_bound": 0.1,
+        "lower_bound": 0.0,
         "upper_bound": 0.2,
-        "predicted_rate": null,
-        "actual_rate": null,
-        "sample_size": 0
+        "direction": "false_positive",
+        "baseline_n": 0,
+        "baseline_rate": null,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
       },
       {
         "lower_bound": 0.2,
-        "upper_bound": 0.3,
-        "predicted_rate": 0.2304,
-        "actual_rate": 0.0,
-        "sample_size": 1
+        "upper_bound": 0.4,
+        "direction": "false_negative",
+        "baseline_n": 7,
+        "baseline_rate": 0.42857142857142855,
+        "live_n": 1,
+        "live_rate": 0.0,
+        "p_value": 1.0,
+        "significant": false
       },
       {
-        "lower_bound": 0.3,
+        "lower_bound": 0.2,
         "upper_bound": 0.4,
-        "predicted_rate": null,
-        "actual_rate": null,
-        "sample_size": 0
+        "direction": "false_positive",
+        "baseline_n": 0,
+        "baseline_rate": null,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
       },
       {
         "lower_bound": 0.4,
-        "upper_bound": 0.5,
-        "predicted_rate": null,
-        "actual_rate": null,
-        "sample_size": 0
+        "upper_bound": 0.6,
+        "direction": "false_negative",
+        "baseline_n": 30,
+        "baseline_rate": 0.4666666666666667,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
       },
       {
-        "lower_bound": 0.5,
+        "lower_bound": 0.4,
         "upper_bound": 0.6,
-        "predicted_rate": 0.5737,
-        "actual_rate": 1.0,
-        "sample_size": 1
+        "direction": "false_positive",
+        "baseline_n": 41,
+        "baseline_rate": 0.24390243902439024,
+        "live_n": 1,
+        "live_rate": 0.0,
+        "p_value": 1.0,
+        "significant": false
       },
       {
         "lower_bound": 0.6,
-        "upper_bound": 0.7,
-        "predicted_rate": 0.6992,
-        "actual_rate": 1.0,
-        "sample_size": 1
+        "upper_bound": 0.8,
+        "direction": "false_negative",
+        "baseline_n": 0,
+        "baseline_rate": null,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
       },
       {
-        "lower_bound": 0.7,
+        "lower_bound": 0.6,
         "upper_bound": 0.8,
-        "predicted_rate": 0.7868,
-        "actual_rate": 1.0,
-        "sample_size": 1
+        "direction": "false_positive",
+        "baseline_n": 57,
+        "baseline_rate": 0.15789473684210525,
+        "live_n": 2,
+        "live_rate": 0.0,
+        "p_value": 1.0,
+        "significant": false
       },
       {
         "lower_bound": 0.8,
-        "upper_bound": 0.9,
-        "predicted_rate": 0.8395,
-        "actual_rate": 1.0,
-        "sample_size": 4
+        "upper_bound": 1.0,
+        "direction": "false_negative",
+        "baseline_n": 0,
+        "baseline_rate": null,
+        "live_n": 0,
+        "live_rate": null,
+        "p_value": null,
+        "significant": false
       },
       {
-        "lower_bound": 0.9,
+        "lower_bound": 0.8,
         "upper_bound": 1.0,
-        "predicted_rate": 0.9556,
-        "actual_rate": 1.0,
-        "sample_size": 3
+        "direction": "false_positive",
+        "baseline_n": 0,
+        "baseline_rate": null,
+        "live_n": 7,
+        "live_rate": 0.0,
+        "p_value": null,
+        "significant": false
+      }
+    ],
+    "rolling": [
+      {
+        "lower_bound": 0.0,
+        "upper_bound": 0.2,
+        "direction": "false_negative",
+        "baseline_rate": null,
+        "points": []
+      },
+      {
+        "lower_bound": 0.0,
+        "upper_bound": 0.2,
+        "direction": "false_positive",
+        "baseline_rate": null,
+        "points": []
+      },
+      {
+        "lower_bound": 0.2,
+        "upper_bound": 0.4,
+        "direction": "false_negative",
+        "baseline_rate": 0.42857142857142855,
+        "points": [
+          {
+            "date": "2026-09-27",
+            "n": 1,
+            "rate": 0.0
+          }
+        ]
+      },
+      {
+        "lower_bound": 0.2,
+        "upper_bound": 0.4,
+        "direction": "false_positive",
+        "baseline_rate": null,
+        "points": []
+      },
+      {
+        "lower_bound": 0.4,
+        "upper_bound": 0.6,
+        "direction": "false_negative",
+        "baseline_rate": 0.4666666666666667,
+        "points": []
+      },
+      {
+        "lower_bound": 0.4,
+        "upper_bound": 0.6,
+        "direction": "false_positive",
+        "baseline_rate": 0.24390243902439024,
+        "points": [
+          {
+            "date": "2026-09-26",
+            "n": 1,
+            "rate": 0.0
+          }
+        ]
+      },
+      {
+        "lower_bound": 0.6,
+        "upper_bound": 0.8,
+        "direction": "false_negative",
+        "baseline_rate": null,
+        "points": []
+      },
+      {
+        "lower_bound": 0.6,
+        "upper_bound": 0.8,
+        "direction": "false_positive",
+        "baseline_rate": 0.15789473684210525,
+        "points": [
+          {
+            "date": "2026-09-28",
+            "n": 1,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-10-02",
+            "n": 2,
+            "rate": 0.0
+          }
+        ]
+      },
+      {
+        "lower_bound": 0.8,
+        "upper_bound": 1.0,
+        "direction": "false_negative",
+        "baseline_rate": null,
+        "points": []
+      },
+      {
+        "lower_bound": 0.8,
+        "upper_bound": 1.0,
+        "direction": "false_positive",
+        "baseline_rate": null,
+        "points": [
+          {
+            "date": "2026-09-22",
+            "n": 1,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-09-23",
+            "n": 2,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-09-24",
+            "n": 3,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-09-25",
+            "n": 4,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-09-29",
+            "n": 5,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-09-30",
+            "n": 6,
+            "rate": 0.0
+          },
+          {
+            "date": "2026-10-01",
+            "n": 7,
+            "rate": 0.0
+          }
+        ]
       }
     ]
   }
