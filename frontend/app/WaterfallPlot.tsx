@@ -12,20 +12,24 @@ type WaterfallRow = {
 export default function WaterfallPlot({
   rows,
   baselineProbability,
+  baselineLabel,
   finalProbability,
+  finalLabel,
   probabilityDomain,
   ticks,
   height,
 }: {
   rows: WaterfallRow[];
   baselineProbability: number;
+  baselineLabel: string;
   finalProbability: number;
+  finalLabel: string;
   probabilityDomain: [number, number];
   ticks: number[];
   height: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -33,26 +37,25 @@ export default function WaterfallPlot({
       return;
     }
     const observer = new ResizeObserver(([entry]) => {
-      setSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+      setWidth(entry.contentRect.width);
     });
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
 
-  const { width, height: containerHeight } = size;
   const left = Math.min(32, width * 0.12);
   const right = width - 12;
   const top = 12;
-  const axisY = containerHeight - 20;
+  const axisY = height - 20;
   const x = (probability: number) =>
     left + ((probability - probabilityDomain[0]) / (probabilityDomain[1] - probabilityDomain[0])) * (right - left);
   const rowY = (index: number) => top + ((axisY - top) * (index + 1)) / (rows.length + 1);
 
   return (
     <div ref={containerRef} className="relative w-full" style={{ height }}>
-      {width > 0 && containerHeight > 0 ? (
+      {width > 0 ? (
         <svg
-          viewBox={`0 0 ${width} ${containerHeight}`}
+          viewBox={`0 0 ${width} ${height}`}
           className="block h-full w-full"
           role="img"
           aria-label="Waterfall of cumulative train probability after each SHAP-IQ effect"
@@ -100,7 +103,7 @@ export default function WaterfallPlot({
             strokeDasharray="3 3"
             strokeWidth="1.5"
           >
-            <title>Model average</title>
+            <title>{baselineLabel}</title>
           </line>
           <line
             x1={x(finalProbability)}
@@ -111,7 +114,7 @@ export default function WaterfallPlot({
             strokeDasharray="3 3"
             strokeWidth="1.5"
           >
-            <title>Final prediction</title>
+            <title>{finalLabel}</title>
           </line>
           <line x1={left} x2={right} y1={axisY} y2={axisY} className="stroke-slate-500" strokeWidth="1" />
           {ticks.map((percentage) => (

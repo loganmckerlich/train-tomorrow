@@ -503,7 +503,9 @@ function ContributorSummary({
               direction: row.direction,
             }))}
             baselineProbability={baselineProbability}
+            baselineLabel={`Model average: ${formatPercent(baselineProbability, 1)}`}
             finalProbability={finalProbability}
+            finalLabel={`Final prediction: ${formatPercent(finalProbability, 1)}`}
             probabilityDomain={chartProbabilityDomain}
             ticks={chartTicks.map((tick) => tick.percentage)}
             height={chartHeightPx}
