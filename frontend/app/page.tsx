@@ -463,15 +463,24 @@ function ContributorSummary({
     0.02,
   ) ?? [0, 1];
   const chartProbabilityDomain: [number, number] = [
-    Math.max(0, chartProbabilityExtent[0]),
-    Math.min(1, chartProbabilityExtent[1]),
+    Math.max(0, Math.floor(chartProbabilityExtent[0] * 100) / 100),
+    Math.min(1, Math.ceil(chartProbabilityExtent[1] * 100) / 100),
   ];
-  const chartTicks = Array.from({ length: 5 }, (_, index) => {
-    const value =
-      chartProbabilityDomain[0] +
-      ((chartProbabilityDomain[1] - chartProbabilityDomain[0]) * index) / 4;
-    return { value, x: scale(value, chartProbabilityDomain, [8, 96]) };
-  });
+  const firstTick = Math.round(chartProbabilityDomain[0] * 100);
+  const lastTick = Math.round(chartProbabilityDomain[1] * 100);
+  const tickStep = Math.max(1, Math.ceil((lastTick - firstTick) / 12));
+  const chartTicks = Array.from(
+    { length: Math.floor((lastTick - firstTick) / tickStep) + 1 },
+    (_, index) => firstTick + index * tickStep,
+  )
+    .concat(lastTick)
+    .filter((tick, index, ticks) => ticks.indexOf(tick) === index)
+    .map((percentage) => ({
+      percentage,
+      x: scale(percentage / 100, chartProbabilityDomain, [8, 96]),
+    }));
+  const axisY = chartHeight - 4;
+  const axisViewHeight = chartHeight + 6;
 
   return (
     <>
@@ -488,18 +497,18 @@ function ContributorSummary({
         <figure className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
           <figcaption className="sr-only">Waterfall showing cumulative train probability after each SHAP-IQ effect</figcaption>
           <svg
-            viewBox={`0 0 100 ${chartHeight}`}
+            viewBox={`0 0 100 ${axisViewHeight}`}
             className="w-full"
             style={{ height: `${Math.max(180, rows.length * 28)}px` }}
             aria-hidden="true"
           >
             {chartTicks.map((tick) => (
               <line
-                key={`grid-${tick.value}`}
+                key={`grid-${tick.percentage}`}
                 x1={tick.x}
                 x2={tick.x}
                 y1="6"
-                y2={chartHeight - 6}
+                y2={axisY}
                 className="stroke-slate-200"
                 strokeWidth="0.5"
               />
@@ -532,7 +541,7 @@ function ContributorSummary({
                 x1={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
                 x2={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
                 y1="6"
-                y2={chartHeight - 6}
+                y2={axisY}
                 className="stroke-slate-500"
                 strokeDasharray="2 2"
                 strokeWidth="1.5"
@@ -544,19 +553,44 @@ function ContributorSummary({
               x1={scale(finalProbability, chartProbabilityDomain, [8, 96])}
               x2={scale(finalProbability, chartProbabilityDomain, [8, 96])}
               y1="6"
-              y2={chartHeight - 6}
+              y2={axisY}
               className="stroke-amber-500"
               strokeDasharray="2 2"
               strokeWidth="1.5"
             >
               <title>{`Final prediction: ${formatPercent(finalProbability, 1)}`}</title>
             </line>
+            <line
+              x1="8"
+              x2="96"
+              y1={axisY}
+              y2={axisY}
+              className="stroke-slate-500"
+              strokeWidth="0.6"
+            />
+            {chartTicks.map((tick) => (
+              <g key={`axis-${tick.percentage}`}>
+                <line
+                  x1={tick.x}
+                  x2={tick.x}
+                  y1={axisY}
+                  y2={axisY + 1.5}
+                  className="stroke-slate-500"
+                  strokeWidth="0.6"
+                />
+                <text
+                  x={tick.x}
+                  y={axisY + 4.5}
+                  textAnchor="middle"
+                  className="fill-slate-600"
+                  fontSize="2.5"
+                >
+                  {tick.percentage}
+                </text>
+              </g>
+            ))}
           </svg>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-            <span>{formatPercent(chartProbabilityDomain[0], 1)}</span>
-            <span>train probability</span>
-            <span>{formatPercent(chartProbabilityDomain[1], 1)}</span>
-          </div>
+          <p className="mt-1 text-center text-[11px] text-slate-500">train probability (%)</p>
           <div className="mt-1 flex justify-center gap-4 text-[11px] text-slate-500">
             <span><span className="mr-1 inline-block w-3 border-t border-dotted border-slate-500 align-middle" />Model average</span>
             <span><span className="mr-1 inline-block w-3 border-t border-dotted border-amber-500 align-middle" />Final prediction</span>
