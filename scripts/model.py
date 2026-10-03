@@ -38,10 +38,20 @@ class TrainedModels:
     validation_predictions: list[dict[str, Any]] | None = None
 
 
-def _time_split(df: pd.DataFrame, frac: float = 0.8) -> tuple[pd.DataFrame, pd.DataFrame]:
+def _time_split(
+    df: pd.DataFrame, frac: float = 0.8, validation_period_days: int | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     if len(df) < 3:
         raise ValueError("Need at least 3 labeled rows for a time-based split")
-    split_idx = max(1, int(len(df) * frac))
+    if validation_period_days is not None:
+        if validation_period_days < 1:
+            raise ValueError("validation_period_days must be at least 1")
+        dates = pd.to_datetime(df["as_of_date"])
+        validation_start = dates.max().normalize() - pd.Timedelta(days=validation_period_days - 1)
+        split_idx = int((dates < validation_start).sum())
+    else:
+        split_idx = int(len(df) * frac)
+    split_idx = max(1, split_idx)
     split_idx = min(split_idx, len(df) - 1)
     return df.iloc[:split_idx].copy(), df.iloc[split_idx:].copy()
 
@@ -126,12 +136,15 @@ def train_and_save_models(
     half_life_days: float = 180.0,
     xgb_params: dict[str, Any] | None = None,
     features: list[str] | None = None,
+    validation_period_days: int | None = None,
 ) -> TrainedModels:
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
     merged_xgb_params = {**DEFAULT_XGB_PARAMS, **(xgb_params or {})}
     features = _feature_list(features)
 
-    clf_train, clf_test = _time_split(ordered, frac=split_frac)
+    clf_train, clf_test = _time_split(
+        ordered, frac=split_frac, validation_period_days=validation_period_days
+    )
     y_train = clf_train["will_train_tomorrow"]
     y_test = clf_test["will_train_tomorrow"]
 
@@ -175,7 +188,9 @@ def train_and_save_models(
     if len(reg_rows) < 3:
         raise ValueError("Need at least 3 positive-label rows to train the effort regressor")
 
-    reg_train, reg_test = _time_split(reg_rows, frac=split_frac)
+    reg_train, reg_test = _time_split(
+        reg_rows, frac=split_frac, validation_period_days=validation_period_days
+    )
     yr_train = reg_train["next_day_relative_effort"]
     yr_test = reg_test["next_day_relative_effort"]
 
@@ -218,17 +233,20 @@ def load_models(model_dir: Path) -> TrainedModels:
 
 
 def evaluate_models(
-    models: TrainedModels, dataset: pd.DataFrame, features: list[str] | None = None
+    models: TrainedModels,
+    dataset: pd.DataFrame,
+    features: list[str] | None = None,
+    validation_period_days: int | None = None,
 ) -> dict[str, np.ndarray]:
     """Reproduce the same time-based test split used during training, for notebook analysis."""
     ordered = dataset.sort_values("as_of_date").reset_index(drop=True)
     features = _feature_list(features)
 
-    _, clf_test = _time_split(ordered)
+    _, clf_test = _time_split(ordered, validation_period_days=validation_period_days)
     probs = models.classifier.predict_proba(clf_test[features])[:, 1]
 
     reg_rows = ordered[ordered["will_train_tomorrow"] == 1].copy()
-    _, reg_test = _time_split(reg_rows)
+    _, reg_test = _time_split(reg_rows, validation_period_days=validation_period_days)
     reg_preds = models.regressor.predict(reg_test[features])
 
     return {

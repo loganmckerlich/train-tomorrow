@@ -86,7 +86,7 @@ def run_pipeline() -> dict[str, object]:
     models = train_and_save_models(
         prepared.historical,
         MODELS_DIR,
-        split_frac=model_params.get("train_test_split_frac", 0.8),
+        validation_period_days=model_params.get("validation_period_days"),
         half_life_days=model_params.get("recency_half_life_days", 180.0),
         xgb_params=model_params.get("xgboost"),
         features=model_features,
