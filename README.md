@@ -70,6 +70,21 @@ jupyter lab notebooks/modeling_exploration.ipynb
 
 The smoke test uses synthetic activities and writes temporary model artifacts only.
 
+## Prediction impact tracking
+
+The daily pipeline saves classifier predictions from its chronological validation split as a fixed baseline in
+`data/baseline_rates.json` on its first run with this feature. Rates are counted in five 20-point probability buckets;
+only pre-deployment validation targets are included. The live comparison uses resolved prediction-history entries
+from the first `daily-predict.yml` run on **2026-09-22** onward and is recomputed as outcomes are backfilled.
+The baseline file is committed by the daily workflow and is never recalculated once present, even though the
+production model continues to retrain on all available data.
+
+False-negative rates are compared in predicted-low buckets and false-positive rates in predicted-high buckets,
+using one-sided Fisher exact tests. The UI reports both sample sizes and p-values and shows cumulative live rates
+against the fixed baseline. This is a correlational proxy, not a controlled experiment: it assumes stationary
+baseline rates, may be underpowered with small daily samples, and cannot determine whether the prediction was viewed
+before training. Treat early results as provisional, not causal evidence.
+
 ## Frontend setup
 
 ```bash

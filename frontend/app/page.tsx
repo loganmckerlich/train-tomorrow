@@ -48,17 +48,34 @@ type Contributor = {
   plot?: ContinuousPlot | CategoricalPlot;
 };
 
-type CalibrationBucket = {
+type ImpactDirection = "false_negative" | "false_positive";
+
+type ImpactComparison = {
   lower_bound: number;
   upper_bound: number;
-  predicted_rate: number | null;
-  actual_rate: number | null;
-  sample_size: number;
+  direction: ImpactDirection;
+  baseline_n: number;
+  baseline_rate: number | null;
+  live_n: number;
+  live_rate: number | null;
+  p_value: number | null;
+  significant: boolean;
 };
 
-type CalibrationSummary = {
-  total_samples: number;
-  buckets: CalibrationBucket[];
+type RollingRate = {
+  lower_bound: number;
+  upper_bound: number;
+  direction: ImpactDirection;
+  baseline_rate: number | null;
+  points: { date: string; n: number; rate: number }[];
+};
+
+type ImpactTracking = {
+  deployment_date: string;
+  significance_level: number;
+  baseline_created_at: string | null;
+  comparisons: ImpactComparison[];
+  rolling: RollingRate[];
 };
 
 type PredictionPayload = {
@@ -71,7 +88,7 @@ type PredictionPayload = {
   baseline_log_odds?: number;
   baseline_probability?: number;
   other_contribution?: number;
-  calibration?: CalibrationSummary;
+  impact_tracking?: ImpactTracking;
   blurb: string;
 };
 
@@ -563,79 +580,193 @@ function ContributorSummary({
   );
 }
 
-function CalibrationPlot({ calibration }: { calibration: CalibrationSummary }) {
-  const populatedBuckets = calibration.buckets.filter(
-    (bucket) =>
-      bucket.sample_size > 0 &&
-      isFiniteNumber(bucket.predicted_rate) &&
-      isFiniteNumber(bucket.actual_rate),
+function ImpactRateChart({
+  direction,
+  comparisons,
+}: {
+  direction: ImpactDirection;
+  comparisons: ImpactComparison[];
+}) {
+  const title = direction === "false_negative" ? "False negatives" : "False positives";
+  return (
+    <section className="mt-5">
+      <h3 className="font-semibold text-slate-900">{title}: baseline vs. live</h3>
+      <div className="mt-2 space-y-3">
+        {comparisons.map((comparison) => (
+          <div key={`${direction}-${comparison.lower_bound}`}>
+            <p className="text-xs font-medium text-slate-700">
+              {formatPercent(comparison.lower_bound)}–{formatPercent(comparison.upper_bound)}
+            </p>
+            <div className="mt-1 grid grid-cols-[4.5rem_1fr_auto] items-center gap-x-2 gap-y-1 text-xs">
+              <span className="text-slate-500">Baseline</span>
+              <div className="h-3 rounded-sm bg-slate-100">
+                <div
+                  className="h-3 rounded-sm bg-sky-500"
+                  style={{ width: `${(comparison.baseline_rate ?? 0) * 100}%` }}
+                  title={`Baseline rate ${formatPercent(comparison.baseline_rate)}`}
+                />
+              </div>
+              <span className="tabular-nums text-slate-600">{formatPercent(comparison.baseline_rate)}</span>
+              <span className="text-slate-500">Live</span>
+              <div className="h-3 rounded-sm bg-slate-100">
+                <div
+                  className={`h-3 rounded-sm ${comparison.significant ? "bg-rose-600" : "bg-amber-500"}`}
+                  style={{ width: `${(comparison.live_rate ?? 0) * 100}%` }}
+                  title={`Live rate ${formatPercent(comparison.live_rate)}; p=${comparison.p_value ?? "n/a"}`}
+                />
+              </div>
+              <span className="tabular-nums text-slate-600">
+                {formatPercent(comparison.live_rate)}
+                {comparison.significant ? " *" : ""}
+              </span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500">
+              Sample size: baseline n={comparison.baseline_n}, live n={comparison.live_n}
+              {comparison.significant ? " · significant excess" : ""}
+            </p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-[11px] text-slate-500">
+        Baseline and live bars share a 0–100% scale; * marks a one-sided significant excess.
+      </p>
+    </section>
   );
+}
+
+function ImpactRollingChart({ series }: { series: RollingRate }) {
+  const dates = series.points.map((point) => Date.parse(point.date));
+  const firstDate = Math.min(...dates);
+  const lastDate = Math.max(...dates);
+  const coordinates = series.points.map((point, index) => {
+    const x = firstDate === lastDate ? 52 : 8 + ((dates[index] - firstDate) / (lastDate - firstDate)) * 88;
+    const y = 92 - point.rate * 82;
+    return `${x},${y}`;
+  });
+  const baselineY = series.baseline_rate === null ? null : 92 - series.baseline_rate * 82;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-900">Calibration / track record</h2>
-          <p className="mt-1 text-sm text-slate-600">
-            When the model says X% likely, how often did I actually train?
+    <div className="rounded-lg border border-slate-200 bg-white p-2">
+      <p className="text-xs font-medium text-slate-700">
+        {formatPercent(series.lower_bound)}–{formatPercent(series.upper_bound)}
+      </p>
+      {series.points.length ? (
+        <>
+          <svg viewBox="0 0 100 100" className="mt-1 h-24 w-full" role="img" aria-label={`Rolling ${series.direction} rate`}>
+            <line x1="8" x2="96" y1="92" y2="92" className="stroke-slate-300" strokeWidth="1" />
+            {baselineY !== null ? (
+              <line
+                x1="8"
+                x2="96"
+                y1={baselineY}
+                y2={baselineY}
+                className="stroke-sky-500"
+                strokeDasharray="4 3"
+                strokeWidth="1.5"
+              />
+            ) : null}
+            {coordinates.length > 1 ? (
+              <polyline points={coordinates.join(" ")} fill="none" className="stroke-rose-500" strokeWidth="2" />
+            ) : null}
+            {coordinates.map((coordinate, index) => {
+              const [x, y] = coordinate.split(",");
+              return <circle key={series.points[index].date} cx={x} cy={y} r="2.5" className="fill-rose-500" />;
+            })}
+          </svg>
+          <p className="text-[11px] text-slate-500">
+            Live cumulative rate {formatPercent(series.points.at(-1)?.rate ?? null)} · n={series.points.at(-1)?.n}
           </p>
-        </div>
-        <p className="text-sm text-slate-500">{calibration.total_samples} resolved historical predictions</p>
-      </div>
+        </>
+      ) : (
+        <p className="mt-2 text-xs text-slate-500">No resolved live predictions in this bucket.</p>
+      )}
+    </div>
+  );
+}
 
-      <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-        <svg viewBox="0 0 100 100" className="h-48 w-full" aria-hidden="true">
-          <line x1="8" y1="92" x2="96" y2="92" className="stroke-slate-300" strokeWidth="1" />
-          <line x1="8" y1="92" x2="8" y2="10" className="stroke-slate-300" strokeWidth="1" />
-          <line x1="8" y1="92" x2="96" y2="10" className="stroke-slate-400" strokeDasharray="4 3" strokeWidth="1" />
-          {populatedBuckets.map((bucket) => {
-            const predictedRate = bucket.predicted_rate as number;
-            const actualRate = bucket.actual_rate as number;
-            return (
-              <circle
-                key={`${bucket.lower_bound}-${bucket.upper_bound}`}
-                cx={scale(predictedRate, [0, 1], [8, 96])}
-                cy={scale(actualRate, [0, 1], [92, 10])}
-                r={Math.min(4.5, 2 + bucket.sample_size * 0.35)}
-                className="fill-amber-400 stroke-slate-900"
-                strokeWidth="1"
-              >
-                <title>
-                  {`${formatPercent(bucket.lower_bound)}–${formatPercent(bucket.upper_bound)} bucket: predicted ${formatPercent(predictedRate)}, trained ${formatPercent(actualRate)}, n=${bucket.sample_size}`}
-                </title>
-              </circle>
-            );
-          })}
-        </svg>
-        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-          <span>0% predicted</span>
-          <span>predicted train rate</span>
-          <span>100% predicted</span>
-        </div>
-        <p className="mt-1 text-center text-[11px] text-slate-500">actual train rate climbs up the chart</p>
-      </div>
-
-      <ul className="mt-4 grid gap-2 text-sm text-slate-700 sm:grid-cols-2">
-        {calibration.buckets.map((bucket) => (
-          <li key={`bucket-${bucket.lower_bound}`} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-            <p className="font-medium text-slate-800">
-              {formatPercent(bucket.lower_bound)}–{formatPercent(bucket.upper_bound)}
-            </p>
-            <p className="mt-1 text-slate-600">
-              {bucket.sample_size === 0
-                ? "No resolved days yet."
-                : `${formatPercent(bucket.predicted_rate)} predicted, ${formatPercent(bucket.actual_rate)} actually trained.`}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">Sample size: {bucket.sample_size}</p>
-          </li>
-        ))}
-      </ul>
-
-      {calibration.total_samples < 20 ? (
-        <p className="mt-4 text-xs text-slate-500">
-          Still building up history — early buckets are honest but noisy until more daily predictions accumulate.
+function ImpactTrackingPanel({ impact }: { impact: ImpactTracking }) {
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div>
+        <h2 className="text-lg font-semibold text-slate-900">Prediction impact by probability bucket</h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Fixed pre-launch validation baseline vs. resolved daily predictions since {impact.deployment_date}.
         </p>
-      ) : null}
+      </div>
+
+      <ImpactRateChart
+        direction="false_negative"
+        comparisons={impact.comparisons.filter((comparison) => comparison.direction === "false_negative")}
+      />
+      <ImpactRateChart
+        direction="false_positive"
+        comparisons={impact.comparisons.filter((comparison) => comparison.direction === "false_positive")}
+      />
+
+      <div className="mt-5">
+        <h3 className="font-semibold text-slate-900">Rolling live rates by bucket</h3>
+        <p className="mt-1 text-xs text-slate-500">
+          Cumulative live rate over time; dashed blue is the frozen baseline. Each point includes resolved sample count.
+        </p>
+        {(["false_negative", "false_positive"] as const).map((direction) => (
+          <div key={direction} className="mt-3">
+            <h4 className="mb-2 text-sm font-medium text-slate-700">
+              {direction === "false_negative" ? "False negatives" : "False positives"}
+            </h4>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+              {impact.rolling
+                .filter((series) => series.direction === direction)
+                .map((series) => (
+                  <ImpactRollingChart key={`${direction}-${series.lower_bound}`} series={series} />
+                ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-5 overflow-x-auto">
+        <h3 className="font-semibold text-slate-900">Comparison summary</h3>
+        <table className="mt-2 min-w-full border-collapse text-left text-xs">
+          <thead>
+            <tr className="border-b border-slate-200 text-slate-500">
+              <th className="py-2 pr-3">Bucket</th>
+              <th className="py-2 pr-3">Direction</th>
+              <th className="py-2 pr-3">Baseline rate (n)</th>
+              <th className="py-2 pr-3">Live rate (n)</th>
+              <th className="py-2 pr-3">One-sided p-value</th>
+              <th className="py-2">Significant</th>
+            </tr>
+          </thead>
+          <tbody>
+            {impact.comparisons.map((comparison) => (
+              <tr
+                key={`${comparison.direction}-${comparison.lower_bound}`}
+                className="border-b border-slate-100 text-slate-700"
+              >
+                <td className="py-2 pr-3">
+                  {formatPercent(comparison.lower_bound)}–{formatPercent(comparison.upper_bound)}
+                </td>
+                <td className="py-2 pr-3">{comparison.direction === "false_negative" ? "FN" : "FP"}</td>
+                <td className="py-2 pr-3">
+                  {formatPercent(comparison.baseline_rate)} (n={comparison.baseline_n})
+                </td>
+                <td className="py-2 pr-3">{formatPercent(comparison.live_rate)} (n={comparison.live_n})</td>
+                <td className="py-2 pr-3">{comparison.p_value === null ? "n/a" : comparison.p_value.toFixed(4)}</td>
+                <td className="py-2">{comparison.significant ? "Y" : "N"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="mt-5 rounded-lg bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+        This is a correlational proxy, not a controlled experiment. It assumes baseline rates are stationary; season,
+        training blocks, and life circumstances can shift training propensity independently of the app. Small daily
+        samples make early results underpowered, so treat them as provisional as live n grows. Whether the prediction
+        was viewed before training is not observable with available data, so this analysis cannot establish causality.
+        Every rate is shown with sample sizes and a one-sided Fisher exact p-value; significance is not proof of a
+        behavioral effect.
+      </p>
     </section>
   );
 }
@@ -704,7 +835,7 @@ export default async function Home() {
         />
       </section>
 
-      {prediction.calibration ? <CalibrationPlot calibration={prediction.calibration} /> : null}
+      {prediction.impact_tracking ? <ImpactTrackingPanel impact={prediction.impact_tracking} /> : null}
     </main>
   );
 }

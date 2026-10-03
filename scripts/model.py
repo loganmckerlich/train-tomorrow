@@ -35,6 +35,7 @@ def _feature_list(features: list[str] | None) -> list[str]:
 class TrainedModels:
     classifier: xgb.XGBClassifier
     regressor: xgb.XGBRegressor
+    validation_predictions: list[dict[str, Any]] | None = None
 
 
 def _time_split(df: pd.DataFrame, frac: float = 0.8) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -141,6 +142,16 @@ def train_and_save_models(
 
     probs = classifier.predict_proba(clf_test[features])[:, 1]
     preds = (probs >= 0.5).astype(int)
+    validation_predictions = [
+        {
+            "date": str(target_date),
+            "probability": float(probability),
+            "actual_will_train": bool(actual),
+        }
+        for target_date, probability, actual in zip(
+            clf_test["target_date"], probs, y_test.to_numpy(), strict=True
+        )
+    ]
     accuracy = float((preds == y_test.to_numpy()).mean())
     baseline_accuracy = float(max(y_test.mean(), 1 - y_test.mean()))
     auc = _binary_auc(y_test.to_numpy(), probs)
@@ -191,7 +202,11 @@ def train_and_save_models(
     classifier.save_model(str(model_dir / CLASSIFIER_MODEL_PATH))
     regressor.save_model(str(model_dir / REGRESSOR_MODEL_PATH))
 
-    return TrainedModels(classifier=classifier, regressor=regressor)
+    return TrainedModels(
+        classifier=classifier,
+        regressor=regressor,
+        validation_predictions=validation_predictions,
+    )
 
 
 def load_models(model_dir: Path) -> TrainedModels:
