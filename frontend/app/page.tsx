@@ -451,8 +451,8 @@ function ContributorSummary({
       finalProbability,
       ...rows.flatMap((row) => [row.startProbability, row.endProbability]),
     ].filter(isFiniteNumber),
-    0.01,
-    0.02,
+    0.001,
+    0,
   ) ?? [0, 1];
   const chartProbabilityDomain: [number, number] = [
     Math.max(0, chartProbabilityExtent[0]),
