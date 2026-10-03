@@ -1,6 +1,7 @@
 import { unstable_noStore as noStore } from "next/cache";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
+import WaterfallPlot from "./WaterfallPlot";
 
 const blurbMarkdownComponents: Components = {
   p: ({ children }) => <p className="mt-3 leading-relaxed first:mt-0">{children}</p>,
@@ -452,7 +453,6 @@ function ContributorSummary({
   );
   const baselineProbability =
     baselineLogOdds === undefined ? undefined : sigmoid(baselineLogOdds);
-  const chartHeight = 16 + rows.length * 12;
   const chartProbabilityExtent = paddedExtent(
     [
       baselineProbability ?? 0,
@@ -479,8 +479,7 @@ function ContributorSummary({
       percentage,
       x: scale(percentage / 100, chartProbabilityDomain, [8, 96]),
     }));
-  const axisY = chartHeight - 4;
-  const axisViewHeight = chartHeight + 6;
+  const chartHeightPx = Math.max(180, rows.length * 28);
 
   return (
     <>
@@ -496,101 +495,19 @@ function ContributorSummary({
       {baselineProbability === undefined ? null : (
         <figure className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
           <figcaption className="sr-only">Waterfall showing cumulative train probability after each SHAP-IQ effect</figcaption>
-          <svg
-            viewBox={`0 0 100 ${axisViewHeight}`}
-            preserveAspectRatio="none"
-            className="w-full"
-            style={{ height: `${Math.max(180, rows.length * 28)}px` }}
-            aria-hidden="true"
-          >
-            {chartTicks.map((tick) => (
-              <line
-                key={`grid-${tick.percentage}`}
-                x1={tick.x}
-                x2={tick.x}
-                y1="6"
-                y2={axisY}
-                className="stroke-slate-200"
-                strokeWidth="0.5"
-              />
-            ))}
-            {rows.map((row, index) => {
-              if (row.startProbability === null || row.endProbability === null) {
-                return null;
-              }
-              const y = 10 + index * 12;
-              const startX = scale(row.startProbability, chartProbabilityDomain, [8, 96]);
-              const endX = scale(row.endProbability, chartProbabilityDomain, [8, 96]);
-              return (
-                <g key={`${row.feature}-${index}`}>
-                  <line
-                    x1={startX}
-                    x2={endX}
-                    y1={y}
-                    y2={y}
-                    className={row.direction === "helping" ? "stroke-emerald-500" : "stroke-rose-500"}
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                  />
-                  <circle cx={startX} cy={y} r="1.5" className="fill-white stroke-slate-400" strokeWidth="0.8" />
-                  <circle cx={endX} cy={y} r="1.8" className="fill-slate-900" />
-                </g>
-              );
-            })}
-            {baselineProbability === undefined ? null : (
-              <line
-                x1={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
-                x2={scale(baselineProbability, chartProbabilityDomain, [8, 96])}
-                y1="6"
-                y2={axisY}
-                className="stroke-slate-500"
-                strokeDasharray="2 2"
-                strokeWidth="1.5"
-              >
-                <title>{`Model average: ${formatPercent(baselineProbability, 1)}`}</title>
-              </line>
-            )}
-            <line
-              x1={scale(finalProbability, chartProbabilityDomain, [8, 96])}
-              x2={scale(finalProbability, chartProbabilityDomain, [8, 96])}
-              y1="6"
-              y2={axisY}
-              className="stroke-amber-500"
-              strokeDasharray="2 2"
-              strokeWidth="1.5"
-            >
-              <title>{`Final prediction: ${formatPercent(finalProbability, 1)}`}</title>
-            </line>
-            <line
-              x1="8"
-              x2="96"
-              y1={axisY}
-              y2={axisY}
-              className="stroke-slate-500"
-              strokeWidth="0.6"
-            />
-            {chartTicks.map((tick) => (
-              <g key={`axis-${tick.percentage}`}>
-                <line
-                  x1={tick.x}
-                  x2={tick.x}
-                  y1={axisY}
-                  y2={axisY + 1.5}
-                  className="stroke-slate-500"
-                  strokeWidth="0.6"
-                />
-                <text
-                  x={tick.x}
-                  y={axisY + 4.5}
-                  textAnchor="middle"
-                  className="fill-slate-600"
-                  fontSize="2.5"
-                >
-                  {tick.percentage}
-                </text>
-              </g>
-            ))}
-          </svg>
+          <WaterfallPlot
+            rows={rows.map((row) => ({
+              feature: row.feature,
+              startProbability: row.startProbability,
+              endProbability: row.endProbability,
+              direction: row.direction,
+            }))}
+            baselineProbability={baselineProbability}
+            finalProbability={finalProbability}
+            probabilityDomain={chartProbabilityDomain}
+            ticks={chartTicks.map((tick) => tick.percentage)}
+            height={chartHeightPx}
+          />
           <p className="mt-1 text-center text-[11px] text-slate-500">train probability (%)</p>
           <div className="mt-1 flex justify-center gap-4 text-[11px] text-slate-500">
             <span><span className="mr-1 inline-block w-3 border-t border-dotted border-slate-500 align-middle" />Model average</span>
