@@ -17,8 +17,21 @@ jobs:
       - name: Check scheduled Pacific hour
         id: pacific_time
         if: github.event_name == 'schedule'
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
         run: |
-          local_hour="$(TZ=America/Los_Angeles date +%H)"
+          case "$SCHEDULE" in
+            "45 6 * * *") scheduled_utc_hour=6 ;;
+            "45 7 * * *") scheduled_utc_hour=7 ;;
+            *) scheduled_utc_hour="" ;;
+          esac
+
+          local_hour=""
+          if [ -n "$scheduled_utc_hour" ]; then
+            scheduled_utc="$(date -u +%F) ${scheduled_utc_hour}:45 UTC"
+            local_hour="$(TZ=America/Los_Angeles date -d "$scheduled_utc" +%H)"
+          fi
+
           if [ "$local_hour" = "23" ]; then
             echo "should_run=true" >> "$GITHUB_OUTPUT"
           else
