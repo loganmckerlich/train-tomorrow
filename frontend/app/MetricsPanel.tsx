@@ -74,7 +74,7 @@ export default function MetricsPanel({ metrics }: { metrics: ModelMetrics }) {
         <Tile label="Train rate in holdout" value={pct(c.positive_rate)} />
       </div>
 
-      <div className="mt-4 grid gap-4">
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Chart title="ROC curve" caption="False-positive rate (x) vs. true-positive rate (y); above the dashed line beats chance.">
           <polyline
             points={c.roc_curve.map((p) => `${x(p.fpr)},${y(p.tpr)}`).join(" ")}
