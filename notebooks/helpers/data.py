@@ -22,7 +22,9 @@ def load_historical(use_live: bool = False, days_back: int = 365) -> pd.DataFram
     from strava_client import fetch_activities_dataframe, out_of_range_dates
     from weather_client import DEFAULT_LAT, DEFAULT_LON, fetch_historical_weather, fetch_tomorrow_forecast
 
-    activities = fetch_activities_dataframe(days_back=days_back)
+    activities = fetch_activities_dataframe(
+        days_back=days_back, activity_types=load_params().get("strava", {}).get("activity_types")
+    )
     weather = fetch_tomorrow_forecast()
     activity_dates = pd.to_datetime(activities["date"], errors="coerce").dt.date.dropna()
     historical_weather = (
