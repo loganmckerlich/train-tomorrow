@@ -8,6 +8,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
+import numpy as np
 import pandas as pd
 from shapiq import TreeExplainer
 import xgboost as xgb
@@ -292,3 +293,71 @@ def build_explanation(
         "top_contributors": top_contributors,
         "other_contribution": round(float(other_contribution), 4),
     }
+
+
+DENSITY_POINTS = 40
+
+
+def _density_curve(values: pd.Series) -> list[dict[str, float]]:
+    """Gaussian KDE (Silverman bandwidth) over the 1st-99th percentile, scaled to max 1 for violin width."""
+    lo, hi = values.quantile(0.01), values.quantile(0.99)
+    std = float(values.std())
+    if hi <= lo or pd.isna(std) or std == 0:
+        return []
+    xs = np.linspace(lo, hi, DENSITY_POINTS)
+    arr = values.to_numpy(dtype=float)
+    bandwidth = 1.06 * std * len(arr) ** -0.2
+    density = np.exp(-0.5 * ((xs[:, None] - arr[None, :]) / bandwidth) ** 2).sum(axis=1)
+    density = density / density.max()
+    return [{"x": round(float(x), 4), "density": round(float(d), 4)} for x, d in zip(xs, density, strict=True)]
+
+
+def build_feature_summary(
+    model: xgb.XGBModel,
+    historical: pd.DataFrame,
+    feature_row: pd.DataFrame,
+    features: list[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Per-feature describe stats, KDE and runtime value, sorted by XGBoost feature_importances_ (not SHAP)."""
+    features = _feature_list(features)
+    importances = dict(zip(features, model.feature_importances_, strict=True))
+    current = feature_row.iloc[0]
+    summary: list[dict[str, Any]] = []
+    for feature in features:
+        values = pd.to_numeric(historical[feature], errors="coerce").dropna()
+        if values.empty:
+            continue
+        current_value = pd.to_numeric(pd.Series([current.get(feature)]), errors="coerce").iloc[0]
+        current_value = None if pd.isna(current_value) else float(current_value)
+        entry: dict[str, Any] = {
+            "feature": feature,
+            "label": PHRASE_BANK.get(feature, feature),
+            "importance": round(float(importances[feature]), 4),
+            "current_value": None if current_value is None else round(current_value, 4),
+            "current_percentile": None if current_value is None else round(float((values <= current_value).mean()), 4),
+        }
+        if feature in CATEGORICAL_FEATURES or values.nunique() <= 2:
+            entry["kind"] = "categorical"
+            entry["current_label"] = None if current_value is None else _category_label(feature, current_value)
+            entry["categories"] = [
+                {"value": float(v), "label": _category_label(feature, float(v)), "share": round(float(s), 4)}
+                for v, s in values.value_counts(normalize=True).sort_index().items()
+            ]
+        else:
+            q = values.quantile([0.05, 0.25, 0.5, 0.75, 0.95])
+            entry["kind"] = "continuous"
+            entry["stats"] = {
+                "count": int(values.count()),
+                "mean": round(float(values.mean()), 4),
+                "std": round(float(values.std()), 4),
+                "min": round(float(values.min()), 4),
+                "p05": round(float(q[0.05]), 4),
+                "p25": round(float(q[0.25]), 4),
+                "median": round(float(q[0.5]), 4),
+                "p75": round(float(q[0.75]), 4),
+                "p95": round(float(q[0.95]), 4),
+                "max": round(float(values.max()), 4),
+            }
+            entry["density"] = _density_curve(values)
+        summary.append(entry)
+    return sorted(summary, key=lambda item: item["importance"], reverse=True)

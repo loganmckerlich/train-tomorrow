@@ -2,6 +2,11 @@ import { unstable_noStore as noStore } from "next/cache";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
 import WaterfallPlot from "./WaterfallPlot";
+import Tabs from "./Tabs";
+import FeatureSummary from "./FeatureSummary";
+import type { FeatureSummaryItem } from "./FeatureSummary";
+import MetricsPanel from "./MetricsPanel";
+import type { ModelMetrics } from "./MetricsPanel";
 
 const WATERFALL_CHART_MIN_HEIGHT = 180;
 const WATERFALL_CHART_ROW_HEIGHT = 28;
@@ -89,6 +94,8 @@ type PredictionPayload = {
   baseline_probability?: number;
   other_contribution?: number;
   impact_tracking?: ImpactTracking;
+  feature_summary?: FeatureSummaryItem[];
+  model_metrics?: ModelMetrics;
   blurb: string;
 };
 
@@ -786,7 +793,7 @@ export default async function Home() {
   const generatedAt = formatGeneratedAt(prediction.generated_at);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-8 px-6 py-14">
+    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-8 px-6 py-14">
       <header>
         <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
           Predicting for {prediction.date}
@@ -819,23 +826,40 @@ export default async function Home() {
         </article>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
-        <ContributorSummary
-          topContributors={prediction.top_contributors}
-          baselineLogOdds={
-            prediction.baseline_log_odds ?? (
-              prediction.baseline_probability === undefined
-                ? undefined
-                : logit(prediction.baseline_probability)
-            )
-          }
-          otherContribution={prediction.other_contribution}
-          finalProbability={prediction.probability}
-        />
-      </section>
-
-      {prediction.impact_tracking ? <ImpactTrackingPanel impact={prediction.impact_tracking} /> : null}
+      <Tabs
+        tabs={[
+          {
+            id: "waterfall",
+            label: "Why this prediction",
+            content: (
+              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
+                <ContributorSummary
+                  topContributors={prediction.top_contributors}
+                  baselineLogOdds={
+                    prediction.baseline_log_odds ?? (
+                      prediction.baseline_probability === undefined
+                        ? undefined
+                        : logit(prediction.baseline_probability)
+                    )
+                  }
+                  otherContribution={prediction.other_contribution}
+                  finalProbability={prediction.probability}
+                />
+              </section>
+            ),
+          },
+          ...(prediction.feature_summary?.length
+            ? [{ id: "features", label: "Features", content: <FeatureSummary items={prediction.feature_summary} /> }]
+            : []),
+          ...(prediction.model_metrics
+            ? [{ id: "metrics", label: "Model metrics", content: <MetricsPanel metrics={prediction.model_metrics} /> }]
+            : []),
+          ...(prediction.impact_tracking
+            ? [{ id: "impact", label: "Prediction impact", content: <ImpactTrackingPanel impact={prediction.impact_tracking} /> }]
+            : []),
+        ]}
+      />
     </main>
   );
 }
