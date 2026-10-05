@@ -13,7 +13,7 @@ const WATERFALL_CHART_ROW_HEIGHT = 28;
 
 const blurbMarkdownComponents: Components = {
   p: ({ children }) => <p className="mt-3 leading-relaxed first:mt-0">{children}</p>,
-  strong: ({ children }) => <strong className="font-semibold text-amber-300">{children}</strong>,
+  strong: ({ children }) => <strong className="font-semibold text-paper">{children}</strong>,
   ul: ({ children }) => <ul className="mt-3 list-disc space-y-1 pl-5">{children}</ul>,
   li: ({ children }) => <li className="leading-relaxed">{children}</li>,
 };
@@ -412,10 +412,7 @@ function FeaturePlot({ contributor }: { contributor: Contributor }) {
   }
 
   return (
-    <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-      <summary className="cursor-pointer text-xs font-medium text-slate-700">
-        Show model effect plot
-      </summary>
+    <div className="mt-3 border-l border-slate-300 pl-3">
       {contributor.plot.kind === "continuous" ? (
         <ContinuousFeaturePlot
           feature={contributor.feature}
@@ -427,7 +424,7 @@ function FeaturePlot({ contributor }: { contributor: Contributor }) {
           plot={contributor.plot}
         />
       )}
-    </details>
+    </div>
   );
 }
 
@@ -523,7 +520,7 @@ function ContributorSummary({
         Feature rows show main effects after separating pairwise interactions; interaction rows show the pair effect.
       </p>
       {baselineProbability === undefined ? null : (
-        <figure className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
+        <figure className="mt-4 border-y border-slate-200 bg-white py-3">
           <figcaption className="sr-only">Waterfall showing cumulative train probability after each SHAP-IQ effect</figcaption>
           <WaterfallPlot
             rows={rows.map((row) => ({
@@ -540,45 +537,47 @@ function ContributorSummary({
             ticks={chartTicks.map((tick) => tick.percentage)}
             height={chartHeightPx}
           />
-          <p className="mt-1 text-center text-[11px] text-slate-500">train probability (%)</p>
-          <div className="mt-1 flex justify-center gap-4 text-[11px] text-slate-500">
+          <p className="mt-1 font-mono text-left text-[11px] text-slate-600">
+            Local scale: {formatPercent(chartProbabilityDomain[0], 0)} to {formatPercent(chartProbabilityDomain[1], 0)}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] text-slate-600">
             <span><span className="mr-1 inline-block w-3 border-t border-dotted border-slate-500 align-middle" />Model average</span>
-            <span><span className="mr-1 inline-block w-3 border-t border-dotted border-amber-500 align-middle" />Final prediction</span>
+            <span><span className="mr-1 inline-block w-3 border-t border-slate-800 align-middle" />Final prediction</span>
           </div>
         </figure>
       )}
-      <ul className="mt-4 space-y-4">
+      <ul className="mt-4">
         {rows.map((row) => {
           const pointChange = row.pointChange;
           return (
-            <li key={row.feature}>
-              <div className="mb-1 flex items-center justify-between gap-4 text-sm">
-                <span className="font-medium text-slate-800">{row.phrase}</span>
-                <div className="text-right">
+            <li key={row.feature} className="contributor-row">
+              <details>
+                <summary className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2">
+                  <span className="font-medium text-slate-800">{row.phrase}</span>
                   <span
-                    className={
-                      row.direction === "helping"
-                        ? "font-semibold text-emerald-600"
-                        : "font-semibold text-rose-600"
-                    }
+                    className={`data-reading text-right text-sm font-semibold ${row.direction === "helping" ? "text-emerald-600" : "text-rose-600"}`}
                     title={`SHAP-IQ ${formatSigned(row.signed_contribution, 3)} log odds`}
                   >
-                    {formatLogOdds(row.signed_contribution)} ({formatPointChange(pointChange)})
-                    {row.endProbability === null ? "" : ` → ${formatPercent(row.endProbability, 1)}`}
+                    {formatPointChange(pointChange)}
+                    {row.endProbability === null ? "" : ` · ${formatPercent(row.endProbability, 1)}`}
                   </span>
-                  <p className="text-xs text-slate-500">{row.direction}</p>
+                  <span className="col-span-2 block h-1 bg-slate-200" title={`Probability change ${formatPointChange(pointChange)}`}>
+                    <span
+                      className={`block h-full ${row.direction === "helping" ? "bg-emerald-500" : "bg-rose-500"}`}
+                      style={{ width: contributorBarWidth(pointChange ?? 0, maxContributionMagnitude) }}
+                    />
+                  </span>
+                  <span className="col-span-2 font-mono text-xs text-slate-500">
+                    {row.direction} · {formatLogOdds(row.signed_contribution)}
+                  </span>
+                </summary>
+                <div className="mt-3">
+                  <p className="font-mono text-xs text-slate-600">
+                    SHAP-IQ contribution {formatLogOdds(row.signed_contribution)}; probability change {formatPointChange(pointChange)}.
+                  </p>
+                  <FeaturePlot contributor={row} />
                 </div>
-              </div>
-              <div className="h-2 rounded-full bg-slate-200">
-                <div
-                  className={`h-2 rounded-full ${
-                    row.direction === "helping" ? "bg-emerald-500" : "bg-rose-500"
-                  }`}
-                  style={{ width: contributorBarWidth(pointChange ?? 0, maxContributionMagnitude) }}
-                  title={`Probability change ${formatPointChange(pointChange)}`}
-                />
-              </div>
-              <FeaturePlot contributor={row} />
+              </details>
             </li>
           );
         })}
@@ -681,7 +680,7 @@ function ImpactRollingChart({ series }: { series: RollingRate }) {
             })}
           </svg>
           <p className="text-[11px] text-slate-500">
-            Live cumulative rate {formatPercent(series.points.at(-1)?.rate ?? null)} · n={series.points.at(-1)?.n}
+            Live cumulative rate <span className="font-mono">{formatPercent(series.points.at(-1)?.rate ?? null)} · n={series.points.at(-1)?.n}</span>
           </p>
         </>
       ) : (
@@ -693,7 +692,7 @@ function ImpactRollingChart({ series }: { series: RollingRate }) {
 
 function ImpactTrackingPanel({ impact }: { impact: ImpactTracking }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="logbook-panel">
       <div>
         <h2 className="text-lg font-semibold text-slate-900">Prediction impact by probability bucket</h2>
         <p className="mt-1 text-sm text-slate-600">
@@ -713,14 +712,14 @@ function ImpactTrackingPanel({ impact }: { impact: ImpactTracking }) {
       <div className="mt-5">
         <h3 className="font-semibold text-slate-900">Rolling live rates by bucket</h3>
         <p className="mt-1 text-xs text-slate-500">
-          Cumulative live rate over time; dashed blue is the frozen baseline. Each point includes resolved sample count.
+          Cumulative live rate over time; the dashed line marks the frozen baseline. Each point includes resolved sample count.
         </p>
         {(["false_negative", "false_positive"] as const).map((direction) => (
           <div key={direction} className="mt-3">
             <h4 className="mb-2 text-sm font-medium text-slate-700">
               {direction === "false_negative" ? "False negatives" : "False positives"}
             </h4>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-2">
               {impact.rolling
                 .filter((series) => series.direction === direction)
                 .map((series) => (
@@ -733,7 +732,7 @@ function ImpactTrackingPanel({ impact }: { impact: ImpactTracking }) {
 
       <div className="mt-5 overflow-x-auto">
         <h3 className="font-semibold text-slate-900">Comparison summary</h3>
-        <table className="mt-2 min-w-full border-collapse text-left text-xs">
+        <table className="mt-2 min-w-full border-collapse text-left font-mono text-xs">
           <thead>
             <tr className="border-b border-slate-200 text-slate-500">
               <th className="py-2 pr-3">Bucket</th>
@@ -783,9 +782,9 @@ export default async function Home() {
 
   if (!prediction) {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center px-6 py-16">
-        <h1 className="text-3xl font-bold text-slate-900">train tomorrow</h1>
-        <p className="mt-4 text-slate-600">Couldn’t load today’s prediction payload.</p>
+      <main className="instrument-page flex min-h-screen flex-col justify-center">
+        <h1 className="font-mono text-xl font-semibold text-paper">train tomorrow</h1>
+        <p className="mt-4 text-paper">Couldn’t load today’s prediction payload.</p>
       </main>
     );
   }
@@ -793,37 +792,27 @@ export default async function Home() {
   const generatedAt = formatGeneratedAt(prediction.generated_at);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-8 px-6 py-14">
-      <header>
-        <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
-          Predicting for {prediction.date}
-        </p>
-        <h1 className="mt-2 text-4xl font-bold text-slate-900">train tomorrow</h1>
-        {generatedAt ? <p className="mt-1 text-xs text-slate-500">Prediction generated {generatedAt}</p> : null}
+    <main className="instrument-page flex min-h-screen flex-col gap-8">
+      <header className="border-b border-[var(--line)] pb-5">
+        <p className="font-mono text-sm text-paper">{prediction.date}</p>
+        <h1 className="mt-2 font-mono text-lg font-semibold tracking-tight text-paper">train tomorrow</h1>
+        {generatedAt ? <p className="mt-1 font-mono text-xs text-slate-300">Prediction generated {generatedAt}</p> : null}
       </header>
 
-      <section className="rounded-2xl bg-slate-900 p-6 text-lg text-slate-50 shadow-sm">
-        <ReactMarkdown components={blurbMarkdownComponents}>{prediction.blurb}</ReactMarkdown>
+      <section className="reading">
+        <p className="text-xs text-slate-300">Train probability</p>
+        <p className="headline-probability mt-3">{Math.round(prediction.probability * 100)}%</p>
+        <p className="mt-3 text-xl leading-snug text-paper">
+          {prediction.will_train ? "Likely training day" : "Likely recovery day"}
+        </p>
+        <p className="mt-5 font-mono text-sm text-slate-300">
+          Predicted effort <span className="text-paper">{prediction.predicted_effort === null ? "n/a" : prediction.predicted_effort.toFixed(1)}</span>
+          <span className="ml-2 font-sans text-xs">relative-effort points</span>
+        </p>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2">
-        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Train probability</p>
-          <p className="mt-2 text-3xl font-semibold text-slate-900">
-            {Math.round(prediction.probability * 100)}%
-          </p>
-          <p className="mt-1 text-sm text-slate-600">
-            {prediction.will_train ? "Likely training day" : "Likely recovery day"}
-          </p>
-        </article>
-
-        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Predicted effort</p>
-          <p className="mt-2 text-3xl font-semibold text-slate-900">
-            {prediction.predicted_effort === null ? "—" : prediction.predicted_effort.toFixed(1)}
-          </p>
-          <p className="mt-1 text-sm text-slate-600">relative-effort points</p>
-        </article>
+      <section className="daily-narrative max-w-2xl border-b border-[var(--line)] pb-6 text-base leading-relaxed text-paper">
+        <ReactMarkdown components={blurbMarkdownComponents}>{prediction.blurb}</ReactMarkdown>
       </section>
 
       <Tabs
@@ -832,8 +821,8 @@ export default async function Home() {
             id: "waterfall",
             label: "Why this prediction",
             content: (
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="text-lg font-semibold text-slate-900">Top contributors</h2>
+              <section className="logbook-panel">
+                <h2 className="text-xl font-semibold text-slate-900">How the estimate moves</h2>
                 <ContributorSummary
                   topContributors={prediction.top_contributors}
                   baselineLogOdds={

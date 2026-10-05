@@ -27,8 +27,8 @@ const pct = (value: number | null) => (value === null ? "n/a" : `${(value * 100)
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">{value}</p>
+      <p className="font-mono text-xs text-slate-600">{label}</p>
+      <p className="mt-1 font-mono text-2xl font-semibold tabular-nums text-slate-900">{value}</p>
       {hint ? <p className="mt-1 text-[11px] text-slate-500">{hint}</p> : null}
     </div>
   );
@@ -55,7 +55,7 @@ export default function MetricsPanel({ metrics }: { metrics: ModelMetrics }) {
   const c = metrics.classifier;
   const r = metrics.regressor;
   return (
-    <section>
+    <section className="logbook-panel">
       <p className="rounded-lg bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
         These metrics come from a quick holdout of the most recent {c.n_holdout} days ({c.holdout_start} to{" "}
         {c.holdout_end}), scored by a model trained only on the {c.n_train} earlier days. The deployed model is then
@@ -63,7 +63,7 @@ export default function MetricsPanel({ metrics }: { metrics: ModelMetrics }) {
       </p>
 
       <h2 className="mt-5 text-sm font-semibold text-slate-900">Will I train? (classifier)</h2>
-      <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="mt-2 grid gap-3">
         <Tile label="AUC" value={fmt(c.auc)} hint="0.5 = coin flip" />
         <Tile label="Accuracy" value={pct(c.accuracy)} hint={`always-majority baseline ${pct(c.baseline_accuracy)}`} />
         <Tile label="Precision" value={pct(c.precision)} />
@@ -74,7 +74,7 @@ export default function MetricsPanel({ metrics }: { metrics: ModelMetrics }) {
         <Tile label="Train rate in holdout" value={pct(c.positive_rate)} />
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+      <div className="mt-4 grid gap-4">
         <Chart title="ROC curve" caption="False-positive rate (x) vs. true-positive rate (y); above the dashed line beats chance.">
           <polyline
             points={c.roc_curve.map((p) => `${x(p.fpr)},${y(p.tpr)}`).join(" ")}
@@ -100,7 +100,7 @@ export default function MetricsPanel({ metrics }: { metrics: ModelMetrics }) {
       </div>
 
       <h2 className="mt-6 text-sm font-semibold text-slate-900">How hard? (effort regressor)</h2>
-      <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="mt-2 grid gap-3">
         <Tile label="MAE" value={fmt(r.mae, 1)} hint="relative-effort points" />
         <Tile label="Median baseline MAE" value={fmt(r.baseline_mae, 1)} hint="always predict the training median" />
         <Tile label="Holdout rows" value={String(r.n_holdout)} hint={`${r.n_train} train rows (training days only)`} />

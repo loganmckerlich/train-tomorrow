@@ -120,7 +120,7 @@ function Card({ item }: { item: FeatureSummaryItem }) {
           importance {fmt(item.importance, 3)}
         </span>
       </div>
-      <p className="mt-3 text-2xl font-semibold text-slate-900">
+      <p className="data-reading mt-3 text-2xl font-semibold text-slate-900">
         {item.kind === "categorical" ? (item.current_label ?? "n/a") : fmt(item.current_value)}
         <span className="ml-2 text-xs font-normal text-slate-500">
           at prediction
@@ -157,12 +157,12 @@ function Card({ item }: { item: FeatureSummaryItem }) {
 
 export default function FeatureSummary({ items }: { items: FeatureSummaryItem[] }) {
   return (
-    <section>
+    <section className="logbook-panel">
       <p className="text-sm text-slate-600">
         Every model feature, ordered by model feature importance. The amber line is the value used for this
         prediction; the violin shows the training-data distribution with dashed p25/p75 and solid median.
       </p>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <div className="mt-4 grid gap-4">
         {items.map((item) => (
           <Card key={item.feature} item={item} />
         ))}

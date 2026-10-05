@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #16181C;
+  --paper: #ECE8DD;
+  --signal: #C9622B;
+  --graphite: #6B6A66;
+  --rise: #3F7A5C;
+  --fall: #9C3B3B;
+  --background: var(--ink);
+  --foreground: var(--paper);
+  --line: #454642;
 }
 
 @theme inline {
@@ -10,17 +17,185 @@
   --color-foreground: var(--foreground);
   --font-sans: Arial, Helvetica, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --color-slate-50: var(--paper);
+  --color-slate-100: #E2DED3;
+  --color-slate-200: #C8C3B8;
+  --color-slate-300: #AAA69D;
+  --color-slate-400: #87857F;
+  --color-slate-500: var(--graphite);
+  --color-slate-600: #555550;
+  --color-slate-700: #3C3D3B;
+  --color-slate-800: #25272A;
+  --color-slate-900: var(--ink);
+  --color-emerald-500: var(--rise);
+  --color-rose-500: var(--fall);
+  --color-rose-600: var(--fall);
+  --color-sky-500: var(--graphite);
+  --color-amber-300: var(--paper);
+  --color-amber-400: var(--graphite);
+  --color-amber-500: var(--graphite);
+  --color-amber-50: var(--paper);
+  --color-amber-600: var(--graphite);
+  --color-amber-950: var(--ink);
+  --color-paper: var(--paper);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.instrument-page {
+  width: min(100% - 2.5rem, 48rem);
+  margin-inline: auto;
+  padding-block: clamp(2rem, 7vw, 5rem);
+}
+
+.instrument-page :where(p, li, figcaption, summary, label) {
+  line-height: 1.65;
+}
+
+.instrument-page :where(button, a, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.instrument-page :where(.bg-white, .bg-slate-50) {
+  background-color: var(--paper);
+}
+
+.instrument-page :where(.text-slate-500) {
+  color: var(--graphite);
+}
+
+.instrument-page :where(.rounded-xl, .rounded-2xl, .rounded-lg) {
+  border-radius: 2px;
+}
+
+.instrument-page :where(.shadow-sm) {
+  box-shadow: none;
+}
+
+.instrument-page .reading {
+  border-top: 1px solid var(--line);
+  padding-block: 1.75rem;
+}
+
+.instrument-page .headline-probability {
+  color: var(--signal);
+  font: 500 clamp(5rem, 18vw, 9rem)/0.95 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.09em;
+}
+
+.instrument-page .data-reading,
+.instrument-page :where(.font-mono, .tabular-nums) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.instrument-page .logbook-panel {
+  border: 1px solid #C8C3B8;
+  background: var(--paper);
+  color: var(--ink);
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.instrument-page .contributor-row {
+  border-bottom: 1px solid #C8C3B8;
+  padding-block: 0.9rem;
+}
+
+.instrument-page .contributor-row > summary {
+  position: relative;
+  padding-left: 1.25rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.instrument-page .contributor-row > summary::-webkit-details-marker {
+  display: none;
+}
+
+.instrument-page .contributor-row > summary::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--graphite);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.instrument-page .contributor-row[open] > summary::before {
+  content: "−";
+}
+
+.instrument-page .contributor-row details > :not(summary) {
+  margin-left: 1.25rem;
+}
+
+.instrument-page :where(.text-emerald-600, .text-emerald-500) {
+  color: var(--rise);
+}
+
+.instrument-page :where(.text-rose-600, .text-rose-500) {
+  color: var(--fall);
+}
+
+.instrument-page :where(.stroke-emerald-500, .fill-emerald-500) {
+  color: var(--rise);
+}
+
+.instrument-page :where(.stroke-rose-500, .fill-rose-500) {
+  color: var(--fall);
+}
+
+.instrument-page :where(.border-slate-200, .border-slate-100) {
+  border-color: #C8C3B8;
+}
+
+.instrument-page [role="tablist"] {
+  border-color: var(--line);
+}
+
+.instrument-page [role="tab"][aria-selected="true"] {
+  border-color: var(--paper);
+  color: var(--paper);
+}
+
+.instrument-page [role="tab"] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.instrument-page [role="tab"]:focus-visible {
+  outline-color: var(--paper);
+}
+
+.instrument-page .contributor-row summary .text-emerald-600,
+.instrument-page .contributor-row summary .text-rose-600 {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .instrument-page {
+    width: min(100% - 1.5rem, 48rem);
+  }
 }

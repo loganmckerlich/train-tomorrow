@@ -21,7 +21,7 @@ export default function Tabs({ tabs }: { tabs: TabItem[] }) {
 
   return (
     <div>
-      <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-slate-200">
+      <div role="tablist" aria-label="Prediction details" className="flex gap-1 overflow-x-auto border-b border-slate-200">
         {tabs.map((tab, index) => {
           const selected = tab.id === active;
           return (
@@ -35,10 +35,10 @@ export default function Tabs({ tabs }: { tabs: TabItem[] }) {
               tabIndex={selected ? 0 : -1}
               onClick={() => setActive(tab.id)}
               onKeyDown={(event) => onKeyDown(event, index)}
-              className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+              className={`-mb-px whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium ${
                 selected
-                  ? "border-amber-500 text-slate-900"
-                  : "border-transparent text-slate-500 hover:text-slate-800"
+                  ? "border-slate-50 text-slate-50"
+                  : "border-transparent text-slate-300 hover:text-slate-50"
               }`}
             >
               {tab.label}
