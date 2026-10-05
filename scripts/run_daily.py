@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -42,8 +42,12 @@ def load_params(path: Path = PARAMS_PATH) -> dict:
         return yaml.safe_load(fp) or {}
 
 
-def run_pipeline() -> dict[str, object]:
-    run_date = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+def run_pipeline(target_date: date | None = None) -> dict[str, object]:
+    today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    target_date = target_date or today + timedelta(days=1)
+    if target_date > today + timedelta(days=1):
+        raise ValueError("Prediction date must be today, tomorrow, or a past date")
+    run_date = target_date - timedelta(days=1)
     params = load_params()
     strava_params = params.get("strava", {})
     model_params = params.get("model", {})
@@ -52,11 +56,15 @@ def run_pipeline() -> dict[str, object]:
     activities = fetch_activities_dataframe(
         days_back=strava_params.get("days_back", 730), activity_types=strava_params.get("activity_types")
     )
-    weather = fetch_tomorrow_forecast(as_of_date=run_date)
+    activities["date"] = pd.to_datetime(activities["date"], errors="coerce").dt.date
+    activities = activities.loc[activities["date"].notna() & (activities["date"] <= run_date)].copy()
 
     activity_dates = pd.to_datetime(activities["date"], errors="coerce").dt.date.dropna()
     historical_weather = (
-        fetch_historical_weather(activity_dates.min(), activity_dates.max())
+        fetch_historical_weather(
+            activity_dates.min(),
+            max(activity_dates.max(), target_date if target_date < today else run_date),
+        )
         if not activity_dates.empty
         else None
     )
@@ -65,6 +73,13 @@ def run_pipeline() -> dict[str, object]:
         home_lon = float(os.getenv("FORECAST_LON", DEFAULT_LON))
         stale_dates = out_of_range_dates(activities, home_lat, home_lon)
         historical_weather = historical_weather.drop(index=list(stale_dates), errors="ignore")
+
+    if target_date < today:
+        if historical_weather is None or target_date not in historical_weather.index:
+            raise ValueError(f"Historical weather is unavailable for prediction date {target_date.isoformat()}")
+        weather = historical_weather.loc[target_date].to_dict()
+    else:
+        weather = fetch_tomorrow_forecast(as_of_date=run_date)
 
     prepared = prepare_datasets(
         activities=activities,
@@ -124,7 +139,7 @@ def run_pipeline() -> dict[str, object]:
 
     payload = {
         "date": str(prepared.tomorrow_features.iloc[0]["target_date"]),
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(ZoneInfo("America/Los_Angeles")).isoformat(),
         "will_train": bool(prediction["will_train"]),
         "probability": round(float(prediction["probability"]), 4),
         "predicted_effort": (
@@ -158,9 +173,9 @@ def write_latest(payload: dict[str, object], output_path: Path = LATEST_JSON_PAT
         fp.write("\n")
 
 
-def main() -> None:
+def main(target_date: date | None = None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    payload = run_pipeline()
+    payload = run_pipeline(target_date=target_date)
     write_latest(payload)
     logger.info("wrote %s", LATEST_JSON_PATH)
 

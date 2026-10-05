@@ -7,3 +7,4 @@ requests~=2.32
 PyGithub~=2.4
 google-genai~=1.24
 PyYAML~=6.0
+python-dotenv~=1.0

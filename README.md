@@ -59,6 +59,17 @@ export FORECAST_LON=-122.4194
 python scripts/run_daily.py
 ```
 
+To predict for a past date, today, or a different date through tomorrow, use:
+
+```bash
+python scripts/daily_predict.py --date YYYY-MM-DD
+```
+
+Omit `--date` to keep the default prediction date of tomorrow. Past-date predictions use archived observed
+weather and only Strava activities available through the day before the requested date; the Strava lookback
+window in `params.yaml` limits how far back the pipeline can predict.
+Add `--local` to load environment variables from `.env` before running the pipeline.
+
 ## Local modeling exploration
 
 ```bash
