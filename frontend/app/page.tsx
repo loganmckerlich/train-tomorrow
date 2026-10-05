@@ -794,7 +794,9 @@ export default async function Home() {
   return (
     <main className="instrument-page flex min-h-screen flex-col gap-8">
       <header className="border-b border-[var(--line)] pb-5">
-        <p className="font-mono text-sm text-paper">{prediction.date}</p>
+        <p className="font-mono text-sm text-paper">
+          Predicting training status for {prediction.date}
+        </p>
         <h1 className="mt-2 font-mono text-lg font-semibold tracking-tight text-paper">train tomorrow</h1>
         {generatedAt ? <p className="mt-1 font-mono text-xs text-slate-300">Prediction generated {generatedAt}</p> : null}
       </header>
