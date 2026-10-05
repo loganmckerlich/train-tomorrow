@@ -49,7 +49,9 @@ def run_pipeline() -> dict[str, object]:
     model_params = params.get("model", {})
     blurb_params = params.get("blurb", {})
 
-    activities = fetch_activities_dataframe(days_back=strava_params.get("days_back", 730))
+    activities = fetch_activities_dataframe(
+        days_back=strava_params.get("days_back", 730), activity_types=strava_params.get("activity_types")
+    )
     weather = fetch_tomorrow_forecast(as_of_date=run_date)
 
     activity_dates = pd.to_datetime(activities["date"], errors="coerce").dt.date.dropna()

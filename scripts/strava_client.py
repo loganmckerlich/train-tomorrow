@@ -65,8 +65,14 @@ def update_refresh_token_secret(new_refresh_token: str) -> None:
         logger.error("Failed to rotate STRAVA_REFRESH_TOKEN secret: %s", exc.stderr.strip())
 
 
-def fetch_recent_activities(access_token: str, days_back: int = 90) -> pd.DataFrame:
-    """Pull authenticated athlete activities from the last N days as a DataFrame."""
+def fetch_recent_activities(
+    access_token: str, days_back: int = 90, activity_types: list[str] | None = None
+) -> pd.DataFrame:
+    """Pull authenticated athlete activities from the last N days as a DataFrame.
+
+    activity_types keeps only activities whose Strava `type` is listed; empty/None keeps everything.
+    """
+    wanted_types = set(activity_types or [])
     after_ts = int((datetime.now(timezone.utc) - timedelta(days=days_back)).timestamp())
     headers = {"Authorization": " ".join(["Bearer", access_token])}
 
@@ -85,6 +91,8 @@ def fetch_recent_activities(access_token: str, days_back: int = 90) -> pd.DataFr
             break
 
         for activity in activities:
+            if wanted_types and activity.get("type") not in wanted_types:
+                continue
             start_date_raw = activity.get("start_date_local") or activity.get("start_date")
             if not start_date_raw:
                 continue
@@ -122,12 +130,12 @@ def fetch_recent_activities(access_token: str, days_back: int = 90) -> pd.DataFr
     return pd.DataFrame(records, columns=columns)
 
 
-def fetch_activities_dataframe(days_back: int = 90) -> pd.DataFrame:
+def fetch_activities_dataframe(days_back: int = 90, activity_types: list[str] | None = None) -> pd.DataFrame:
     token_payload = exchange_refresh_token()
     access_token = token_payload.get("access_token")
     if not isinstance(access_token, str) or not access_token:
         raise RuntimeError("Strava OAuth response did not include access_token")
-    return fetch_recent_activities(access_token=access_token, days_back=days_back)
+    return fetch_recent_activities(access_token=access_token, days_back=days_back, activity_types=activity_types)
 
 
 def _haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:

@@ -10,6 +10,10 @@ blurb:
 strava:
   # how many days of activity history to pull from Strava on each run
   days_back: 1095
+  # keep only these Strava activity `type` values; empty list = all activities. Options include:
+  # Ride, VirtualRide, EBikeRide, Run, Walk, Hike, Swim, WeightTraining, Workout, Yoga, Rowing, Elliptical
+  # (gravel/mountain rides are type "Ride"; Strava only distinguishes them in sport_type)
+  activity_types: [Ride,Run]
 
 model:
   # nonzero-effort/distance quantile above which a day counts as "hard"/"long" for streak features
