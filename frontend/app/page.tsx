@@ -13,7 +13,7 @@ const WATERFALL_CHART_ROW_HEIGHT = 28;
 
 const blurbMarkdownComponents: Components = {
   p: ({ children }) => <p className="mt-3 leading-relaxed first:mt-0">{children}</p>,
-  strong: ({ children }) => <strong className="font-semibold text-paper">{children}</strong>,
+  strong: ({ children }) => <strong className="font-semibold text-slate-900">{children}</strong>,
   ul: ({ children }) => <ul className="mt-3 list-disc space-y-1 pl-5">{children}</ul>,
   li: ({ children }) => <li className="leading-relaxed">{children}</li>,
 };
@@ -813,7 +813,7 @@ export default async function Home() {
         </p>
       </section>
 
-      <section className="daily-narrative max-w-2xl border-b border-[var(--line)] pb-6 text-base leading-relaxed text-paper">
+      <section className="logbook-panel daily-narrative max-w-2xl text-base leading-relaxed text-slate-900">
         <ReactMarkdown components={blurbMarkdownComponents}>{prediction.blurb}</ReactMarkdown>
       </section>
 
