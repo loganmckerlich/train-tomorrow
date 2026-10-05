@@ -3,7 +3,7 @@ name: Daily Prediction
 on:
   schedule:
     # GitHub cron is UTC: these cover 11:45 PM Pacific in both PST and PDT.
-    - cron: "45 6,7 * * *"
+    - cron: "45 6 * * *"
     - cron: "45 7 * * *"
   workflow_dispatch:
 
