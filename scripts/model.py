@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from sklearn.metrics import precision_recall_fscore_support
+from sklearn.metrics import brier_score_loss, log_loss, precision_recall_fscore_support, roc_curve
 
 from features import FEATURE_COLUMNS
 
@@ -36,6 +36,54 @@ class TrainedModels:
     classifier: xgb.XGBClassifier
     regressor: xgb.XGBRegressor
     validation_predictions: list[dict[str, Any]] | None = None
+    metrics: dict[str, Any] | None = None
+
+
+def _finite(value: float) -> float | None:
+    return None if value is None or not np.isfinite(value) else round(float(value), 4)
+
+
+def _classifier_holdout_metrics(
+    y_true: np.ndarray, probs: np.ndarray, clf_train: pd.DataFrame, clf_test: pd.DataFrame
+) -> dict[str, Any]:
+    preds = (probs >= 0.5).astype(int)
+    precision, recall, f1, _ = precision_recall_fscore_support(y_true, preds, average="binary", zero_division=0)
+    two_classes = len(np.unique(y_true)) == 2
+    roc: list[dict[str, float]] = []
+    if two_classes:
+        fpr, tpr, _ = roc_curve(y_true, probs)
+        step = max(1, len(fpr) // 50)
+        roc = [{"fpr": round(float(a), 4), "tpr": round(float(b), 4)} for a, b in zip(fpr[::step], tpr[::step])]
+        roc.append({"fpr": 1.0, "tpr": 1.0})
+    # Equal-width probability bins; empty bins are skipped.
+    edges = np.linspace(0, 1, 6)
+    bins = np.clip(np.digitize(probs, edges[1:-1]), 0, 4)
+    calibration = [
+        {
+            "mean_predicted": round(float(probs[bins == b].mean()), 4),
+            "observed_rate": round(float(y_true[bins == b].mean()), 4),
+            "n": int((bins == b).sum()),
+        }
+        for b in range(5)
+        if (bins == b).any()
+    ]
+    return {
+        "n_train": len(clf_train),
+        "n_holdout": len(clf_test),
+        "holdout_start": str(clf_test["as_of_date"].min()),
+        "holdout_end": str(clf_test["as_of_date"].max()),
+        "positive_rate": _finite(y_true.mean()),
+        "accuracy": _finite((preds == y_true).mean()),
+        "baseline_accuracy": _finite(max(y_true.mean(), 1 - y_true.mean())),
+        "auc": _finite(_binary_auc(y_true, probs)),
+        "precision": _finite(precision),
+        "recall": _finite(recall),
+        "f1": _finite(f1),
+        "log_loss": _finite(log_loss(y_true, probs, labels=[0, 1])),
+        "brier": _finite(brier_score_loss(y_true, probs)),
+        "roc_curve": roc,
+        "calibration": calibration,
+    }
 
 
 def _time_split(
@@ -207,6 +255,15 @@ def train_and_save_models(
     reg_preds = regressor.predict(reg_test[features])
     mae = float(np.mean(np.abs(reg_preds - yr_test.to_numpy())))
     logger.info("regressor_mae=%.3f", mae)
+    metrics = {
+        "classifier": _classifier_holdout_metrics(y_test.to_numpy(), probs, clf_train, clf_test),
+        "regressor": {
+            "n_train": len(reg_train),
+            "n_holdout": len(reg_test),
+            "mae": _finite(mae),
+            "baseline_mae": _finite(np.mean(np.abs(yr_test.to_numpy() - np.median(yr_train.to_numpy())))),
+        },
+    }
 
     logger.info("refitting regressor on full positive-label dataset (n=%d) before saving", len(reg_rows))
     regressor.fit(
@@ -223,6 +280,7 @@ def train_and_save_models(
         classifier=classifier,
         regressor=regressor,
         validation_predictions=validation_predictions,
+        metrics=metrics,
     )
 
 

@@ -105,7 +105,7 @@ export default function WaterfallPlot({
                   strokeWidth={barWidth}
                   strokeLinecap="round"
                 />
-                <circle cx={startX} cy={y} r={barWidth * 0.4} className="fill-white stroke-slate-400" strokeWidth="1" />
+                <circle cx={startX} cy={y} r={barWidth * 0.4} className="fill-slate-50 stroke-slate-400" strokeWidth="1" />
                 <circle cx={endX} cy={y} r={barWidth * 0.5} className="fill-slate-900" />
               </g>
             );
@@ -126,9 +126,8 @@ export default function WaterfallPlot({
             x2={x(finalProbability)}
             y1={top}
             y2={axisY}
-            className="stroke-amber-500"
-            strokeDasharray="3 3"
-            strokeWidth="1.5"
+            className="stroke-slate-800"
+            strokeWidth="2"
           >
             <title>{finalLabel}</title>
           </line>
@@ -148,9 +147,10 @@ export default function WaterfallPlot({
                 y={axisY + PLOT_LAYOUT.tickLabelOffset}
                 textAnchor="middle"
                 className="fill-slate-600"
+                fontFamily="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
                 fontSize="11"
               >
-                {percentage}
+                {percentage}%
               </text>
             </g>
           ))}

@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 
 from blurb import generate_blurb, generate_blurb_llm
-from explain import build_explanation
+from explain import build_explanation, build_feature_summary
 from features import FEATURE_COLUMNS, prepare_datasets
 from model import predict_tomorrow, train_and_save_models
 from predictions_log import (
@@ -152,6 +152,10 @@ def run_pipeline(target_date: date | None = None) -> dict[str, object]:
         "baseline_probability": explanation["baseline_probability"],
         "other_contribution": explanation["other_contribution"],
         "blurb": blurb,
+        "feature_summary": build_feature_summary(
+            models.classifier, prepared.historical, prepared.tomorrow_features, features=model_features
+        ),
+        "model_metrics": models.metrics,
     }
 
     # prepared.historical already contains real outcomes for recent days, so this backfills
