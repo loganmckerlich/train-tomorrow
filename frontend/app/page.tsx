@@ -813,7 +813,7 @@ export default async function Home() {
         </p>
       </section>
 
-      <section className="logbook-panel daily-narrative max-w-2xl text-base leading-relaxed text-slate-900">
+      <section className="logbook-panel daily-narrative text-base leading-relaxed text-slate-900">
         <ReactMarkdown components={blurbMarkdownComponents}>{prediction.blurb}</ReactMarkdown>
       </section>
 
