@@ -162,7 +162,7 @@ export default function FeatureSummary({ items }: { items: FeatureSummaryItem[] 
         Every model feature, ordered by model feature importance. The amber line is the value used for this
         prediction; the violin shows the training-data distribution with dashed p25/p75 and solid median.
       </p>
-      <div className="mt-4 grid gap-4">
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
         {items.map((item) => (
           <Card key={item.feature} item={item} />
         ))}

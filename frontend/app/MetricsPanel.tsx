@@ -63,7 +63,7 @@ export default function MetricsPanel({ metrics }: { metrics: ModelMetrics }) {
       </p>
 
       <h2 className="mt-5 text-sm font-semibold text-slate-900">Will I train? (classifier)</h2>
-      <div className="mt-2 grid gap-3">
+      <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Tile label="AUC" value={fmt(c.auc)} hint="0.5 = coin flip" />
         <Tile label="Accuracy" value={pct(c.accuracy)} hint={`always-majority baseline ${pct(c.baseline_accuracy)}`} />
         <Tile label="Precision" value={pct(c.precision)} />
@@ -100,7 +100,7 @@ export default function MetricsPanel({ metrics }: { metrics: ModelMetrics }) {
       </div>
 
       <h2 className="mt-6 text-sm font-semibold text-slate-900">How hard? (effort regressor)</h2>
-      <div className="mt-2 grid gap-3">
+      <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Tile label="MAE" value={fmt(r.mae, 1)} hint="relative-effort points" />
         <Tile label="Median baseline MAE" value={fmt(r.baseline_mae, 1)} hint="always predict the training median" />
         <Tile label="Holdout rows" value={String(r.n_holdout)} hint={`${r.n_train} train rows (training days only)`} />

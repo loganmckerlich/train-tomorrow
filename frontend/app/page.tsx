@@ -719,7 +719,7 @@ function ImpactTrackingPanel({ impact }: { impact: ImpactTracking }) {
             <h4 className="mb-2 text-sm font-medium text-slate-700">
               {direction === "false_negative" ? "False negatives" : "False positives"}
             </h4>
-            <div className="grid gap-2">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {impact.rolling
                 .filter((series) => series.direction === direction)
                 .map((series) => (
