@@ -10,14 +10,39 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
+def describe_values(contributor: dict[str, Any]) -> str:
+    """e.g. 'value=0 (typical 0.3, 12th percentile)'; empty when no context is attached."""
+    parts = []
+    for ctx in contributor.get("value_context") or []:
+        if ctx.get("current_value") is None:
+            continue
+        unit = f" {ctx['unit']}" if ctx.get("unit") else ""
+        shown = ctx.get("current_label") or f"{ctx['current_value']}{unit}"
+        text = f"value={shown} (typical {ctx['typical_value']}{unit}, {ctx['percentile']:.0%} of history is at or below)"
+        parts.append(text if len(contributor["value_context"]) == 1 else f"{ctx['feature']} {text}")
+    return "; ".join(parts)
+
+
+def describe_definitions(contributor: dict[str, Any]) -> str:
+    ctxs = contributor.get("value_context") or []
+    return "; ".join(
+        (f"{c['feature']}: {c['definition']}" if len(ctxs) > 1 else c["definition"]) for c in ctxs if c.get("definition")
+    ) or "n/a"
+
+
+def _phrase_with_value(contributor: dict[str, Any]) -> str:
+    values = describe_values(contributor)
+    return f"{contributor['phrase']} [{values}]" if values else contributor["phrase"]
+
+
 def generate_blurb(
     will_train: bool,
     probability: float,
     predicted_effort: float | None,
     top_contributors: list[dict[str, Any]],
 ) -> str:
-    positives = [item["phrase"] for item in top_contributors if item["signed_contribution"] >= 0]
-    negatives = [item["phrase"] for item in top_contributors if item["signed_contribution"] < 0]
+    positives = [_phrase_with_value(item) for item in top_contributors if item["signed_contribution"] >= 0]
+    negatives = [_phrase_with_value(item) for item in top_contributors if item["signed_contribution"] < 0]
 
     pos_text = positives[0] if positives else "your routine momentum"
     neg_text = negatives[0] if negatives else "a bit of friction in the setup"
@@ -51,15 +76,19 @@ def generate_gemini_prompt(
     tone: str,
 ) -> str:
     factors = "\n".join(
-        f"- {c['feature']} ({c['phrase']}): signed_contribution={c['signed_contribution']:+.3f} "
-        f"({c['direction']} the training call)"
+        f"- {c['feature']} (variable meaning: {c['phrase']}): {describe_values(c) or 'value n/a'}; "
+        f"definition: {describe_definitions(c)}; "
+        f"signed_contribution={c['signed_contribution']:+.3f} ({c['direction']} the training call)"
         for c in top_contributors
     )
     effort_line = f"predicted_effort: {predicted_effort:.1f} (relative-effort units)" if predicted_effort is not None else "predicted_effort: n/a (rest day)"
     prompt = (
         "I have a model that predicts whether an athlete will train tomorrow based on various factors.\n"+
         "I want you to make a clean, concise summary of the prediction based on the data provided.\n"+
-        "Tell the athlete what we think will occur tommorow based on the prediction along with why based on the top contributing factors.\n"+
+        "Tell the athlete what we think will occur tomorrow based on the prediction along with why based on the top contributing factors.\n"+
+        "Each factor's meaning only names the variable, not its state (value=0 for 'rain in the forecast' means NO rain). "+
+        "Describe tomorrow's actual condition from the value, units and definition, and never claim anything they contradict. "+
+        "A positive contribution from a low value means the low value is helping.\n"+
         f"Use a {tone} tone\n\n"+
         "HERE IS YOUR DATA INPUT:\n"+
         f"prediction: {'train' if will_train else 'rest'}\n"+
@@ -67,6 +96,7 @@ def generate_gemini_prompt(
         f"{effort_line}\n"+
         f"top_contributing_factors (feature, meaning, signed contribution toward training):\n{factors}"
     )
+    logger.info(f"Generated Gemini prompt:\n{prompt}")
     return prompt
 
 def generate_blurb_llm(

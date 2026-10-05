@@ -13,7 +13,7 @@ bootstrap_scripts_path()
 import pandas as pd
 
 from blurb import generate_blurb
-from explain import PHRASE_BANK, _interaction_contributions, _rank_contributors, build_explanation
+from explain import FEATURE_INFO, _interaction_contributions, _rank_contributors, build_explanation
 from features import prepare_datasets
 from model import _time_split, predict_tomorrow, train_and_save_models
 
@@ -90,7 +90,7 @@ def main() -> None:
     mileage_features = {"mileage_acute_7", "mileage_chronic_28"}
     assert mileage_features <= set(prepared.historical.columns)
     assert mileage_features <= set(prepared.tomorrow_features.columns)
-    assert mileage_features <= PHRASE_BANK.keys()
+    assert mileage_features <= FEATURE_INFO.keys()
 
     with tempfile.TemporaryDirectory() as tmpdir:
         models = train_and_save_models(

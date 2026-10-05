@@ -6,7 +6,7 @@ Single entrypoint is `build_explanation`; everything else here is a building blo
 from __future__ import annotations
 
 import math
-from typing import Any
+from typing import Any, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -22,43 +22,120 @@ SEASON_LABELS = ["Winter", "Spring", "Summer", "Fall"]
 
 CONTINUOUS_BIN_COUNT = 24  # caps historical scatter points; ceiling is coarser resolution, raise if plots look chunky
 
-PHRASE_BANK: dict[str, str] = {
-    "acute_load_7": "recent training load in your legs",
-    "chronic_load_28": "longer-term fitness base",
-    "atl_ctl_ratio": "how peaky your load balance looks",
-    "days_since_last_hard": "time since your last hard effort",
-    "streak_length": "your current streak momentum",
-    "trained_today": "whether you already trained today",
-    "trained_hard_today": "whether today's session was a hard one",
-    "trained_days_2": "how much you've trained the past 2 days",
-    "trained_both_days_2": "back-to-back training the last 2 days",
-    "trained_days_7": "how often you've trained this past week",
-    "trained_days_30": "your training frequency over the past month",
-    "moving_time_acute_7": "your recent training volume",
-    "moving_time_chronic_28": "your training volume base over the past month",
-    "mileage_acute_7": "your recent mileage volume",
-    "mileage_chronic_28": "your longer-term mileage base",
-    "today_relative_effort": "how hard today's session was",
-    "dow_train_rate": "regular train rate for this day of the week",
-    "month_train_rate": "regular train rate for this month",
-    "trained_last_weekend": "whether you trained this past weekend",
-    "day_of_week": "the day of the week",
-    "month": "the month of year",
-    "season": "seasonal vibes",
-    "days_since_last_long_ride": "time since your last really long session",
-    "forecast_temp_high": "the temp high forecast",
-    "forecast_temp_low": "the temp low forecast",
-    "forecast_precip_probability": "rain in the forecast",
-    "forecast_rain_expected": "whether rain is expected at all",
-    "forecast_wind_speed": "the wind forecast",
-    "forecast_temp_high_vs_seasonal": "how the temp high compares to normal for this time of year",
-    "forecast_temp_low_vs_seasonal": "how the temp low compares to normal for this time of year",
-    "forecast_precip_probability_vs_seasonal": "how much rainier or drier than usual it is",
-    "forecast_wind_speed_vs_seasonal": "how much windier or calmer than usual it is",
-    "forecast_precip_morning": "rain chances during your morning window",
-    "forecast_precip_midday": "rain chances during the midday window",
-    "forecast_precip_evening": "rain chances during your evening window",
+M_TO_MILES = 0.000621371
+
+
+class FeatureInfo(NamedTuple):
+    phrase: str  # short human label (names the variable, not its state)
+    definition: str  # precise meaning for the LLM
+    unit: str = ""
+    scale: float = 1.0  # display = stored * scale + offset
+    offset: float = 0.0
+
+
+FEATURE_INFO: dict[str, FeatureInfo] = {
+    "acute_load_7": FeatureInfo(
+        "recent training load in your legs",
+        "short-term training load: 7-day exponentially weighted average of daily total Strava Relative Effort (a heart-rate based score of how hard a day was)",
+        "effort points/day"),
+    "chronic_load_28": FeatureInfo(
+        "longer-term fitness base",
+        "long-term fitness/training load: 28-day exponentially weighted average of daily total Strava Relative Effort",
+        "effort points/day"),
+    "atl_ctl_ratio": FeatureInfo(
+        "how peaky your load balance looks",
+        "short-term load divided by long-term load; above 1 means recent training is heavier than the 28-day norm, below 1 means lighter",
+        "ratio"),
+    "days_since_last_hard": FeatureInfo(
+        "time since your last hard effort",
+        "days since the last day whose Relative Effort reached the athlete's 'hard day' cutoff", "days"),
+    "streak_length": FeatureInfo(
+        "your current streak momentum", "consecutive ACTIVE DAYS (at least one workout) ending today", "days"),
+    "trained_today": FeatureInfo("whether you already trained today", "1 if there was any workout today, else 0"),
+    "trained_hard_today": FeatureInfo(
+        "whether today's session was a hard one",
+        "1 if today's total Relative Effort reached the 'hard day' cutoff, else 0"),
+    "trained_days_2": FeatureInfo(
+        "how much you've trained the past 2 days",
+        "number of distinct ACTIVE DAYS in the last 2 days (several workouts on one day count once)", "active days"),
+    "trained_both_days_2": FeatureInfo(
+        "back-to-back training the last 2 days", "1 if there was a workout on each of the last 2 days"),
+    "trained_days_7": FeatureInfo(
+        "how often you've trained this past week",
+        "number of distinct ACTIVE DAYS in the last 7 days; NOT a workout count, several workouts on one day count once",
+        "active days"),
+    "trained_days_30": FeatureInfo(
+        "your training frequency over the past month",
+        "number of distinct ACTIVE DAYS in the last 30 days; NOT a workout count, several workouts on one day count once",
+        "active days"),
+    "moving_time_acute_7": FeatureInfo(
+        "your recent training volume",
+        "7-day exponentially weighted average of daily total moving time", "minutes/day", 1 / 60),
+    "moving_time_chronic_28": FeatureInfo(
+        "your training volume base over the past month",
+        "28-day exponentially weighted average of daily total moving time", "minutes/day", 1 / 60),
+    "mileage_acute_7": FeatureInfo(
+        "your recent mileage volume",
+        "7-day exponentially weighted average of daily total distance (a per-day average, not a weekly total)",
+        "miles/day", M_TO_MILES),
+    "mileage_chronic_28": FeatureInfo(
+        "your longer-term mileage base",
+        "28-day exponentially weighted average of daily total distance (a per-day average, not a monthly total)",
+        "miles/day", M_TO_MILES),
+    "today_relative_effort": FeatureInfo(
+        "how hard today's session was",
+        "total Strava Relative Effort summed over all of today's workouts", "effort points"),
+    "dow_train_rate": FeatureInfo(
+        "regular train rate for this day of the week",
+        "share of past days with this same weekday on which the athlete trained", "fraction 0-1"),
+    "month_train_rate": FeatureInfo(
+        "regular train rate for this month",
+        "share of past days in this calendar month (across years) on which the athlete trained", "fraction 0-1"),
+    "trained_last_weekend": FeatureInfo(
+        "whether you trained this past weekend",
+        "1 if the athlete trained on the most recent Saturday or Sunday, else 0"),
+    "day_of_week": FeatureInfo("the day of the week", "day of the week of tomorrow"),
+    "month": FeatureInfo("the month of year", "calendar month of tomorrow"),
+    "season": FeatureInfo("seasonal vibes", "season of tomorrow"),
+    "days_since_last_long_ride": FeatureInfo(
+        "time since your last really long session",
+        "days since the last day whose longest single activity exceeded the athlete's 'long' distance cutoff", "days"),
+    "forecast_temp_high": FeatureInfo("the temp high forecast", "tomorrow's forecast daily high temperature", "°F", 1.8, 32.0),
+    "forecast_temp_low": FeatureInfo("the temp low forecast", "tomorrow's forecast daily low temperature", "°F", 1.8, 32.0),
+    "forecast_precip_probability": FeatureInfo(
+        "rain in the forecast",
+        "share of tomorrow's 24 hours with any precipitation (0 = fully dry day, 100 = rain all day)", "% of hours"),
+    "forecast_rain_expected": FeatureInfo(
+        "whether rain is expected at all", "1 if any precipitation is forecast tomorrow, 0 if fully dry"),
+    "forecast_wind_speed": FeatureInfo("the wind forecast", "tomorrow's forecast max wind speed", "km/h"),
+    "forecast_temp_high_vs_seasonal": FeatureInfo(
+        "how the temp high compares to normal for this time of year",
+        "forecast high minus the historical average high for this time of year; positive = warmer than normal", "°F", 1.8),
+    "forecast_temp_low_vs_seasonal": FeatureInfo(
+        "how the temp low compares to normal for this time of year",
+        "forecast low minus the historical average low for this time of year; positive = warmer than normal", "°F", 1.8),
+    "forecast_precip_probability_vs_seasonal": FeatureInfo(
+        "how much rainier or drier than usual it is",
+        "forecast rainy-hours share minus the historical average for this time of year; positive = wetter than normal",
+        "percentage points"),
+    "forecast_wind_speed_vs_seasonal": FeatureInfo(
+        "how much windier or calmer than usual it is",
+        "forecast max wind minus the historical average for this time of year; positive = windier than normal", "km/h"),
+    "forecast_precip_morning": FeatureInfo(
+        "rain chances during your morning window",
+        "share of tomorrow's morning hours (5-9am) with precipitation", "% of hours"),
+    "forecast_precip_midday": FeatureInfo(
+        "rain chances during the midday window",
+        "share of tomorrow's midday hours (9am-4pm) with precipitation", "% of hours"),
+    "forecast_precip_evening": FeatureInfo(
+        "rain chances during your evening window",
+        "share of tomorrow's evening hours (4-9pm) with precipitation", "% of hours"),
 }
+
+
+def _phrase(feature: str) -> str:
+    info = FEATURE_INFO.get(feature)
+    return info.phrase if info else feature.replace("_", " ")
 
 
 def _feature_list(features: list[str] | None) -> list[str]:
@@ -82,7 +159,7 @@ def summarize_top_contributors(contributions: dict[str, float], top_n: int = 3) 
                 "feature": feature,
                 "signed_contribution": float(value),
                 "direction": "helping" if value >= 0 else "hurting",
-                "phrase": PHRASE_BANK.get(feature, feature.replace("_", " ")),
+                "phrase": _phrase(feature),
             }
         )
     return output
@@ -110,7 +187,7 @@ def _rank_contributors(
             "kind": "feature",
             "signed_contribution": value,
             "direction": "helping" if value >= 0 else "hurting",
-            "phrase": PHRASE_BANK.get(feature, feature.replace("_", " ")),
+            "phrase": _phrase(feature),
         }
         for feature, value in contributions.items()
     ]
@@ -121,10 +198,7 @@ def _rank_contributors(
             "kind": "interaction",
             "signed_contribution": value,
             "direction": "helping" if value >= 0 else "hurting",
-            "phrase": (
-                f"interaction between {PHRASE_BANK.get(feature_a, feature_a.replace('_', ' '))} "
-                f"and {PHRASE_BANK.get(feature_b, feature_b.replace('_', ' '))}"
-            ),
+            "phrase": f"interaction between {_phrase(feature_a)} and {_phrase(feature_b)}",
         }
         for (feature_a, feature_b), value in interactions.items()
     )
@@ -255,6 +329,26 @@ def attach_feature_plots(
     return enriched
 
 
+def _value_context(feature: str, historical: pd.DataFrame, current_row: pd.Series) -> dict[str, Any]:
+    """Tomorrow's actual value vs history, so a label like 'rain in the forecast' isn't read as 'rain is forecast'."""
+    values = pd.to_numeric(historical[feature], errors="coerce").dropna()
+    current = pd.to_numeric(pd.Series([current_row.get(feature)]), errors="coerce").iloc[0]
+    if pd.isna(current) or values.empty:
+        return {"feature": feature, "current_value": None}
+    definition, unit, scale, offset = (FEATURE_INFO.get(feature) or FeatureInfo("", ""))[1:]
+    context: dict[str, Any] = {
+        "feature": feature,
+        "current_value": round(float(current) * scale + offset, 3),
+        "typical_value": round(float(values.median()) * scale + offset, 3),
+        "percentile": round(float((values <= current).mean()), 4),
+        "unit": unit,
+        "definition": definition,
+    }
+    if feature in CATEGORICAL_FEATURES:
+        context["current_label"] = _category_label(feature, float(current))
+    return context
+
+
 def build_explanation(
     model: xgb.XGBModel,
     feature_row: pd.DataFrame,
@@ -281,6 +375,10 @@ def build_explanation(
         )
     else:
         top_contributors = selected
+    current_row = feature_row.iloc[0]
+    for contributor in top_contributors:
+        names = contributor.get("features") or [contributor["feature"]]
+        contributor["value_context"] = [_value_context(name, historical, current_row) for name in names]
 
     remainder = ranked[top_n:]
     other_contribution = sum(item["signed_contribution"] for item in remainder)
@@ -331,7 +429,7 @@ def build_feature_summary(
         current_value = None if pd.isna(current_value) else float(current_value)
         entry: dict[str, Any] = {
             "feature": feature,
-            "label": PHRASE_BANK.get(feature, feature),
+            "label": FEATURE_INFO[feature].phrase if feature in FEATURE_INFO else feature,
             "importance": round(float(importances[feature]), 4),
             "current_value": None if current_value is None else round(current_value, 4),
             "current_percentile": None if current_value is None else round(float((values <= current_value).mean()), 4),
