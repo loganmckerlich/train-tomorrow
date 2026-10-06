@@ -35,6 +35,8 @@ jobs:
 
           if [ "$local_hour" = "23" ]; then
             echo "should_run=true" >> "$GITHUB_OUTPUT"
+            # Pin the target so runs delayed past midnight Pacific don't predict a day late.
+            echo "target_date=$(TZ=America/Los_Angeles date -d "$scheduled_utc + 1 day" +%F)" >> "$GITHUB_OUTPUT"
           else
             echo "should_run=false" >> "$GITHUB_OUTPUT"
           fi
@@ -43,18 +45,29 @@ jobs:
         if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
         uses: actions/checkout@v4
 
+      - name: Skip if prediction already exists
+        id: existing
+        if: github.event_name == 'schedule' && steps.pacific_time.outputs.should_run == 'true'
+        env:
+          TARGET_DATE: ${{ steps.pacific_time.outputs.target_date }}
+        run: |
+          if [ "$(jq -r .date data/latest.json)" = "$TARGET_DATE" ]; then
+            echo "Prediction for $TARGET_DATE already exists; skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
-        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
+        if: (github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true') && steps.existing.outputs.skip != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install dependencies
-        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
+        if: (github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true') && steps.existing.outputs.skip != 'true'
         run: pip install -r requirements.txt
 
       - name: Run daily prediction script
-        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
+        if: (github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true') && steps.existing.outputs.skip != 'true'
         env:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
@@ -64,10 +77,11 @@ jobs:
           FORECAST_LON: ${{ vars.FORECAST_LON }}
           GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
-        run: python scripts/run_daily.py
+          TARGET_DATE: ${{ steps.pacific_time.outputs.target_date }}
+        run: python scripts/daily_predict.py ${TARGET_DATE:+--date "$TARGET_DATE"}
 
       - name: Commit latest prediction JSON
-        if: github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true'
+        if: (github.event_name != 'schedule' || steps.pacific_time.outputs.should_run == 'true') && steps.existing.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
