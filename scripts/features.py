@@ -173,11 +173,11 @@ def _compute_state_features(daily: pd.DataFrame, hard_threshold: float, long_thr
     for idx, (day, row) in enumerate(state.iterrows()):
         if row["day_hardest_effort"] >= hard_threshold:
             last_hard = day
-        hard_days.append((day - last_hard).days if last_hard is not None else 999)
+        hard_days.append((day - last_hard).days if last_hard is not None else np.nan)
 
         if row["longest_day_ride"] >= long_threshold and row["longest_day_ride"] > 0:
             last_long = day
-        long_days.append((day - last_long).days if last_long is not None else 999)
+        long_days.append((day - last_long).days if last_long is not None else np.nan)
 
         if row["trained_today"] == 1:
             running_streak += 1
@@ -252,7 +252,7 @@ def prepare_datasets(
                 "acute_load_7": float(today_row["acute_load_7"]),
                 "chronic_load_28": float(today_row["chronic_load_28"]),
                 "atl_ctl_ratio": float(today_row["atl_ctl_ratio"]),
-                "days_since_last_hard": int(today_row["days_since_last_hard"]),
+                "days_since_last_hard": float(today_row["days_since_last_hard"]),
                 "streak_length": int(today_row["streak_length"]),
                 "trained_today": int(today_row["trained_today"]),
                 "trained_hard_today": int(today_row["trained_hard_today"]),
@@ -271,7 +271,7 @@ def prepare_datasets(
                 "trained_last_weekend": bool(today_row["trained_last_weekend"]),
                 "month": next_day.month,
                 "season": _season_from_month(next_day.month),
-                "days_since_last_long_ride": int(today_row["days_since_last_long_ride"]),
+                "days_since_last_long_ride": float(today_row["days_since_last_long_ride"]),
                 "forecast_temp_high": forecast_temp_high,
                 "forecast_temp_low": forecast_temp_low,
                 "forecast_precip_probability": forecast_precip_probability,
@@ -309,7 +309,7 @@ def prepare_datasets(
                 "acute_load_7": float(recent["acute_load_7"]),
                 "chronic_load_28": float(recent["chronic_load_28"]),
                 "atl_ctl_ratio": float(recent["atl_ctl_ratio"]),
-                "days_since_last_hard": int(recent["days_since_last_hard"]),
+                "days_since_last_hard": float(recent["days_since_last_hard"]),
                 "streak_length": int(recent["streak_length"]),
                 "trained_today": int(recent["trained_today"]),
                 "trained_hard_today": int(recent["trained_hard_today"]),
@@ -328,7 +328,7 @@ def prepare_datasets(
                 "trained_last_weekend": bool(recent["trained_last_weekend"]),
                 "month": target_day.month,
                 "season": _season_from_month(target_day.month),
-                "days_since_last_long_ride": int(recent["days_since_last_long_ride"]),
+                "days_since_last_long_ride": float(recent["days_since_last_long_ride"]),
                 "forecast_temp_high": float(tomorrow_weather["temp_high"]),
                 "forecast_temp_low": float(tomorrow_weather["temp_low"]),
                 "forecast_precip_probability": float(tomorrow_weather["precip_probability"]),
