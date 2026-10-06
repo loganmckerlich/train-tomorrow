@@ -846,9 +846,19 @@ export default async function Home() {
           ...(prediction.model_metrics
             ? [{ id: "metrics", label: "Model metrics", content: <MetricsPanel metrics={prediction.model_metrics} /> }]
             : []),
-          ...(prediction.impact_tracking
-            ? [{ id: "impact", label: "Prediction impact", content: <ImpactTrackingPanel impact={prediction.impact_tracking} /> }]
-            : []),
+          // Hidden until there is more data; restore by rendering <ImpactTrackingPanel impact={prediction.impact_tracking} /> when set.
+          {
+            id: "impact",
+            label: "Prediction impact",
+            content: (
+              <section className="rounded-lg border border-slate-200 bg-white p-6 text-center">
+                <h2 className="text-lg font-semibold text-slate-900">Coming soon</h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Prediction impact tracking will be released once there is more data.
+                </p>
+              </section>
+            ),
+          },
         ]}
       />
     </main>
