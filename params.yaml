@@ -13,7 +13,7 @@ strava:
   # keep only these Strava activity `type` values; empty list = all activities. Options include:
   # Ride, VirtualRide, EBikeRide, Run, Walk, Hike, Swim, WeightTraining, Workout, Yoga, Rowing, Elliptical
   # (gravel/mountain rides are type "Ride"; Strava only distinguishes them in sport_type)
-  activity_types: [Ride,Run]
+  activity_types: [Ride,Run,Rowing]
 
 model:
   # nonzero-effort/distance quantile above which a day counts as "hard"/"long" for streak features
