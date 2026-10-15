@@ -1,105 +1,105 @@
 {
-  "date": "2026-10-14",
-  "generated_at": "2026-10-14T00:02:39.719540-07:00",
+  "date": "2026-10-15",
+  "generated_at": "2026-10-15T00:03:43.692442-07:00",
   "will_train": true,
-  "probability": 0.548,
-  "predicted_effort": 44.67,
+  "probability": 0.6231,
+  "predicted_effort": 44.79,
   "top_contributors": [
     {
       "feature": "dow_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.28016115058195656,
+      "signed_contribution": 0.30139436085923943,
       "direction": "helping",
       "phrase": "regular train rate for this day of the week",
       "plot": {
         "kind": "continuous",
-        "current_value": 0.3442,
-        "current_shap": 0.2802,
+        "current_value": 0.3613,
+        "current_shap": 0.3014,
         "points": [
           {
             "feature_value": 0.0044,
-            "shap_value": -0.7186
+            "shap_value": -0.7356
           },
           {
             "feature_value": 0.0975,
-            "shap_value": -0.7228
+            "shap_value": -0.7399
           },
           {
             "feature_value": 0.1233,
-            "shap_value": -0.7199
+            "shap_value": -0.7366
           },
           {
-            "feature_value": 0.1427,
-            "shap_value": -0.7182
+            "feature_value": 0.1428,
+            "shap_value": -0.7351
           },
           {
-            "feature_value": 0.1571,
-            "shap_value": -0.7167
+            "feature_value": 0.1574,
+            "shap_value": -0.7327
           },
           {
             "feature_value": 0.1666,
-            "shap_value": -0.6873
+            "shap_value": -0.7059
           },
           {
             "feature_value": 0.1758,
-            "shap_value": -0.5621
+            "shap_value": -0.5612
           },
           {
             "feature_value": 0.1971,
-            "shap_value": -0.151
+            "shap_value": -0.1617
           },
           {
             "feature_value": 0.2236,
-            "shap_value": -0.0959
+            "shap_value": -0.1055
           },
           {
             "feature_value": 0.2346,
-            "shap_value": -0.082
+            "shap_value": -0.0911
           },
           {
             "feature_value": 0.2445,
-            "shap_value": -0.0188
+            "shap_value": -0.0213
           },
           {
-            "feature_value": 0.2523,
-            "shap_value": 0.0188
+            "feature_value": 0.2524,
+            "shap_value": 0.0097
           },
           {
-            "feature_value": 0.2634,
-            "shap_value": 0.0848
+            "feature_value": 0.2637,
+            "shap_value": 0.0811
           },
           {
-            "feature_value": 0.2766,
-            "shap_value": 0.115
+            "feature_value": 0.2768,
+            "shap_value": 0.1175
           },
           {
-            "feature_value": 0.2872,
-            "shap_value": 0.1955
+            "feature_value": 0.2876,
+            "shap_value": 0.2083
           },
           {
-            "feature_value": 0.3,
-            "shap_value": 0.3193
+            "feature_value": 0.3003,
+            "shap_value": 0.3115
           },
           {
-            "feature_value": 0.3096,
-            "shap_value": 0.3148
+            "feature_value": 0.3097,
+            "shap_value": 0.3098
           },
           {
-            "feature_value": 0.3213,
-            "shap_value": 0.2928
+            "feature_value": 0.3216,
+            "shap_value": 0.3042
           },
           {
-            "feature_value": 0.363,
-            "shap_value": 0.2774
+            "feature_value": 0.3633,
+            "shap_value": 0.2975
           }
         ]
       },
       "value_context": [
         {
           "feature": "dow_train_rate",
-          "current_value": 0.344,
+          "current_value": 0.361,
           "typical_value": 0.182,
-          "percentile": 0.9788,
+          "percentile": 0.9935,
           "unit": "fraction 0-1",
           "definition": "share of past days with this same weekday on which the athlete trained"
         }
@@ -108,98 +108,98 @@
     {
       "feature": "month_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.2237328738123273,
+      "signed_contribution": 0.23326113314140082,
       "direction": "helping",
       "phrase": "regular train rate for this month",
       "plot": {
         "kind": "continuous",
-        "current_value": 0.3333,
-        "current_shap": 0.2237,
+        "current_value": 0.3415,
+        "current_shap": 0.2333,
         "points": [
           {
             "feature_value": 0.0006,
-            "shap_value": 0.12
+            "shap_value": 0.1114
           },
           {
             "feature_value": 0.0422,
-            "shap_value": 0.1213
+            "shap_value": 0.1124
           },
           {
             "feature_value": 0.0707,
-            "shap_value": 0.1216
+            "shap_value": 0.1126
           },
           {
             "feature_value": 0.0917,
-            "shap_value": 0.1239
+            "shap_value": 0.1152
           },
           {
-            "feature_value": 0.1103,
-            "shap_value": 0.1229
+            "feature_value": 0.1106,
+            "shap_value": 0.1138
           },
           {
-            "feature_value": 0.1293,
-            "shap_value": 0.1281
+            "feature_value": 0.1296,
+            "shap_value": 0.1203
           },
           {
-            "feature_value": 0.1444,
-            "shap_value": 0.1575
+            "feature_value": 0.1446,
+            "shap_value": 0.1446
           },
           {
             "feature_value": 0.1606,
-            "shap_value": 0.1875
+            "shap_value": 0.1777
           },
           {
             "feature_value": 0.1911,
-            "shap_value": 0.206
+            "shap_value": 0.2056
           },
           {
             "feature_value": 0.2457,
-            "shap_value": 0.2066
+            "shap_value": 0.2074
           },
           {
             "feature_value": 0.2884,
-            "shap_value": 0.2044
+            "shap_value": 0.2046
           },
           {
-            "feature_value": 0.329,
-            "shap_value": 0.2197
+            "feature_value": 0.3291,
+            "shap_value": 0.2287
           },
           {
             "feature_value": 0.3985,
-            "shap_value": 0.1898
+            "shap_value": 0.1995
           },
           {
             "feature_value": 0.4352,
-            "shap_value": -0.05
+            "shap_value": -0.0484
           },
           {
             "feature_value": 0.457,
-            "shap_value": -0.2734
+            "shap_value": -0.2735
           },
           {
             "feature_value": 0.4882,
-            "shap_value": -0.335
+            "shap_value": -0.3352
           },
           {
             "feature_value": 0.5291,
-            "shap_value": -0.3364
+            "shap_value": -0.3362
           },
           {
             "feature_value": 0.5761,
-            "shap_value": -0.3393
+            "shap_value": -0.3394
           },
           {
             "feature_value": 0.7202,
-            "shap_value": -0.3429
+            "shap_value": -0.3428
           }
         ]
       },
       "value_context": [
         {
           "feature": "month_train_rate",
-          "current_value": 0.333,
+          "current_value": 0.341,
           "typical_value": 0.153,
-          "percentile": 0.6934,
+          "percentile": 0.6974,
           "unit": "fraction 0-1",
           "definition": "share of past days in this calendar month (across years) on which the athlete trained"
         }
@@ -208,320 +208,380 @@
     {
       "feature": "forecast_precip_probability",
       "kind": "feature",
-      "signed_contribution": 0.16583574506829823,
+      "signed_contribution": 0.22640523170133195,
       "direction": "helping",
       "phrase": "rain in the forecast",
       "plot": {
         "kind": "continuous",
-        "current_value": 8.3333,
-        "current_shap": 0.1658,
+        "current_value": 0.0,
+        "current_shap": 0.2264,
         "points": [
           {
-            "feature_value": 0.3479,
-            "shap_value": 0.2296
+            "feature_value": 0.3472,
+            "shap_value": 0.2254
           },
           {
             "feature_value": 8.3333,
-            "shap_value": 0.1665
+            "shap_value": 0.1656
           },
           {
             "feature_value": 12.5,
-            "shap_value": 0.0316
+            "shap_value": 0.0239
           },
           {
             "feature_value": 18.9167,
-            "shap_value": -0.0604
+            "shap_value": -0.0653
           },
           {
             "feature_value": 25.0,
-            "shap_value": -0.0932
+            "shap_value": -0.1014
           },
           {
             "feature_value": 29.1667,
-            "shap_value": -0.125
+            "shap_value": -0.1232
           },
           {
             "feature_value": 35.5721,
-            "shap_value": -0.3633
+            "shap_value": -0.3549
           },
           {
             "feature_value": 41.6667,
-            "shap_value": -0.5327
+            "shap_value": -0.5277
           },
           {
             "feature_value": 47.9938,
-            "shap_value": -0.571
+            "shap_value": -0.5668
           },
           {
             "feature_value": 56.3725,
-            "shap_value": -0.6023
+            "shap_value": -0.5981
           },
           {
             "feature_value": 62.5,
-            "shap_value": -0.6138
+            "shap_value": -0.6095
           },
           {
             "feature_value": 69.0625,
-            "shap_value": -0.6127
+            "shap_value": -0.6084
           },
           {
             "feature_value": 78.7582,
-            "shap_value": -0.6137
+            "shap_value": -0.6091
           },
           {
             "feature_value": 93.4524,
-            "shap_value": -0.6126
+            "shap_value": -0.6084
           }
         ]
       },
       "value_context": [
         {
           "feature": "forecast_precip_probability",
-          "current_value": 8.333,
+          "current_value": 0.0,
           "typical_value": 8.333,
-          "percentile": 0.5173,
+          "percentile": 0.4429,
           "unit": "% of hours",
           "definition": "share of tomorrow's 24 hours with any precipitation (0 = fully dry day, 100 = rain all day)"
         }
       ]
     },
     {
-      "feature": "forecast_temp_high_vs_seasonal",
+      "feature": "forecast_temp_high",
       "kind": "feature",
-      "signed_contribution": -0.16130978333465612,
-      "direction": "hurting",
-      "phrase": "how the temp high compares to normal for this time of year",
+      "signed_contribution": 0.1396324517471002,
+      "direction": "helping",
+      "phrase": "the temp high forecast",
       "plot": {
         "kind": "continuous",
-        "current_value": 1.9574,
-        "current_shap": -0.1613,
+        "current_value": 25.8,
+        "current_shap": 0.1396,
         "points": [
           {
-            "feature_value": -6.4784,
-            "shap_value": 0.0381
+            "feature_value": 3.5375,
+            "shap_value": -0.2996
           },
           {
-            "feature_value": -4.4849,
-            "shap_value": 0.0392
+            "feature_value": 6.007,
+            "shap_value": -0.2991
           },
           {
-            "feature_value": -3.535,
-            "shap_value": 0.0399
+            "feature_value": 7.1378,
+            "shap_value": -0.3001
           },
           {
-            "feature_value": -2.8869,
-            "shap_value": 0.0385
+            "feature_value": 8.0652,
+            "shap_value": -0.2994
           },
           {
-            "feature_value": -2.4459,
-            "shap_value": 0.0311
+            "feature_value": 8.8279,
+            "shap_value": -0.2981
           },
           {
-            "feature_value": -2.0206,
-            "shap_value": 0.0168
+            "feature_value": 9.5349,
+            "shap_value": -0.2997
           },
           {
-            "feature_value": -1.6951,
-            "shap_value": 0.0136
+            "feature_value": 10.2717,
+            "shap_value": -0.302
           },
           {
-            "feature_value": -1.3843,
-            "shap_value": 0.0665
+            "feature_value": 10.9524,
+            "shap_value": -0.3043
           },
           {
-            "feature_value": -1.1098,
-            "shap_value": 0.2215
+            "feature_value": 11.7308,
+            "shap_value": -0.3043
           },
           {
-            "feature_value": -0.8422,
-            "shap_value": 0.232
+            "feature_value": 12.4256,
+            "shap_value": -0.2967
           },
           {
-            "feature_value": -0.4526,
-            "shap_value": 0.2321
+            "feature_value": 13.2744,
+            "shap_value": -0.2819
           },
           {
-            "feature_value": -0.06,
-            "shap_value": 0.1246
+            "feature_value": 14.1778,
+            "shap_value": -0.1775
           },
           {
-            "feature_value": 0.3273,
-            "shap_value": 0.0793
+            "feature_value": 15.2233,
+            "shap_value": 0.1472
           },
           {
-            "feature_value": 0.6639,
-            "shap_value": 0.0716
+            "feature_value": 16.3292,
+            "shap_value": 0.2906
           },
           {
-            "feature_value": 1.078,
-            "shap_value": 0.0272
+            "feature_value": 17.3643,
+            "shap_value": 0.2531
           },
           {
-            "feature_value": 1.4413,
-            "shap_value": -0.1067
+            "feature_value": 18.5213,
+            "shap_value": 0.1163
           },
           {
-            "feature_value": 1.9337,
-            "shap_value": -0.1581
+            "feature_value": 19.6818,
+            "shap_value": 0.1002
           },
           {
-            "feature_value": 2.379,
-            "shap_value": -0.1658
+            "feature_value": 20.5535,
+            "shap_value": 0.0866
           },
           {
-            "feature_value": 2.839,
-            "shap_value": -0.159
+            "feature_value": 21.6587,
+            "shap_value": 0.1233
           },
           {
-            "feature_value": 3.2857,
-            "shap_value": -0.1465
+            "feature_value": 22.8068,
+            "shap_value": 0.1288
           },
           {
-            "feature_value": 3.8776,
-            "shap_value": -0.1158
+            "feature_value": 23.969,
+            "shap_value": 0.141
           },
           {
-            "feature_value": 4.8071,
-            "shap_value": -0.1029
+            "feature_value": 25.6,
+            "shap_value": 0.1349
           },
           {
-            "feature_value": 5.9225,
-            "shap_value": -0.1036
+            "feature_value": 27.4333,
+            "shap_value": 0.1344
           },
           {
-            "feature_value": 8.5494,
-            "shap_value": -0.1045
+            "feature_value": 30.3372,
+            "shap_value": 0.1318
           }
         ]
       },
       "value_context": [
         {
-          "feature": "forecast_temp_high_vs_seasonal",
-          "current_value": 3.523,
-          "typical_value": 0.211,
-          "percentile": 0.6898,
+          "feature": "forecast_temp_high",
+          "current_value": 78.44,
+          "typical_value": 58.28,
+          "percentile": 0.9007,
           "unit": "\u00b0F",
-          "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
+          "definition": "tomorrow's forecast daily high temperature"
         }
       ]
     },
     {
-      "feature": "forecast_temp_low_vs_seasonal",
+      "feature": "chronic_load_28",
       "kind": "feature",
-      "signed_contribution": -0.13812017939209525,
-      "direction": "hurting",
-      "phrase": "how the temp low compares to normal for this time of year",
+      "signed_contribution": 0.13272724513454323,
+      "direction": "helping",
+      "phrase": "longer-term fitness base",
       "plot": {
         "kind": "continuous",
-        "current_value": 4.2102,
-        "current_shap": -0.1381,
+        "current_value": 38.0799,
+        "current_shap": 0.1327,
         "points": [
           {
-            "feature_value": -6.2512,
-            "shap_value": 0.0894
+            "feature_value": 1.0775,
+            "shap_value": -0.091
           },
           {
-            "feature_value": -3.8244,
-            "shap_value": 0.089
+            "feature_value": 11.8641,
+            "shap_value": -0.0922
           },
           {
-            "feature_value": -2.8847,
-            "shap_value": 0.0889
+            "feature_value": 13.4881,
+            "shap_value": -0.0941
           },
           {
-            "feature_value": -2.3599,
-            "shap_value": 0.087
+            "feature_value": 14.9239,
+            "shap_value": -0.1161
           },
           {
-            "feature_value": -2.0066,
-            "shap_value": 0.0862
+            "feature_value": 16.4185,
+            "shap_value": -0.1633
           },
           {
-            "feature_value": -1.6211,
-            "shap_value": 0.0794
+            "feature_value": 18.4825,
+            "shap_value": -0.1583
           },
           {
-            "feature_value": -1.3102,
-            "shap_value": 0.0521
+            "feature_value": 21.0014,
+            "shap_value": -0.1039
           },
           {
-            "feature_value": -0.991,
-            "shap_value": 0.0765
+            "feature_value": 23.178,
+            "shap_value": 0.0745
           },
           {
-            "feature_value": -0.6922,
-            "shap_value": 0.0982
+            "feature_value": 24.688,
+            "shap_value": 0.1107
           },
           {
-            "feature_value": -0.3668,
-            "shap_value": 0.0846
+            "feature_value": 25.9802,
+            "shap_value": 0.0224
           },
           {
-            "feature_value": -0.1035,
-            "shap_value": 0.0519
+            "feature_value": 27.5112,
+            "shap_value": 0.015
           },
           {
-            "feature_value": 0.1528,
-            "shap_value": 0.0657
+            "feature_value": 29.3829,
+            "shap_value": 0.0401
           },
           {
-            "feature_value": 0.4497,
-            "shap_value": 0.0015
+            "feature_value": 31.0811,
+            "shap_value": 0.075
           },
           {
-            "feature_value": 0.7177,
-            "shap_value": -0.0355
+            "feature_value": 33.2518,
+            "shap_value": 0.0793
           },
           {
-            "feature_value": 1.0034,
-            "shap_value": -0.0132
+            "feature_value": 35.7816,
+            "shap_value": 0.1213
           },
           {
-            "feature_value": 1.276,
-            "shap_value": -0.0107
+            "feature_value": 38.8064,
+            "shap_value": 0.1295
           },
           {
-            "feature_value": 1.5801,
-            "shap_value": -0.0457
+            "feature_value": 42.3614,
+            "shap_value": 0.1291
           },
           {
-            "feature_value": 1.8896,
-            "shap_value": -0.1227
+            "feature_value": 47.404,
+            "shap_value": 0.1287
           },
           {
-            "feature_value": 2.1168,
-            "shap_value": -0.1226
-          },
-          {
-            "feature_value": 2.5361,
-            "shap_value": -0.1368
-          },
-          {
-            "feature_value": 3.0009,
-            "shap_value": -0.1408
-          },
-          {
-            "feature_value": 3.4963,
-            "shap_value": -0.1395
-          },
-          {
-            "feature_value": 4.374,
-            "shap_value": -0.1395
-          },
-          {
-            "feature_value": 6.3733,
-            "shap_value": -0.1399
+            "feature_value": 58.7023,
+            "shap_value": 0.1282
           }
         ]
       },
       "value_context": [
         {
-          "feature": "forecast_temp_low_vs_seasonal",
-          "current_value": 7.578,
-          "typical_value": 0.586,
-          "percentile": 0.9335,
-          "unit": "\u00b0F",
-          "definition": "forecast low minus the historical average low for this time of year; positive = warmer than normal"
+          "feature": "chronic_load_28",
+          "current_value": 38.08,
+          "typical_value": 22.181,
+          "percentile": 0.845,
+          "unit": "effort points/day",
+          "definition": "long-term fitness/training load: 28-day exponentially weighted average of daily total Strava Relative Effort"
+        }
+      ]
+    },
+    {
+      "feature": "trained_days_30",
+      "kind": "feature",
+      "signed_contribution": -0.10966604495259946,
+      "direction": "hurting",
+      "phrase": "your training frequency over the past month",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 20.0,
+        "current_shap": -0.1097,
+        "points": [
+          {
+            "feature_value": 0.5092,
+            "shap_value": 0.0353
+          },
+          {
+            "feature_value": 5.0,
+            "shap_value": 0.0354
+          },
+          {
+            "feature_value": 6.0,
+            "shap_value": 0.0356
+          },
+          {
+            "feature_value": 7.0,
+            "shap_value": 0.0355
+          },
+          {
+            "feature_value": 8.0,
+            "shap_value": 0.0335
+          },
+          {
+            "feature_value": 9.0,
+            "shap_value": 0.0335
+          },
+          {
+            "feature_value": 10.5161,
+            "shap_value": 0.0643
+          },
+          {
+            "feature_value": 12.0,
+            "shap_value": 0.0973
+          },
+          {
+            "feature_value": 13.0,
+            "shap_value": 0.0959
+          },
+          {
+            "feature_value": 14.0,
+            "shap_value": 0.0924
+          },
+          {
+            "feature_value": 15.0,
+            "shap_value": 0.0147
+          },
+          {
+            "feature_value": 16.0,
+            "shap_value": -0.1103
+          },
+          {
+            "feature_value": 17.0,
+            "shap_value": -0.114
+          },
+          {
+            "feature_value": 18.82,
+            "shap_value": -0.1137
+          }
+        ]
+      },
+      "value_context": [
+        {
+          "feature": "trained_days_30",
+          "current_value": 20.0,
+          "typical_value": 9.0,
+          "percentile": 0.9991,
+          "unit": "active days",
+          "definition": "number of distinct ACTIVE DAYS in the last 30 days; NOT a workout count, several workouts on one day count once"
         }
       ]
     },
@@ -532,425 +592,274 @@
         "forecast_temp_low_vs_seasonal"
       ],
       "kind": "interaction",
-      "signed_contribution": -0.1294850119061055,
+      "signed_contribution": -0.09196189919168557,
       "direction": "hurting",
       "phrase": "interaction between regular train rate for this day of the week and how the temp low compares to normal for this time of year",
       "value_context": [
         {
           "feature": "dow_train_rate",
-          "current_value": 0.344,
+          "current_value": 0.361,
           "typical_value": 0.182,
-          "percentile": 0.9788,
+          "percentile": 0.9935,
           "unit": "fraction 0-1",
           "definition": "share of past days with this same weekday on which the athlete trained"
         },
         {
           "feature": "forecast_temp_low_vs_seasonal",
-          "current_value": 7.578,
+          "current_value": 2.538,
           "typical_value": 0.586,
-          "percentile": 0.9335,
+          "percentile": 0.6648,
           "unit": "\u00b0F",
           "definition": "forecast low minus the historical average low for this time of year; positive = warmer than normal"
         }
       ]
     },
     {
-      "feature": "chronic_load_28",
-      "kind": "feature",
-      "signed_contribution": 0.12100675742942314,
-      "direction": "helping",
-      "phrase": "longer-term fitness base",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 38.4562,
-        "current_shap": 0.121,
-        "points": [
-          {
-            "feature_value": 1.0775,
-            "shap_value": -0.0983
-          },
-          {
-            "feature_value": 11.8641,
-            "shap_value": -0.0995
-          },
-          {
-            "feature_value": 13.4881,
-            "shap_value": -0.0985
-          },
-          {
-            "feature_value": 14.9106,
-            "shap_value": -0.1131
-          },
-          {
-            "feature_value": 16.3778,
-            "shap_value": -0.153
-          },
-          {
-            "feature_value": 18.4325,
-            "shap_value": -0.1421
-          },
-          {
-            "feature_value": 20.971,
-            "shap_value": -0.0884
-          },
-          {
-            "feature_value": 23.178,
-            "shap_value": 0.078
-          },
-          {
-            "feature_value": 24.688,
-            "shap_value": 0.1068
-          },
-          {
-            "feature_value": 25.9802,
-            "shap_value": 0.0357
-          },
-          {
-            "feature_value": 27.5112,
-            "shap_value": 0.0377
-          },
-          {
-            "feature_value": 29.3638,
-            "shap_value": 0.0576
-          },
-          {
-            "feature_value": 31.0406,
-            "shap_value": 0.0845
-          },
-          {
-            "feature_value": 33.1959,
-            "shap_value": 0.0822
-          },
-          {
-            "feature_value": 35.7221,
-            "shap_value": 0.1079
-          },
-          {
-            "feature_value": 38.7797,
-            "shap_value": 0.118
-          },
-          {
-            "feature_value": 42.3614,
-            "shap_value": 0.1175
-          },
-          {
-            "feature_value": 47.404,
-            "shap_value": 0.1173
-          },
-          {
-            "feature_value": 58.7023,
-            "shap_value": 0.116
-          }
-        ]
-      },
-      "value_context": [
-        {
-          "feature": "chronic_load_28",
-          "current_value": 38.456,
-          "typical_value": 22.173,
-          "percentile": 0.8504,
-          "unit": "effort points/day",
-          "definition": "long-term fitness/training load: 28-day exponentially weighted average of daily total Strava Relative Effort"
-        }
-      ]
-    },
-    {
-      "feature": "trained_days_30",
-      "kind": "feature",
-      "signed_contribution": -0.12038849603866239,
-      "direction": "hurting",
-      "phrase": "your training frequency over the past month",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 19.0,
-        "current_shap": -0.1204,
-        "points": [
-          {
-            "feature_value": 0.5092,
-            "shap_value": 0.0421
-          },
-          {
-            "feature_value": 5.0,
-            "shap_value": 0.0423
-          },
-          {
-            "feature_value": 6.0,
-            "shap_value": 0.0427
-          },
-          {
-            "feature_value": 7.0,
-            "shap_value": 0.0427
-          },
-          {
-            "feature_value": 8.0,
-            "shap_value": 0.0421
-          },
-          {
-            "feature_value": 9.0,
-            "shap_value": 0.0407
-          },
-          {
-            "feature_value": 10.5161,
-            "shap_value": 0.0646
-          },
-          {
-            "feature_value": 12.0,
-            "shap_value": 0.0973
-          },
-          {
-            "feature_value": 13.0,
-            "shap_value": 0.0948
-          },
-          {
-            "feature_value": 14.0,
-            "shap_value": 0.0872
-          },
-          {
-            "feature_value": 15.0,
-            "shap_value": 0.0117
-          },
-          {
-            "feature_value": 16.0,
-            "shap_value": -0.1219
-          },
-          {
-            "feature_value": 17.0,
-            "shap_value": -0.1247
-          },
-          {
-            "feature_value": 18.8163,
-            "shap_value": -0.1252
-          }
-        ]
-      },
-      "value_context": [
-        {
-          "feature": "trained_days_30",
-          "current_value": 19.0,
-          "typical_value": 9.0,
-          "percentile": 0.9889,
-          "unit": "active days",
-          "definition": "number of distinct ACTIVE DAYS in the last 30 days; NOT a workout count, several workouts on one day count once"
-        }
-      ]
-    },
-    {
-      "feature": "forecast_temp_high",
-      "kind": "feature",
-      "signed_contribution": 0.08985733572973469,
-      "direction": "helping",
-      "phrase": "the temp high forecast",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 18.2,
-        "current_shap": 0.0899,
-        "points": [
-          {
-            "feature_value": 3.5375,
-            "shap_value": -0.297
-          },
-          {
-            "feature_value": 6.007,
-            "shap_value": -0.2956
-          },
-          {
-            "feature_value": 7.1378,
-            "shap_value": -0.2968
-          },
-          {
-            "feature_value": 8.0652,
-            "shap_value": -0.2961
-          },
-          {
-            "feature_value": 8.8279,
-            "shap_value": -0.2946
-          },
-          {
-            "feature_value": 9.5349,
-            "shap_value": -0.2961
-          },
-          {
-            "feature_value": 10.2717,
-            "shap_value": -0.2984
-          },
-          {
-            "feature_value": 10.9524,
-            "shap_value": -0.3005
-          },
-          {
-            "feature_value": 11.6636,
-            "shap_value": -0.3022
-          },
-          {
-            "feature_value": 12.3702,
-            "shap_value": -0.291
-          },
-          {
-            "feature_value": 13.2744,
-            "shap_value": -0.2798
-          },
-          {
-            "feature_value": 14.1778,
-            "shap_value": -0.1754
-          },
-          {
-            "feature_value": 15.2233,
-            "shap_value": 0.1564
-          },
-          {
-            "feature_value": 16.2864,
-            "shap_value": 0.2919
-          },
-          {
-            "feature_value": 17.3152,
-            "shap_value": 0.251
-          },
-          {
-            "feature_value": 18.5109,
-            "shap_value": 0.093
-          },
-          {
-            "feature_value": 19.6818,
-            "shap_value": 0.0827
-          },
-          {
-            "feature_value": 20.5535,
-            "shap_value": 0.0739
-          },
-          {
-            "feature_value": 21.6587,
-            "shap_value": 0.1171
-          },
-          {
-            "feature_value": 22.8068,
-            "shap_value": 0.133
-          },
-          {
-            "feature_value": 23.969,
-            "shap_value": 0.1468
-          },
-          {
-            "feature_value": 25.6,
-            "shap_value": 0.143
-          },
-          {
-            "feature_value": 27.4333,
-            "shap_value": 0.1449
-          },
-          {
-            "feature_value": 30.3372,
-            "shap_value": 0.1426
-          }
-        ]
-      },
-      "value_context": [
-        {
-          "feature": "forecast_temp_high",
-          "current_value": 64.76,
-          "typical_value": 58.28,
-          "percentile": 0.642,
-          "unit": "\u00b0F",
-          "definition": "tomorrow's forecast daily high temperature"
-        }
-      ]
-    },
-    {
       "feature": "days_since_last_hard",
       "kind": "feature",
-      "signed_contribution": 0.07125483702355725,
+      "signed_contribution": 0.0855739024686572,
       "direction": "helping",
       "phrase": "time since your last hard effort",
       "plot": {
         "kind": "continuous",
-        "current_value": 0.0,
-        "current_shap": 0.0713,
+        "current_value": 1.0,
+        "current_shap": 0.0856,
         "points": [
           {
-            "feature_value": 0.4538,
-            "shap_value": 0.0716
+            "feature_value": 0.4519,
+            "shap_value": 0.079
           },
           {
             "feature_value": 2.0,
-            "shap_value": 0.1126
+            "shap_value": 0.1112
           },
           {
             "feature_value": 3.0,
-            "shap_value": 0.1555
+            "shap_value": 0.1531
           },
           {
             "feature_value": 4.0,
-            "shap_value": 0.1557
+            "shap_value": 0.1553
           },
           {
             "feature_value": 5.0,
-            "shap_value": 0.1168
+            "shap_value": 0.1167
           },
           {
             "feature_value": 6.0,
-            "shap_value": 0.0703
+            "shap_value": 0.0613
           },
           {
             "feature_value": 7.0,
-            "shap_value": -0.0062
+            "shap_value": -0.0182
           },
           {
             "feature_value": 8.0,
-            "shap_value": -0.0608
+            "shap_value": -0.0817
           },
           {
             "feature_value": 9.4583,
-            "shap_value": -0.1604
+            "shap_value": -0.1641
           },
           {
             "feature_value": 11.0,
-            "shap_value": -0.1856
+            "shap_value": -0.1853
           },
           {
             "feature_value": 12.8837,
-            "shap_value": -0.1788
+            "shap_value": -0.1815
           },
           {
             "feature_value": 15.9677,
-            "shap_value": -0.1618
+            "shap_value": -0.1656
           },
           {
             "feature_value": 19.6207,
-            "shap_value": -0.1609
+            "shap_value": -0.1645
           },
           {
             "feature_value": 29.4,
-            "shap_value": -0.1601
+            "shap_value": -0.1638
           }
         ]
       },
       "value_context": [
         {
           "feature": "days_since_last_hard",
-          "current_value": 0.0,
+          "current_value": 1.0,
           "typical_value": 4.0,
-          "percentile": 0.1537,
+          "percentile": 0.2822,
           "unit": "days",
           "definition": "days since the last day whose Relative Effort reached the athlete's 'hard day' cutoff"
         }
       ]
+    },
+    {
+      "feature": "forecast_temp_high_vs_seasonal",
+      "kind": "feature",
+      "signed_contribution": -0.0780872979500652,
+      "direction": "hurting",
+      "phrase": "how the temp high compares to normal for this time of year",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 9.6931,
+        "current_shap": -0.0781,
+        "points": [
+          {
+            "feature_value": -6.4784,
+            "shap_value": 0.017
+          },
+          {
+            "feature_value": -4.4849,
+            "shap_value": 0.0182
+          },
+          {
+            "feature_value": -3.535,
+            "shap_value": 0.0189
+          },
+          {
+            "feature_value": -2.8869,
+            "shap_value": 0.0186
+          },
+          {
+            "feature_value": -2.4459,
+            "shap_value": 0.0098
+          },
+          {
+            "feature_value": -2.0206,
+            "shap_value": 0.0014
+          },
+          {
+            "feature_value": -1.6913,
+            "shap_value": -0.0009
+          },
+          {
+            "feature_value": -1.3812,
+            "shap_value": 0.0714
+          },
+          {
+            "feature_value": -1.1073,
+            "shap_value": 0.2212
+          },
+          {
+            "feature_value": -0.8388,
+            "shap_value": 0.2297
+          },
+          {
+            "feature_value": -0.4479,
+            "shap_value": 0.2298
+          },
+          {
+            "feature_value": -0.0559,
+            "shap_value": 0.1155
+          },
+          {
+            "feature_value": 0.3273,
+            "shap_value": 0.0646
+          },
+          {
+            "feature_value": 0.6677,
+            "shap_value": 0.0666
+          },
+          {
+            "feature_value": 1.0836,
+            "shap_value": 0.0372
+          },
+          {
+            "feature_value": 1.4463,
+            "shap_value": -0.0882
+          },
+          {
+            "feature_value": 1.9397,
+            "shap_value": -0.1416
+          },
+          {
+            "feature_value": 2.3837,
+            "shap_value": -0.1505
+          },
+          {
+            "feature_value": 2.8508,
+            "shap_value": -0.1429
+          },
+          {
+            "feature_value": 3.2936,
+            "shap_value": -0.1299
+          },
+          {
+            "feature_value": 3.8783,
+            "shap_value": -0.0906
+          },
+          {
+            "feature_value": 4.8071,
+            "shap_value": -0.0805
+          },
+          {
+            "feature_value": 5.9225,
+            "shap_value": -0.0814
+          },
+          {
+            "feature_value": 8.5494,
+            "shap_value": -0.0815
+          }
+        ]
+      },
+      "value_context": [
+        {
+          "feature": "forecast_temp_high_vs_seasonal",
+          "current_value": 17.448,
+          "typical_value": 0.215,
+          "percentile": 0.9944,
+          "unit": "\u00b0F",
+          "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
+        }
+      ]
+    },
+    {
+      "feature": "dow_train_rate \u00d7 forecast_temp_high_vs_seasonal",
+      "features": [
+        "dow_train_rate",
+        "forecast_temp_high_vs_seasonal"
+      ],
+      "kind": "interaction",
+      "signed_contribution": -0.06676031217313076,
+      "direction": "hurting",
+      "phrase": "interaction between regular train rate for this day of the week and how the temp high compares to normal for this time of year",
+      "value_context": [
+        {
+          "feature": "dow_train_rate",
+          "current_value": 0.361,
+          "typical_value": 0.182,
+          "percentile": 0.9935,
+          "unit": "fraction 0-1",
+          "definition": "share of past days with this same weekday on which the athlete trained"
+        },
+        {
+          "feature": "forecast_temp_high_vs_seasonal",
+          "current_value": 17.448,
+          "typical_value": 0.215,
+          "percentile": 0.9944,
+          "unit": "\u00b0F",
+          "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
+        }
+      ]
     }
   ],
-  "baseline_log_odds": -0.39711561868762146,
-  "baseline_probability": 0.402,
-  "other_contribution": 0.1872,
-  "blurb": "Momentum check: 55% to train. regular train rate for this day of the week [value=0.344 fraction 0-1 (typical 0.182 fraction 0-1, 98% of history is at or below)] is a tailwind, how the temp high compares to normal for this time of year [value=3.523 \u00b0F (typical 0.211 \u00b0F, 69% of history is at or below)] is a headwind. Plan on ~45 relative-effort points.",
+  "baseline_log_odds": -0.3834763026973178,
+  "baseline_probability": 0.4053,
+  "other_contribution": 0.1137,
+  "blurb": "Momentum check: 62% to train. regular train rate for this day of the week [value=0.361 fraction 0-1 (typical 0.182 fraction 0-1, 99% of history is at or below)] is a tailwind, your training frequency over the past month [value=20.0 active days (typical 9.0 active days, 100% of history is at or below)] is a headwind. Plan on ~45 relative-effort points.",
   "feature_summary": [
     {
       "feature": "forecast_precip_probability",
       "label": "rain in the forecast",
-      "importance": 0.0915,
-      "current_value": 8.3333,
-      "current_percentile": 0.5173,
+      "importance": 0.0964,
+      "current_value": 0.0,
+      "current_percentile": 0.4429,
       "kind": "continuous",
       "stats": {
-        "count": 1067,
-        "mean": 23.0709,
-        "std": 28.3084,
+        "count": 1068,
+        "mean": 23.0493,
+        "std": 28.304,
         "min": 0.0,
         "p05": 0.0,
         "p25": 0.0,
@@ -966,355 +875,537 @@
         },
         {
           "x": 2.4573,
-          "density": 0.9948
+          "density": 0.9947
         },
         {
           "x": 4.9145,
-          "density": 0.9083
+          "density": 0.908
         },
         {
           "x": 7.3718,
-          "density": 0.7712
+          "density": 0.7707
         },
         {
           "x": 9.8291,
-          "density": 0.6213
+          "density": 0.6206
         },
         {
           "x": 12.2863,
-          "density": 0.4887
+          "density": 0.4881
         },
         {
           "x": 14.7436,
-          "density": 0.389
+          "density": 0.3883
         },
         {
           "x": 17.2009,
-          "density": 0.3237
+          "density": 0.323
         },
         {
           "x": 19.6581,
-          "density": 0.2865
+          "density": 0.2859
         },
         {
           "x": 22.1154,
-          "density": 0.2686
+          "density": 0.2681
         },
         {
           "x": 24.5726,
-          "density": 0.2624
+          "density": 0.2618
         },
         {
           "x": 27.0299,
-          "density": 0.2617
+          "density": 0.2611
         },
         {
           "x": 29.4872,
-          "density": 0.2627
+          "density": 0.2621
         },
         {
           "x": 31.9444,
-          "density": 0.263
+          "density": 0.2624
         },
         {
           "x": 34.4017,
-          "density": 0.2613
+          "density": 0.2608
         },
         {
           "x": 36.859,
-          "density": 0.2575
+          "density": 0.2569
         },
         {
           "x": 39.3162,
-          "density": 0.2517
+          "density": 0.2512
         },
         {
           "x": 41.7735,
-          "density": 0.2448
+          "density": 0.2443
         },
         {
           "x": 44.2308,
-          "density": 0.2376
+          "density": 0.2371
         },
         {
           "x": 46.688,
-          "density": 0.2309
+          "density": 0.2304
         },
         {
           "x": 49.1453,
-          "density": 0.2251
+          "density": 0.2246
         },
         {
           "x": 51.6026,
-          "density": 0.2202
+          "density": 0.2197
         },
         {
           "x": 54.0598,
-          "density": 0.2158
+          "density": 0.2153
         },
         {
           "x": 56.5171,
-          "density": 0.2113
+          "density": 0.2109
         },
         {
           "x": 58.9744,
-          "density": 0.2061
+          "density": 0.2057
         },
         {
           "x": 61.4316,
-          "density": 0.1999
+          "density": 0.1995
         },
         {
           "x": 63.8889,
-          "density": 0.1927
+          "density": 0.1923
         },
         {
           "x": 66.3462,
-          "density": 0.1848
+          "density": 0.1845
         },
         {
           "x": 68.8034,
-          "density": 0.1767
+          "density": 0.1763
         },
         {
           "x": 71.2607,
-          "density": 0.1683
+          "density": 0.168
         },
         {
           "x": 73.7179,
-          "density": 0.1596
+          "density": 0.1593
         },
         {
           "x": 76.1752,
-          "density": 0.1502
+          "density": 0.1499
         },
         {
           "x": 78.6325,
-          "density": 0.1397
+          "density": 0.1394
         },
         {
           "x": 81.0897,
-          "density": 0.1281
+          "density": 0.1278
         },
         {
           "x": 83.547,
-          "density": 0.1158
+          "density": 0.1155
         },
         {
           "x": 86.0043,
-          "density": 0.1033
+          "density": 0.1031
         },
         {
           "x": 88.4615,
-          "density": 0.0913
+          "density": 0.0911
         },
         {
           "x": 90.9188,
-          "density": 0.0802
+          "density": 0.08
         },
         {
           "x": 93.3761,
-          "density": 0.0698
+          "density": 0.0697
         },
         {
           "x": 95.8333,
-          "density": 0.06
+          "density": 0.0599
         }
       ]
     },
     {
       "feature": "forecast_temp_high",
       "label": "the temp high forecast",
-      "importance": 0.0859,
-      "current_value": 18.2,
-      "current_percentile": 0.642,
+      "importance": 0.0846,
+      "current_value": 25.8,
+      "current_percentile": 0.9007,
       "kind": "continuous",
       "stats": {
-        "count": 1067,
-        "mean": 15.5932,
-        "std": 7.1097,
+        "count": 1068,
+        "mean": 15.5963,
+        "std": 7.1072,
         "min": -3.8,
         "p05": 5.6,
         "p25": 9.8,
         "median": 14.6,
         "p75": 21.0,
-        "p95": 27.94,
+        "p95": 27.93,
         "max": 34.5
       },
       "density": [
         {
-          "x": 2.398,
-          "density": 0.1411
+          "x": 2.401,
+          "density": 0.1412
         },
         {
-          "x": 3.122,
-          "density": 0.1984
+          "x": 3.1249,
+          "density": 0.1986
         },
         {
-          "x": 3.846,
-          "density": 0.273
+          "x": 3.8488,
+          "density": 0.2732
         },
         {
-          "x": 4.57,
-          "density": 0.3643
+          "x": 4.5727,
+          "density": 0.3646
         },
         {
-          "x": 5.294,
-          "density": 0.4684
+          "x": 5.2966,
+          "density": 0.4688
         },
         {
-          "x": 6.018,
-          "density": 0.5787
+          "x": 6.0205,
+          "density": 0.579
         },
         {
-          "x": 6.742,
-          "density": 0.6873
+          "x": 6.7444,
+          "density": 0.6876
         },
         {
-          "x": 7.466,
-          "density": 0.7871
+          "x": 7.4683,
+          "density": 0.7874
         },
         {
-          "x": 8.19,
-          "density": 0.8723
+          "x": 8.1922,
+          "density": 0.8725
         },
         {
-          "x": 8.914,
-          "density": 0.938
+          "x": 8.9161,
+          "density": 0.9381
         },
         {
-          "x": 9.638,
+          "x": 9.64,
           "density": 0.9811
         },
         {
-          "x": 10.362,
+          "x": 10.3639,
           "density": 1.0
         },
         {
-          "x": 11.086,
+          "x": 11.0878,
           "density": 0.9953
         },
         {
-          "x": 11.81,
-          "density": 0.97
+          "x": 11.8117,
+          "density": 0.9699
         },
         {
-          "x": 12.534,
-          "density": 0.9295
+          "x": 12.5356,
+          "density": 0.9294
         },
         {
-          "x": 13.258,
-          "density": 0.8815
+          "x": 13.2595,
+          "density": 0.8813
         },
         {
-          "x": 13.982,
-          "density": 0.8335
+          "x": 13.9834,
+          "density": 0.8334
         },
         {
-          "x": 14.706,
-          "density": 0.7917
+          "x": 14.7073,
+          "density": 0.7918
         },
         {
-          "x": 15.43,
-          "density": 0.759
+          "x": 15.4312,
+          "density": 0.7594
         },
         {
-          "x": 16.154,
-          "density": 0.7354
+          "x": 16.1551,
+          "density": 0.7364
         },
         {
-          "x": 16.878,
-          "density": 0.7199
+          "x": 16.8789,
+          "density": 0.7217
         },
         {
-          "x": 17.602,
-          "density": 0.7113
+          "x": 17.6028,
+          "density": 0.7139
         },
         {
-          "x": 18.326,
-          "density": 0.7085
+          "x": 18.3267,
+          "density": 0.7119
         },
         {
-          "x": 19.05,
-          "density": 0.7095
+          "x": 19.0506,
+          "density": 0.7131
         },
         {
-          "x": 19.774,
-          "density": 0.71
+          "x": 19.7745,
+          "density": 0.7133
         },
         {
-          "x": 20.498,
-          "density": 0.7052
+          "x": 20.4984,
+          "density": 0.7078
         },
         {
-          "x": 21.222,
-          "density": 0.6911
+          "x": 21.2223,
+          "density": 0.6928
         },
         {
-          "x": 21.946,
-          "density": 0.6664
+          "x": 21.9462,
+          "density": 0.6674
         },
         {
-          "x": 22.67,
-          "density": 0.6324
+          "x": 22.6701,
+          "density": 0.6328
         },
         {
           "x": 23.394,
-          "density": 0.5919
+          "density": 0.5921
         },
         {
-          "x": 24.118,
-          "density": 0.5484
+          "x": 24.1179,
+          "density": 0.5485
         },
         {
-          "x": 24.842,
+          "x": 24.8418,
           "density": 0.5052
         },
         {
-          "x": 25.566,
+          "x": 25.5657,
           "density": 0.4639
         },
         {
-          "x": 26.29,
+          "x": 26.2896,
           "density": 0.4245
         },
         {
-          "x": 27.014,
+          "x": 27.0135,
           "density": 0.3855
         },
         {
-          "x": 27.738,
+          "x": 27.7374,
           "density": 0.3457
         },
         {
-          "x": 28.462,
+          "x": 28.4613,
           "density": 0.3043
         },
         {
-          "x": 29.186,
+          "x": 29.1852,
           "density": 0.2615
         },
         {
-          "x": 29.91,
+          "x": 29.9091,
           "density": 0.2178
         },
         {
-          "x": 30.634,
+          "x": 30.633,
           "density": 0.1745
+        }
+      ]
+    },
+    {
+      "feature": "month_train_rate",
+      "label": "regular train rate for this month",
+      "importance": 0.0796,
+      "current_value": 0.3415,
+      "current_percentile": 0.6974,
+      "kind": "continuous",
+      "stats": {
+        "count": 1084,
+        "mean": 0.2256,
+        "std": 0.215,
+        "min": 0.0,
+        "p05": 0.0,
+        "p25": 0.0261,
+        "median": 0.1529,
+        "p75": 0.4273,
+        "p95": 0.6,
+        "max": 1.0
+      },
+      "density": [
+        {
+          "x": 0.0,
+          "density": 0.9375
+        },
+        {
+          "x": 0.0194,
+          "density": 0.9973
+        },
+        {
+          "x": 0.0387,
+          "density": 1.0
+        },
+        {
+          "x": 0.0581,
+          "density": 0.9671
+        },
+        {
+          "x": 0.0774,
+          "density": 0.9218
+        },
+        {
+          "x": 0.0968,
+          "density": 0.877
+        },
+        {
+          "x": 0.1161,
+          "density": 0.8325
+        },
+        {
+          "x": 0.1355,
+          "density": 0.781
+        },
+        {
+          "x": 0.1548,
+          "density": 0.7168
+        },
+        {
+          "x": 0.1742,
+          "density": 0.6416
+        },
+        {
+          "x": 0.1935,
+          "density": 0.5639
+        },
+        {
+          "x": 0.2129,
+          "density": 0.4949
+        },
+        {
+          "x": 0.2322,
+          "density": 0.4424
+        },
+        {
+          "x": 0.2516,
+          "density": 0.4078
+        },
+        {
+          "x": 0.2709,
+          "density": 0.3868
+        },
+        {
+          "x": 0.2903,
+          "density": 0.3729
+        },
+        {
+          "x": 0.3096,
+          "density": 0.3617
+        },
+        {
+          "x": 0.329,
+          "density": 0.3534
+        },
+        {
+          "x": 0.3483,
+          "density": 0.3524
+        },
+        {
+          "x": 0.3677,
+          "density": 0.3636
+        },
+        {
+          "x": 0.387,
+          "density": 0.3887
+        },
+        {
+          "x": 0.4064,
+          "density": 0.4234
+        },
+        {
+          "x": 0.4257,
+          "density": 0.4586
+        },
+        {
+          "x": 0.4451,
+          "density": 0.4838
+        },
+        {
+          "x": 0.4644,
+          "density": 0.4917
+        },
+        {
+          "x": 0.4838,
+          "density": 0.4804
+        },
+        {
+          "x": 0.5031,
+          "density": 0.4533
+        },
+        {
+          "x": 0.5225,
+          "density": 0.4163
+        },
+        {
+          "x": 0.5419,
+          "density": 0.3748
+        },
+        {
+          "x": 0.5612,
+          "density": 0.3325
+        },
+        {
+          "x": 0.5806,
+          "density": 0.2907
+        },
+        {
+          "x": 0.5999,
+          "density": 0.2496
+        },
+        {
+          "x": 0.6193,
+          "density": 0.2093
+        },
+        {
+          "x": 0.6386,
+          "density": 0.1703
+        },
+        {
+          "x": 0.658,
+          "density": 0.1336
+        },
+        {
+          "x": 0.6773,
+          "density": 0.1009
+        },
+        {
+          "x": 0.6967,
+          "density": 0.0733
+        },
+        {
+          "x": 0.716,
+          "density": 0.0516
+        },
+        {
+          "x": 0.7354,
+          "density": 0.0355
+        },
+        {
+          "x": 0.7547,
+          "density": 0.0244
         }
       ]
     },
     {
       "feature": "trained_days_7",
       "label": "how often you've trained this past week",
-      "importance": 0.0776,
+      "importance": 0.0791,
       "current_value": 4.0,
-      "current_percentile": 0.9003,
+      "current_percentile": 0.9004,
       "kind": "continuous",
       "stats": {
-        "count": 1083,
-        "mean": 2.0859,
-        "std": 1.7451,
+        "count": 1084,
+        "mean": 2.0876,
+        "std": 1.7452,
         "min": 0.0,
         "p05": 0.0,
         "p25": 0.0,
@@ -1334,7 +1425,7 @@
         },
         {
           "x": 0.3077,
-          "density": 0.9392
+          "density": 0.9391
         },
         {
           "x": 0.4615,
@@ -1342,11 +1433,11 @@
         },
         {
           "x": 0.6154,
-          "density": 0.7945
+          "density": 0.7944
         },
         {
           "x": 0.7692,
-          "density": 0.756
+          "density": 0.7559
         },
         {
           "x": 0.9231,
@@ -1354,31 +1445,31 @@
         },
         {
           "x": 1.0769,
-          "density": 0.719
+          "density": 0.7189
         },
         {
           "x": 1.2308,
-          "density": 0.7041
+          "density": 0.704
         },
         {
           "x": 1.3846,
-          "density": 0.7005
+          "density": 0.7004
         },
         {
           "x": 1.5385,
-          "density": 0.7191
+          "density": 0.719
         },
         {
           "x": 1.6923,
-          "density": 0.7578
+          "density": 0.7577
         },
         {
           "x": 1.8462,
-          "density": 0.7986
+          "density": 0.7985
         },
         {
           "x": 2.0,
-          "density": 0.8196
+          "density": 0.8195
         },
         {
           "x": 2.1538,
@@ -1390,7 +1481,7 @@
         },
         {
           "x": 2.4615,
-          "density": 0.7644
+          "density": 0.7643
         },
         {
           "x": 2.6154,
@@ -1402,67 +1493,67 @@
         },
         {
           "x": 2.9231,
-          "density": 0.7803
+          "density": 0.7804
         },
         {
           "x": 3.0769,
-          "density": 0.761
+          "density": 0.7614
         },
         {
           "x": 3.2308,
-          "density": 0.7126
+          "density": 0.7134
         },
         {
           "x": 3.3846,
-          "density": 0.6498
+          "density": 0.6511
         },
         {
           "x": 3.5385,
-          "density": 0.5933
+          "density": 0.5953
         },
         {
           "x": 3.6923,
-          "density": 0.5548
+          "density": 0.5575
         },
         {
           "x": 3.8462,
-          "density": 0.53
+          "density": 0.5331
         },
         {
           "x": 4.0,
-          "density": 0.5046
+          "density": 0.508
         },
         {
           "x": 4.1538,
-          "density": 0.4677
+          "density": 0.4709
         },
         {
           "x": 4.3077,
-          "density": 0.4198
+          "density": 0.4225
         },
         {
           "x": 4.4615,
-          "density": 0.3708
+          "density": 0.3728
         },
         {
           "x": 4.6154,
-          "density": 0.3313
+          "density": 0.3326
         },
         {
           "x": 4.7692,
-          "density": 0.3042
+          "density": 0.305
         },
         {
           "x": 4.9231,
-          "density": 0.2844
+          "density": 0.2848
         },
         {
           "x": 5.0769,
-          "density": 0.2637
+          "density": 0.2639
         },
         {
           "x": 5.2308,
-          "density": 0.2383
+          "density": 0.2384
         },
         {
           "x": 5.3846,
@@ -1482,223 +1573,41 @@
         },
         {
           "x": 6.0,
-          "density": 0.1421
-        }
-      ]
-    },
-    {
-      "feature": "month_train_rate",
-      "label": "regular train rate for this month",
-      "importance": 0.077,
-      "current_value": 0.3333,
-      "current_percentile": 0.6934,
-      "kind": "continuous",
-      "stats": {
-        "count": 1083,
-        "mean": 0.2255,
-        "std": 0.2151,
-        "min": 0.0,
-        "p05": 0.0,
-        "p25": 0.026,
-        "median": 0.1528,
-        "p75": 0.4277,
-        "p95": 0.6,
-        "max": 1.0
-      },
-      "density": [
-        {
-          "x": 0.0,
-          "density": 0.9374
-        },
-        {
-          "x": 0.0194,
-          "density": 0.9973
-        },
-        {
-          "x": 0.0387,
-          "density": 1.0
-        },
-        {
-          "x": 0.0581,
-          "density": 0.9671
-        },
-        {
-          "x": 0.0774,
-          "density": 0.9219
-        },
-        {
-          "x": 0.0968,
-          "density": 0.8771
-        },
-        {
-          "x": 0.1162,
-          "density": 0.8326
-        },
-        {
-          "x": 0.1355,
-          "density": 0.781
-        },
-        {
-          "x": 0.1549,
-          "density": 0.7167
-        },
-        {
-          "x": 0.1742,
-          "density": 0.6414
-        },
-        {
-          "x": 0.1936,
-          "density": 0.5637
-        },
-        {
-          "x": 0.2129,
-          "density": 0.4946
-        },
-        {
-          "x": 0.2323,
-          "density": 0.4418
-        },
-        {
-          "x": 0.2517,
-          "density": 0.4069
-        },
-        {
-          "x": 0.271,
-          "density": 0.3854
-        },
-        {
-          "x": 0.2904,
-          "density": 0.3709
-        },
-        {
-          "x": 0.3097,
-          "density": 0.3592
-        },
-        {
-          "x": 0.3291,
-          "density": 0.3508
-        },
-        {
-          "x": 0.3485,
-          "density": 0.3499
-        },
-        {
-          "x": 0.3678,
-          "density": 0.3617
-        },
-        {
-          "x": 0.3872,
-          "density": 0.3873
-        },
-        {
-          "x": 0.4065,
-          "density": 0.4226
-        },
-        {
-          "x": 0.4259,
-          "density": 0.4582
-        },
-        {
-          "x": 0.4453,
-          "density": 0.4836
-        },
-        {
-          "x": 0.4646,
-          "density": 0.4915
-        },
-        {
-          "x": 0.484,
-          "density": 0.4802
-        },
-        {
-          "x": 0.5033,
-          "density": 0.453
-        },
-        {
-          "x": 0.5227,
-          "density": 0.4159
-        },
-        {
-          "x": 0.5421,
-          "density": 0.3745
-        },
-        {
-          "x": 0.5614,
-          "density": 0.3321
-        },
-        {
-          "x": 0.5808,
-          "density": 0.2903
-        },
-        {
-          "x": 0.6001,
-          "density": 0.2492
-        },
-        {
-          "x": 0.6195,
-          "density": 0.2089
-        },
-        {
-          "x": 0.6388,
-          "density": 0.1698
-        },
-        {
-          "x": 0.6582,
-          "density": 0.1332
-        },
-        {
-          "x": 0.6776,
-          "density": 0.1005
-        },
-        {
-          "x": 0.6969,
-          "density": 0.073
-        },
-        {
-          "x": 0.7163,
-          "density": 0.0513
-        },
-        {
-          "x": 0.7356,
-          "density": 0.0354
-        },
-        {
-          "x": 0.755,
-          "density": 0.0243
+          "density": 0.142
         }
       ]
     },
     {
       "feature": "dow_train_rate",
       "label": "regular train rate for this day of the week",
-      "importance": 0.0761,
-      "current_value": 0.3442,
-      "current_percentile": 0.9788,
+      "importance": 0.0787,
+      "current_value": 0.3613,
+      "current_percentile": 0.9935,
       "kind": "continuous",
       "stats": {
-        "count": 1083,
-        "mean": 0.1734,
-        "std": 0.1169,
+        "count": 1084,
+        "mean": 0.1736,
+        "std": 0.117,
         "min": 0.0,
         "p05": 0.0,
-        "p25": 0.0715,
-        "median": 0.1818,
-        "p75": 0.27,
-        "p95": 0.3258,
+        "p25": 0.0723,
+        "median": 0.1823,
+        "p75": 0.2702,
+        "p95": 0.3261,
         "max": 0.5
       },
       "density": [
         {
           "x": 0.0,
-          "density": 0.8551
+          "density": 0.8548
         },
         {
           "x": 0.0091,
-          "density": 0.8382
+          "density": 0.8379
         },
         {
           "x": 0.0183,
-          "density": 0.761
+          "density": 0.7608
         },
         {
           "x": 0.0274,
@@ -1706,31 +1615,31 @@
         },
         {
           "x": 0.0365,
-          "density": 0.5181
+          "density": 0.5182
         },
         {
           "x": 0.0456,
-          "density": 0.4052
+          "density": 0.4053
         },
         {
           "x": 0.0548,
-          "density": 0.3227
+          "density": 0.3228
         },
         {
           "x": 0.0639,
-          "density": 0.2768
+          "density": 0.2769
         },
         {
           "x": 0.073,
-          "density": 0.2663
+          "density": 0.2664
         },
         {
           "x": 0.0821,
-          "density": 0.2855
+          "density": 0.2856
         },
         {
           "x": 0.0913,
-          "density": 0.3274
+          "density": 0.3275
         },
         {
           "x": 0.1004,
@@ -1738,11 +1647,11 @@
         },
         {
           "x": 0.1095,
-          "density": 0.4536
+          "density": 0.4535
         },
         {
-          "x": 0.1187,
-          "density": 0.5266
+          "x": 0.1186,
+          "density": 0.5265
         },
         {
           "x": 0.1278,
@@ -1750,23 +1659,23 @@
         },
         {
           "x": 0.1369,
-          "density": 0.6646
+          "density": 0.6645
         },
         {
           "x": 0.146,
-          "density": 0.717
+          "density": 0.7169
         },
         {
           "x": 0.1552,
-          "density": 0.7511
+          "density": 0.751
         },
         {
           "x": 0.1643,
-          "density": 0.7647
+          "density": 0.7646
         },
         {
           "x": 0.1734,
-          "density": 0.7611
+          "density": 0.761
         },
         {
           "x": 0.1825,
@@ -1785,24 +1694,24 @@
           "density": 0.7637
         },
         {
-          "x": 0.2191,
+          "x": 0.219,
           "density": 0.8048
         },
         {
           "x": 0.2282,
-          "density": 0.8576
+          "density": 0.8575
         },
         {
           "x": 0.2373,
-          "density": 0.9117
+          "density": 0.9116
         },
         {
           "x": 0.2464,
-          "density": 0.9572
+          "density": 0.9571
         },
         {
           "x": 0.2556,
-          "density": 0.9875
+          "density": 0.9874
         },
         {
           "x": 0.2647,
@@ -1810,239 +1719,57 @@
         },
         {
           "x": 0.2738,
-          "density": 0.9948
+          "density": 0.9949
         },
         {
           "x": 0.2829,
-          "density": 0.9727
+          "density": 0.9731
         },
         {
           "x": 0.2921,
-          "density": 0.9338
+          "density": 0.9346
         },
         {
           "x": 0.3012,
-          "density": 0.8773
+          "density": 0.8785
         },
         {
           "x": 0.3103,
-          "density": 0.8027
+          "density": 0.8045
         },
         {
-          "x": 0.3195,
-          "density": 0.7115
+          "x": 0.3194,
+          "density": 0.714
         },
         {
           "x": 0.3286,
-          "density": 0.6079
-        },
-        {
-          "x": 0.3377,
-          "density": 0.4985
-        },
-        {
-          "x": 0.3468,
-          "density": 0.3911
-        },
-        {
-          "x": 0.356,
-          "density": 0.2928
-        }
-      ]
-    },
-    {
-      "feature": "chronic_load_28",
-      "label": "longer-term fitness base",
-      "importance": 0.0693,
-      "current_value": 38.4562,
-      "current_percentile": 0.8504,
-      "kind": "continuous",
-      "stats": {
-        "count": 1083,
-        "mean": 21.6993,
-        "std": 16.1,
-        "min": 0.0,
-        "p05": 0.0,
-        "p25": 10.7101,
-        "median": 22.1729,
-        "p75": 32.0213,
-        "p95": 49.1158,
-        "max": 78.3357
-      },
-      "density": [
-        {
-          "x": 0.0,
-          "density": 0.8936
-        },
-        {
-          "x": 1.6139,
-          "density": 0.8581
-        },
-        {
-          "x": 3.2278,
-          "density": 0.7428
-        },
-        {
-          "x": 4.8417,
-          "density": 0.612
-        },
-        {
-          "x": 6.4556,
-          "density": 0.5275
-        },
-        {
-          "x": 8.0695,
-          "density": 0.5196
-        },
-        {
-          "x": 9.6833,
-          "density": 0.5814
-        },
-        {
-          "x": 11.2972,
-          "density": 0.6812
-        },
-        {
-          "x": 12.9111,
-          "density": 0.7815
-        },
-        {
-          "x": 14.525,
-          "density": 0.8551
-        },
-        {
-          "x": 16.1389,
-          "density": 0.8938
-        },
-        {
-          "x": 17.7528,
-          "density": 0.9074
-        },
-        {
-          "x": 19.3667,
-          "density": 0.9147
-        },
-        {
-          "x": 20.9806,
-          "density": 0.9305
-        },
-        {
-          "x": 22.5945,
-          "density": 0.9574
-        },
-        {
-          "x": 24.2084,
-          "density": 0.9855
-        },
-        {
-          "x": 25.8223,
-          "density": 1.0
-        },
-        {
-          "x": 27.4362,
-          "density": 0.9903
-        },
-        {
-          "x": 29.05,
-          "density": 0.954
-        },
-        {
-          "x": 30.6639,
-          "density": 0.8962
-        },
-        {
-          "x": 32.2778,
-          "density": 0.8256
-        },
-        {
-          "x": 33.8917,
-          "density": 0.7509
-        },
-        {
-          "x": 35.5056,
-          "density": 0.6782
-        },
-        {
-          "x": 37.1195,
           "density": 0.6109
         },
         {
-          "x": 38.7334,
-          "density": 0.5499
+          "x": 0.3377,
+          "density": 0.5019
         },
         {
-          "x": 40.3473,
-          "density": 0.4946
+          "x": 0.3468,
+          "density": 0.3946
         },
         {
-          "x": 41.9612,
-          "density": 0.4443
-        },
-        {
-          "x": 43.5751,
-          "density": 0.398
-        },
-        {
-          "x": 45.189,
-          "density": 0.3547
-        },
-        {
-          "x": 46.8028,
-          "density": 0.3131
-        },
-        {
-          "x": 48.4167,
-          "density": 0.2723
-        },
-        {
-          "x": 50.0306,
-          "density": 0.2326
-        },
-        {
-          "x": 51.6445,
-          "density": 0.1957
-        },
-        {
-          "x": 53.2584,
-          "density": 0.1637
-        },
-        {
-          "x": 54.8723,
-          "density": 0.1377
-        },
-        {
-          "x": 56.4862,
-          "density": 0.1176
-        },
-        {
-          "x": 58.1001,
-          "density": 0.1021
-        },
-        {
-          "x": 59.714,
-          "density": 0.0895
-        },
-        {
-          "x": 61.3279,
-          "density": 0.0783
-        },
-        {
-          "x": 62.9418,
-          "density": 0.0674
+          "x": 0.3559,
+          "density": 0.2961
         }
       ]
     },
     {
       "feature": "forecast_precip_evening",
       "label": "rain chances during your evening window",
-      "importance": 0.0636,
+      "importance": 0.0682,
       "current_value": 0.0,
-      "current_percentile": 0.6307,
+      "current_percentile": 0.6311,
       "kind": "continuous",
       "stats": {
-        "count": 1067,
-        "mean": 23.1678,
-        "std": 35.3606,
+        "count": 1068,
+        "mean": 23.1461,
+        "std": 35.3511,
         "min": 0.0,
         "p05": 0.0,
         "p25": 0.0,
@@ -2062,185 +1789,367 @@
         },
         {
           "x": 5.1282,
-          "density": 0.881
+          "density": 0.8808
         },
         {
           "x": 7.6923,
-          "density": 0.7499
+          "density": 0.7496
         },
         {
           "x": 10.2564,
-          "density": 0.6046
+          "density": 0.6041
         },
         {
           "x": 12.8205,
-          "density": 0.4683
+          "density": 0.4679
         },
         {
           "x": 15.3846,
-          "density": 0.3558
+          "density": 0.3553
         },
         {
           "x": 17.9487,
-          "density": 0.2715
+          "density": 0.2711
         },
         {
           "x": 20.5128,
-          "density": 0.213
+          "density": 0.2126
         },
         {
           "x": 23.0769,
-          "density": 0.1745
+          "density": 0.1742
         },
         {
           "x": 25.641,
-          "density": 0.1504
+          "density": 0.1501
         },
         {
           "x": 28.2051,
-          "density": 0.1364
+          "density": 0.1361
         },
         {
           "x": 30.7692,
-          "density": 0.1298
+          "density": 0.1295
         },
         {
           "x": 33.3333,
-          "density": 0.1283
+          "density": 0.128
         },
         {
           "x": 35.8974,
-          "density": 0.1293
+          "density": 0.129
         },
         {
           "x": 38.4615,
-          "density": 0.1304
+          "density": 0.1301
         },
         {
           "x": 41.0256,
-          "density": 0.1298
+          "density": 0.1295
         },
         {
           "x": 43.5897,
-          "density": 0.1272
+          "density": 0.1269
         },
         {
           "x": 46.1538,
-          "density": 0.1235
+          "density": 0.1233
         },
         {
           "x": 48.7179,
-          "density": 0.1205
-        },
-        {
-          "x": 51.2821,
-          "density": 0.1194
-        },
-        {
-          "x": 53.8462,
           "density": 0.1203
         },
         {
+          "x": 51.2821,
+          "density": 0.1192
+        },
+        {
+          "x": 53.8462,
+          "density": 0.12
+        },
+        {
           "x": 56.4103,
-          "density": 0.1219
+          "density": 0.1217
         },
         {
           "x": 58.9744,
-          "density": 0.1226
+          "density": 0.1224
         },
         {
           "x": 61.5385,
-          "density": 0.1211
+          "density": 0.1209
         },
         {
           "x": 64.1026,
-          "density": 0.1176
+          "density": 0.1173
         },
         {
           "x": 66.6667,
-          "density": 0.113
+          "density": 0.1128
         },
         {
           "x": 69.2308,
-          "density": 0.1093
+          "density": 0.1091
         },
         {
           "x": 71.7949,
-          "density": 0.1076
+          "density": 0.1074
         },
         {
           "x": 74.359,
-          "density": 0.1083
+          "density": 0.108
         },
         {
           "x": 76.9231,
-          "density": 0.1106
+          "density": 0.1104
         },
         {
           "x": 79.4872,
-          "density": 0.1138
+          "density": 0.1136
         },
         {
           "x": 82.0513,
-          "density": 0.1177
+          "density": 0.1174
         },
         {
           "x": 84.6154,
-          "density": 0.1228
+          "density": 0.1226
         },
         {
           "x": 87.1795,
-          "density": 0.1304
+          "density": 0.1301
         },
         {
           "x": 89.7436,
-          "density": 0.141
+          "density": 0.1407
         },
         {
           "x": 92.3077,
-          "density": 0.1537
+          "density": 0.1534
         },
         {
           "x": 94.8718,
-          "density": 0.1659
+          "density": 0.1656
         },
         {
           "x": 97.4359,
-          "density": 0.1736
+          "density": 0.1733
         },
         {
           "x": 100.0,
-          "density": 0.1732
+          "density": 0.173
+        }
+      ]
+    },
+    {
+      "feature": "chronic_load_28",
+      "label": "longer-term fitness base",
+      "importance": 0.0648,
+      "current_value": 38.0799,
+      "current_percentile": 0.845,
+      "kind": "continuous",
+      "stats": {
+        "count": 1084,
+        "mean": 21.7148,
+        "std": 16.1006,
+        "min": 0.0,
+        "p05": 0.0,
+        "p25": 10.7496,
+        "median": 22.181,
+        "p75": 32.0834,
+        "p95": 49.1096,
+        "max": 78.3357
+      },
+      "density": [
+        {
+          "x": 0.0,
+          "density": 0.8936
+        },
+        {
+          "x": 1.6138,
+          "density": 0.8581
+        },
+        {
+          "x": 3.2277,
+          "density": 0.7427
+        },
+        {
+          "x": 4.8415,
+          "density": 0.6119
+        },
+        {
+          "x": 6.4553,
+          "density": 0.5274
+        },
+        {
+          "x": 8.0692,
+          "density": 0.5195
+        },
+        {
+          "x": 9.683,
+          "density": 0.5813
+        },
+        {
+          "x": 11.2969,
+          "density": 0.6812
+        },
+        {
+          "x": 12.9107,
+          "density": 0.7815
+        },
+        {
+          "x": 14.5245,
+          "density": 0.8551
+        },
+        {
+          "x": 16.1384,
+          "density": 0.8937
+        },
+        {
+          "x": 17.7522,
+          "density": 0.9073
+        },
+        {
+          "x": 19.366,
+          "density": 0.9146
+        },
+        {
+          "x": 20.9799,
+          "density": 0.9305
+        },
+        {
+          "x": 22.5937,
+          "density": 0.9574
+        },
+        {
+          "x": 24.2076,
+          "density": 0.9854
+        },
+        {
+          "x": 25.8214,
+          "density": 1.0
+        },
+        {
+          "x": 27.4352,
+          "density": 0.9904
+        },
+        {
+          "x": 29.0491,
+          "density": 0.9543
+        },
+        {
+          "x": 30.6629,
+          "density": 0.8968
+        },
+        {
+          "x": 32.2767,
+          "density": 0.8269
+        },
+        {
+          "x": 33.8906,
+          "density": 0.753
+        },
+        {
+          "x": 35.5044,
+          "density": 0.6811
+        },
+        {
+          "x": 37.1182,
+          "density": 0.6144
+        },
+        {
+          "x": 38.7321,
+          "density": 0.5536
+        },
+        {
+          "x": 40.3459,
+          "density": 0.498
+        },
+        {
+          "x": 41.9598,
+          "density": 0.4469
+        },
+        {
+          "x": 43.5736,
+          "density": 0.3998
+        },
+        {
+          "x": 45.1874,
+          "density": 0.3558
+        },
+        {
+          "x": 46.8013,
+          "density": 0.3137
+        },
+        {
+          "x": 48.4151,
+          "density": 0.2725
+        },
+        {
+          "x": 50.0289,
+          "density": 0.2327
+        },
+        {
+          "x": 51.6428,
+          "density": 0.1958
+        },
+        {
+          "x": 53.2566,
+          "density": 0.1637
+        },
+        {
+          "x": 54.8705,
+          "density": 0.1377
+        },
+        {
+          "x": 56.4843,
+          "density": 0.1176
+        },
+        {
+          "x": 58.0981,
+          "density": 0.1021
+        },
+        {
+          "x": 59.712,
+          "density": 0.0895
+        },
+        {
+          "x": 61.3258,
+          "density": 0.0783
+        },
+        {
+          "x": 62.9396,
+          "density": 0.0674
         }
       ]
     },
     {
       "feature": "days_since_last_hard",
       "label": "time since your last hard effort",
-      "importance": 0.0603,
-      "current_value": 0.0,
-      "current_percentile": 0.1537,
+      "importance": 0.06,
+      "current_value": 1.0,
+      "current_percentile": 0.2822,
       "kind": "continuous",
       "stats": {
-        "count": 846,
-        "mean": 6.091,
-        "std": 7.0222,
+        "count": 847,
+        "mean": 6.0838,
+        "std": 7.0212,
         "min": 0.0,
         "p05": 0.0,
         "p25": 1.0,
         "median": 4.0,
         "p75": 8.0,
-        "p95": 20.75,
+        "p95": 20.7,
         "max": 39.0
       },
       "density": [
         {
           "x": 0.0,
-          "density": 0.7956
+          "density": 0.7967
         },
         {
           "x": 0.8462,
-          "density": 0.9416
+          "density": 0.9423
         },
         {
           "x": 1.6923,
@@ -2248,135 +2157,135 @@
         },
         {
           "x": 2.5385,
-          "density": 0.9753
+          "density": 0.9746
         },
         {
           "x": 3.3846,
-          "density": 0.8951
+          "density": 0.894
         },
         {
           "x": 4.2308,
-          "density": 0.7912
+          "density": 0.79
         },
         {
           "x": 5.0769,
-          "density": 0.6862
+          "density": 0.685
         },
         {
           "x": 5.9231,
-          "density": 0.591
+          "density": 0.5899
         },
         {
           "x": 6.7692,
-          "density": 0.5084
+          "density": 0.5074
         },
         {
           "x": 7.6154,
-          "density": 0.4378
+          "density": 0.437
         },
         {
           "x": 8.4615,
-          "density": 0.3783
+          "density": 0.3776
         },
         {
           "x": 9.3077,
-          "density": 0.3287
+          "density": 0.3281
         },
         {
           "x": 10.1538,
-          "density": 0.2875
+          "density": 0.2869
         },
         {
           "x": 11.0,
-          "density": 0.2527
+          "density": 0.2522
         },
         {
           "x": 11.8462,
-          "density": 0.2225
+          "density": 0.222
         },
         {
           "x": 12.6923,
-          "density": 0.1961
+          "density": 0.1957
         },
         {
           "x": 13.5385,
-          "density": 0.1735
+          "density": 0.1732
         },
         {
           "x": 14.3846,
-          "density": 0.1548
+          "density": 0.1545
         },
         {
           "x": 15.2308,
-          "density": 0.1395
+          "density": 0.1392
         },
         {
           "x": 16.0769,
-          "density": 0.1266
+          "density": 0.1264
         },
         {
           "x": 16.9231,
-          "density": 0.1149
+          "density": 0.1147
         },
         {
           "x": 17.7692,
-          "density": 0.1034
+          "density": 0.1032
         },
         {
           "x": 18.6154,
-          "density": 0.0917
+          "density": 0.0916
         },
         {
           "x": 19.4615,
-          "density": 0.0801
+          "density": 0.08
         },
         {
           "x": 20.3077,
-          "density": 0.0692
+          "density": 0.069
         },
         {
           "x": 21.1538,
-          "density": 0.0595
+          "density": 0.0593
         },
         {
           "x": 22.0,
-          "density": 0.0515
+          "density": 0.0514
         },
         {
           "x": 22.8462,
-          "density": 0.0456
+          "density": 0.0455
         },
         {
           "x": 23.6923,
-          "density": 0.0414
+          "density": 0.0413
         },
         {
           "x": 24.5385,
-          "density": 0.0385
+          "density": 0.0384
         },
         {
           "x": 25.3846,
-          "density": 0.0363
+          "density": 0.0362
         },
         {
           "x": 26.2308,
-          "density": 0.0342
+          "density": 0.0341
         },
         {
           "x": 27.0769,
-          "density": 0.032
+          "density": 0.0319
         },
         {
           "x": 27.9231,
-          "density": 0.0298
+          "density": 0.0297
         },
         {
           "x": 28.7692,
-          "density": 0.0278
+          "density": 0.0277
         },
         {
           "x": 29.6154,
-          "density": 0.0263
+          "density": 0.0262
         },
         {
           "x": 30.4615,
@@ -2384,7 +2293,7 @@
         },
         {
           "x": 31.3077,
-          "density": 0.0248
+          "density": 0.0247
         },
         {
           "x": 32.1538,
@@ -2392,370 +2301,188 @@
         },
         {
           "x": 33.0,
-          "density": 0.0235
-        }
-      ]
-    },
-    {
-      "feature": "forecast_temp_low_vs_seasonal",
-      "label": "how the temp low compares to normal for this time of year",
-      "importance": 0.0572,
-      "current_value": 4.2102,
-      "current_percentile": 0.9335,
-      "kind": "continuous",
-      "stats": {
-        "count": 1067,
-        "mean": 0.2728,
-        "std": 2.7699,
-        "min": -13.2134,
-        "p05": -4.41,
-        "p25": -1.4357,
-        "median": 0.3253,
-        "p75": 1.9996,
-        "p95": 4.8063,
-        "max": 9.3943
-      },
-      "density": [
-        {
-          "x": -6.9515,
-          "density": 0.0372
-        },
-        {
-          "x": -6.5913,
-          "density": 0.0444
-        },
-        {
-          "x": -6.231,
-          "density": 0.0558
-        },
-        {
-          "x": -5.8707,
-          "density": 0.075
-        },
-        {
-          "x": -5.5104,
-          "density": 0.1025
-        },
-        {
-          "x": -5.1502,
-          "density": 0.134
-        },
-        {
-          "x": -4.7899,
-          "density": 0.1633
-        },
-        {
-          "x": -4.4296,
-          "density": 0.1899
-        },
-        {
-          "x": -4.0693,
-          "density": 0.2228
-        },
-        {
-          "x": -3.709,
-          "density": 0.2746
-        },
-        {
-          "x": -3.3488,
-          "density": 0.3518
-        },
-        {
-          "x": -2.9885,
-          "density": 0.4498
-        },
-        {
-          "x": -2.6282,
-          "density": 0.556
-        },
-        {
-          "x": -2.2679,
-          "density": 0.6573
-        },
-        {
-          "x": -1.9076,
-          "density": 0.7449
-        },
-        {
-          "x": -1.5474,
-          "density": 0.8163
-        },
-        {
-          "x": -1.1871,
-          "density": 0.8736
-        },
-        {
-          "x": -0.8268,
-          "density": 0.9202
-        },
-        {
-          "x": -0.4665,
-          "density": 0.9579
-        },
-        {
-          "x": -0.1063,
-          "density": 0.9851
-        },
-        {
-          "x": 0.254,
-          "density": 0.9995
-        },
-        {
-          "x": 0.6143,
-          "density": 1.0
-        },
-        {
-          "x": 0.9746,
-          "density": 0.9868
-        },
-        {
-          "x": 1.3349,
-          "density": 0.9583
-        },
-        {
-          "x": 1.6951,
-          "density": 0.91
-        },
-        {
-          "x": 2.0554,
-          "density": 0.8392
-        },
-        {
-          "x": 2.4157,
-          "density": 0.7507
-        },
-        {
-          "x": 2.776,
-          "density": 0.6548
-        },
-        {
-          "x": 3.1362,
-          "density": 0.5599
-        },
-        {
-          "x": 3.4965,
-          "density": 0.4686
-        },
-        {
-          "x": 3.8568,
-          "density": 0.3826
-        },
-        {
-          "x": 4.2171,
-          "density": 0.307
-        },
-        {
-          "x": 4.5774,
-          "density": 0.247
-        },
-        {
-          "x": 4.9376,
-          "density": 0.2027
-        },
-        {
-          "x": 5.2979,
-          "density": 0.1685
-        },
-        {
-          "x": 5.6582,
-          "density": 0.1383
-        },
-        {
-          "x": 6.0185,
-          "density": 0.1096
-        },
-        {
-          "x": 6.3788,
-          "density": 0.0831
-        },
-        {
-          "x": 6.739,
-          "density": 0.0615
-        },
-        {
-          "x": 7.0993,
-          "density": 0.0468
+          "density": 0.0234
         }
       ]
     },
     {
       "feature": "forecast_temp_high_vs_seasonal",
       "label": "how the temp high compares to normal for this time of year",
-      "importance": 0.0571,
-      "current_value": 1.9574,
-      "current_percentile": 0.6898,
+      "importance": 0.0579,
+      "current_value": 9.6931,
+      "current_percentile": 0.9944,
       "kind": "continuous",
       "stats": {
-        "count": 1067,
-        "mean": 0.405,
-        "std": 3.4191,
+        "count": 1068,
+        "mean": 0.4079,
+        "std": 3.4188,
         "min": -11.0853,
-        "p05": -4.7431,
-        "p25": -1.8311,
-        "median": 0.1173,
-        "p75": 2.5892,
-        "p95": 6.4006,
+        "p05": -4.7428,
+        "p25": -1.8294,
+        "median": 0.1197,
+        "p75": 2.5904,
+        "p95": 6.3965,
         "max": 14.6595
       },
       "density": [
         {
-          "x": -6.8144,
-          "density": 0.0863
+          "x": -6.8135,
+          "density": 0.0864
         },
         {
-          "x": -6.4036,
-          "density": 0.117
+          "x": -6.4027,
+          "density": 0.1171
         },
         {
-          "x": -5.9928,
-          "density": 0.1518
+          "x": -5.992,
+          "density": 0.1519
         },
         {
-          "x": -5.582,
-          "density": 0.1902
+          "x": -5.5812,
+          "density": 0.1903
         },
         {
-          "x": -5.1712,
-          "density": 0.2333
+          "x": -5.1704,
+          "density": 0.2334
         },
         {
-          "x": -4.7604,
+          "x": -4.7597,
           "density": 0.2834
         },
         {
-          "x": -4.3495,
+          "x": -4.3489,
           "density": 0.3432
         },
         {
-          "x": -3.9387,
-          "density": 0.4162
+          "x": -3.9381,
+          "density": 0.4163
         },
         {
-          "x": -3.5279,
+          "x": -3.5274,
           "density": 0.5049
         },
         {
-          "x": -3.1171,
-          "density": 0.6082
+          "x": -3.1166,
+          "density": 0.6083
         },
         {
-          "x": -2.7063,
-          "density": 0.7202
+          "x": -2.7058,
+          "density": 0.7203
         },
         {
-          "x": -2.2955,
+          "x": -2.2951,
           "density": 0.8295
         },
         {
-          "x": -1.8847,
-          "density": 0.9209
+          "x": -1.8843,
+          "density": 0.921
         },
         {
-          "x": -1.4738,
+          "x": -1.4736,
           "density": 0.98
         },
         {
-          "x": -1.063,
+          "x": -1.0628,
           "density": 1.0
         },
         {
-          "x": -0.6522,
+          "x": -0.652,
           "density": 0.9871
         },
         {
-          "x": -0.2414,
+          "x": -0.2413,
           "density": 0.9564
         },
         {
-          "x": 0.1694,
+          "x": 0.1695,
           "density": 0.9215
         },
         {
-          "x": 0.5802,
-          "density": 0.8877
+          "x": 0.5803,
+          "density": 0.8876
         },
         {
           "x": 0.991,
-          "density": 0.854
+          "density": 0.8541
         },
         {
-          "x": 1.4019,
-          "density": 0.8196
+          "x": 1.4018,
+          "density": 0.8198
         },
         {
-          "x": 1.8127,
-          "density": 0.7849
+          "x": 1.8126,
+          "density": 0.7855
         },
         {
-          "x": 2.2235,
-          "density": 0.7491
+          "x": 2.2233,
+          "density": 0.7503
         },
         {
-          "x": 2.6343,
-          "density": 0.7073
+          "x": 2.6341,
+          "density": 0.7095
         },
         {
-          "x": 3.0451,
-          "density": 0.6537
+          "x": 3.0449,
+          "density": 0.6568
         },
         {
-          "x": 3.4559,
-          "density": 0.5871
+          "x": 3.4556,
+          "density": 0.5905
         },
         {
-          "x": 3.8668,
-          "density": 0.5138
+          "x": 3.8664,
+          "density": 0.517
         },
         {
-          "x": 4.2776,
-          "density": 0.4439
+          "x": 4.2772,
+          "density": 0.4462
         },
         {
-          "x": 4.6884,
-          "density": 0.3834
+          "x": 4.6879,
+          "density": 0.3849
         },
         {
-          "x": 5.0992,
-          "density": 0.3319
+          "x": 5.0987,
+          "density": 0.3326
         },
         {
-          "x": 5.51,
-          "density": 0.2853
+          "x": 5.5095,
+          "density": 0.2856
         },
         {
-          "x": 5.9208,
-          "density": 0.2417
+          "x": 5.9202,
+          "density": 0.2418
         },
         {
-          "x": 6.3316,
+          "x": 6.331,
           "density": 0.2028
         },
         {
-          "x": 6.7425,
+          "x": 6.7418,
           "density": 0.1711
         },
         {
-          "x": 7.1533,
-          "density": 0.1472
+          "x": 7.1525,
+          "density": 0.1473
         },
         {
-          "x": 7.5641,
+          "x": 7.5633,
           "density": 0.1293
         },
         {
-          "x": 7.9749,
+          "x": 7.9741,
           "density": 0.1144
         },
         {
-          "x": 8.3857,
+          "x": 8.3848,
           "density": 0.1005
         },
         {
-          "x": 8.7965,
+          "x": 8.7956,
           "density": 0.0863
         },
         {
-          "x": 9.2073,
+          "x": 9.2064,
           "density": 0.0711
         }
       ]
@@ -2763,199 +2490,381 @@
     {
       "feature": "mileage_chronic_28",
       "label": "your longer-term mileage base",
-      "importance": 0.056,
-      "current_value": 40796.4,
-      "current_percentile": 0.9548,
+      "importance": 0.0544,
+      "current_value": 38405.1931,
+      "current_percentile": 0.9382,
       "kind": "continuous",
       "stats": {
-        "count": 1083,
-        "mean": 17145.8161,
-        "std": 12695.8641,
+        "count": 1084,
+        "mean": 17167.634,
+        "std": 12710.3163,
         "min": 114.958,
-        "p05": 411.4854,
-        "p25": 7158.3874,
-        "median": 15042.1285,
-        "p75": 27120.1303,
-        "p95": 39958.612,
+        "p05": 411.5854,
+        "p25": 7175.0419,
+        "median": 15072.4387,
+        "p75": 27158.5669,
+        "p95": 40066.2672,
         "max": 55707.7741
       },
       "density": [
         {
-          "x": 216.6595,
-          "density": 0.8362
+          "x": 216.7728,
+          "density": 0.8359
         },
         {
-          "x": 1394.3357,
-          "density": 0.9101
+          "x": 1394.4171,
+          "density": 0.9098
         },
         {
-          "x": 2572.0119,
-          "density": 0.9183
+          "x": 2572.0614,
+          "density": 0.9182
         },
         {
-          "x": 3749.6882,
-          "density": 0.8841
+          "x": 3749.7057,
+          "density": 0.8842
         },
         {
-          "x": 4927.3644,
-          "density": 0.8433
+          "x": 4927.35,
+          "density": 0.8436
         },
         {
-          "x": 6105.0406,
-          "density": 0.8259
+          "x": 6104.9944,
+          "density": 0.8264
         },
         {
-          "x": 7282.7169,
-          "density": 0.8433
+          "x": 7282.6387,
+          "density": 0.8437
         },
         {
-          "x": 8460.3931,
-          "density": 0.8877
+          "x": 8460.283,
+          "density": 0.8879
         },
         {
-          "x": 9638.0694,
-          "density": 0.9401
+          "x": 9637.9273,
+          "density": 0.9402
         },
         {
-          "x": 10815.7456,
-          "density": 0.9815
+          "x": 10815.5716,
+          "density": 0.9816
         },
         {
-          "x": 11993.4218,
+          "x": 11993.2159,
           "density": 1.0
         },
         {
-          "x": 13171.0981,
+          "x": 13170.8603,
           "density": 0.9924
         },
         {
-          "x": 14348.7743,
-          "density": 0.9628
+          "x": 14348.5046,
+          "density": 0.9629
         },
         {
-          "x": 15526.4506,
-          "density": 0.9189
+          "x": 15526.1489,
+          "density": 0.9191
         },
         {
-          "x": 16704.1268,
-          "density": 0.8687
+          "x": 16703.7932,
+          "density": 0.8689
         },
         {
-          "x": 17881.803,
-          "density": 0.8184
+          "x": 17881.4375,
+          "density": 0.8186
         },
         {
-          "x": 19059.4793,
-          "density": 0.7714
+          "x": 19059.0818,
+          "density": 0.7716
         },
         {
-          "x": 20237.1555,
-          "density": 0.7292
+          "x": 20236.7262,
+          "density": 0.7294
         },
         {
-          "x": 21414.8317,
-          "density": 0.6919
+          "x": 21414.3705,
+          "density": 0.6921
         },
         {
-          "x": 22592.508,
-          "density": 0.6598
+          "x": 22592.0148,
+          "density": 0.66
         },
         {
-          "x": 23770.1842,
-          "density": 0.634
+          "x": 23769.6591,
+          "density": 0.6342
         },
         {
-          "x": 24947.8605,
-          "density": 0.6161
+          "x": 24947.3034,
+          "density": 0.6163
         },
         {
-          "x": 26125.5367,
-          "density": 0.6075
+          "x": 26124.9477,
+          "density": 0.6077
         },
         {
-          "x": 27303.2129,
-          "density": 0.6081
+          "x": 27302.5921,
+          "density": 0.6082
         },
         {
-          "x": 28480.8892,
-          "density": 0.6146
+          "x": 28480.2364,
+          "density": 0.6147
         },
         {
-          "x": 29658.5654,
-          "density": 0.6209
+          "x": 29657.8807,
+          "density": 0.621
         },
         {
-          "x": 30836.2417,
-          "density": 0.6191
+          "x": 30835.525,
+          "density": 0.6192
         },
         {
-          "x": 32013.9179,
-          "density": 0.6026
+          "x": 32013.1693,
+          "density": 0.6027
         },
         {
-          "x": 33191.5941,
-          "density": 0.5685
+          "x": 33190.8136,
+          "density": 0.5688
         },
         {
-          "x": 34369.2704,
-          "density": 0.5192
+          "x": 34368.4579,
+          "density": 0.5199
         },
         {
-          "x": 35546.9466,
-          "density": 0.4612
+          "x": 35546.1023,
+          "density": 0.4624
         },
         {
-          "x": 36724.6228,
-          "density": 0.4027
+          "x": 36723.7466,
+          "density": 0.4046
         },
         {
-          "x": 37902.2991,
-          "density": 0.3503
+          "x": 37901.3909,
+          "density": 0.353
         },
         {
-          "x": 39079.9753,
-          "density": 0.3075
+          "x": 39079.0352,
+          "density": 0.3109
         },
         {
-          "x": 40257.6516,
-          "density": 0.2736
+          "x": 40256.6795,
+          "density": 0.2774
         },
         {
-          "x": 41435.3278,
-          "density": 0.2455
+          "x": 41434.3238,
+          "density": 0.2492
         },
         {
-          "x": 42613.004,
-          "density": 0.219
+          "x": 42611.9682,
+          "density": 0.2222
         },
         {
-          "x": 43790.6803,
-          "density": 0.1912
+          "x": 43789.6125,
+          "density": 0.1937
         },
         {
-          "x": 44968.3565,
-          "density": 0.1614
+          "x": 44967.2568,
+          "density": 0.1632
         },
         {
-          "x": 46146.0328,
-          "density": 0.1309
+          "x": 46144.9011,
+          "density": 0.132
+        }
+      ]
+    },
+    {
+      "feature": "forecast_temp_low_vs_seasonal",
+      "label": "how the temp low compares to normal for this time of year",
+      "importance": 0.0543,
+      "current_value": 1.4098,
+      "current_percentile": 0.6648,
+      "kind": "continuous",
+      "stats": {
+        "count": 1068,
+        "mean": 0.2742,
+        "std": 2.769,
+        "min": -13.2134,
+        "p05": -4.4095,
+        "p25": -1.4337,
+        "median": 0.3258,
+        "p75": 1.9948,
+        "p95": 4.803,
+        "max": 9.3943
+      },
+      "density": [
+        {
+          "x": -6.9512,
+          "density": 0.0372
+        },
+        {
+          "x": -6.591,
+          "density": 0.0444
+        },
+        {
+          "x": -6.2308,
+          "density": 0.0558
+        },
+        {
+          "x": -5.8706,
+          "density": 0.0749
+        },
+        {
+          "x": -5.5104,
+          "density": 0.1024
+        },
+        {
+          "x": -5.1502,
+          "density": 0.1339
+        },
+        {
+          "x": -4.79,
+          "density": 0.1632
+        },
+        {
+          "x": -4.4298,
+          "density": 0.1897
+        },
+        {
+          "x": -4.0696,
+          "density": 0.2225
+        },
+        {
+          "x": -3.7094,
+          "density": 0.2742
+        },
+        {
+          "x": -3.3492,
+          "density": 0.3513
+        },
+        {
+          "x": -2.989,
+          "density": 0.4492
+        },
+        {
+          "x": -2.6288,
+          "density": 0.5553
+        },
+        {
+          "x": -2.2686,
+          "density": 0.6565
+        },
+        {
+          "x": -1.9084,
+          "density": 0.744
+        },
+        {
+          "x": -1.5482,
+          "density": 0.8154
+        },
+        {
+          "x": -1.188,
+          "density": 0.8726
+        },
+        {
+          "x": -0.8278,
+          "density": 0.9192
+        },
+        {
+          "x": -0.4676,
+          "density": 0.9568
+        },
+        {
+          "x": -0.1074,
+          "density": 0.9842
+        },
+        {
+          "x": 0.2528,
+          "density": 0.9989
+        },
+        {
+          "x": 0.613,
+          "density": 1.0
+        },
+        {
+          "x": 0.9732,
+          "density": 0.9878
+        },
+        {
+          "x": 1.3334,
+          "density": 0.9604
+        },
+        {
+          "x": 1.6936,
+          "density": 0.9128
+        },
+        {
+          "x": 2.0538,
+          "density": 0.842
+        },
+        {
+          "x": 2.414,
+          "density": 0.7528
+        },
+        {
+          "x": 2.7742,
+          "density": 0.656
+        },
+        {
+          "x": 3.1344,
+          "density": 0.5605
+        },
+        {
+          "x": 3.4946,
+          "density": 0.4688
+        },
+        {
+          "x": 3.8548,
+          "density": 0.3827
+        },
+        {
+          "x": 4.215,
+          "density": 0.307
+        },
+        {
+          "x": 4.5752,
+          "density": 0.247
+        },
+        {
+          "x": 4.9354,
+          "density": 0.2027
+        },
+        {
+          "x": 5.2956,
+          "density": 0.1685
+        },
+        {
+          "x": 5.6558,
+          "density": 0.1384
+        },
+        {
+          "x": 6.016,
+          "density": 0.1096
+        },
+        {
+          "x": 6.3762,
+          "density": 0.0832
+        },
+        {
+          "x": 6.7364,
+          "density": 0.0616
+        },
+        {
+          "x": 7.0966,
+          "density": 0.0469
         }
       ]
     },
     {
       "feature": "trained_days_30",
       "label": "your training frequency over the past month",
-      "importance": 0.0551,
-      "current_value": 19.0,
-      "current_percentile": 0.9889,
+      "importance": 0.0541,
+      "current_value": 20.0,
+      "current_percentile": 0.9991,
       "kind": "continuous",
       "stats": {
-        "count": 1083,
-        "mean": 8.7331,
-        "std": 5.9697,
+        "count": 1084,
+        "mean": 8.7426,
+        "std": 5.9751,
         "min": 0.0,
         "p05": 0.0,
-        "p25": 4.5,
+        "p25": 4.75,
         "median": 9.0,
         "p75": 14.0,
         "p95": 17.0,
@@ -2964,11 +2873,11 @@
       "density": [
         {
           "x": 0.0,
-          "density": 0.9144
+          "density": 0.9139
         },
         {
           "x": 0.5128,
-          "density": 0.8778
+          "density": 0.8775
         },
         {
           "x": 1.0256,
@@ -2976,43 +2885,43 @@
         },
         {
           "x": 1.5385,
-          "density": 0.6254
+          "density": 0.6256
         },
         {
           "x": 2.0513,
-          "density": 0.4939
+          "density": 0.4943
         },
         {
           "x": 2.5641,
-          "density": 0.4074
+          "density": 0.4079
         },
         {
           "x": 3.0769,
-          "density": 0.3798
+          "density": 0.3802
         },
         {
           "x": 3.5897,
-          "density": 0.4069
+          "density": 0.4072
         },
         {
           "x": 4.1026,
-          "density": 0.4744
+          "density": 0.4746
         },
         {
           "x": 4.6154,
-          "density": 0.5655
+          "density": 0.5657
         },
         {
           "x": 5.1282,
-          "density": 0.6663
+          "density": 0.6664
         },
         {
           "x": 5.641,
-          "density": 0.7661
+          "density": 0.7662
         },
         {
           "x": 6.1538,
-          "density": 0.8566
+          "density": 0.8567
         },
         {
           "x": 6.6667,
@@ -3028,295 +2937,113 @@
         },
         {
           "x": 8.2051,
-          "density": 0.9912
+          "density": 0.9913
         },
         {
           "x": 8.7179,
-          "density": 0.9584
+          "density": 0.9585
         },
         {
           "x": 9.2308,
-          "density": 0.9112
+          "density": 0.9114
         },
         {
           "x": 9.7436,
-          "density": 0.8609
+          "density": 0.8611
         },
         {
           "x": 10.2564,
-          "density": 0.8169
+          "density": 0.8172
         },
         {
           "x": 10.7692,
-          "density": 0.7855
+          "density": 0.7857
         },
         {
           "x": 11.2821,
-          "density": 0.7688
+          "density": 0.769
         },
         {
           "x": 11.7949,
-          "density": 0.7666
+          "density": 0.7669
         },
         {
           "x": 12.3077,
-          "density": 0.7777
+          "density": 0.7779
         },
         {
           "x": 12.8205,
-          "density": 0.7997
+          "density": 0.7999
         },
         {
           "x": 13.3333,
-          "density": 0.8292
+          "density": 0.8294
         },
         {
           "x": 13.8462,
-          "density": 0.8607
+          "density": 0.8608
         },
         {
           "x": 14.359,
-          "density": 0.8863
+          "density": 0.8864
         },
         {
           "x": 14.8718,
-          "density": 0.8975
+          "density": 0.8977
         },
         {
           "x": 15.3846,
-          "density": 0.8868
+          "density": 0.8871
         },
         {
           "x": 15.8974,
-          "density": 0.8498
+          "density": 0.8503
         },
         {
           "x": 16.4103,
-          "density": 0.7865
+          "density": 0.7875
         },
         {
           "x": 16.9231,
-          "density": 0.7017
+          "density": 0.7034
         },
         {
           "x": 17.4359,
-          "density": 0.6033
+          "density": 0.6057
         },
         {
           "x": 17.9487,
-          "density": 0.5005
+          "density": 0.5037
         },
         {
           "x": 18.4615,
-          "density": 0.402
+          "density": 0.4057
         },
         {
           "x": 18.9744,
-          "density": 0.3134
+          "density": 0.3174
         },
         {
           "x": 19.4872,
-          "density": 0.2377
+          "density": 0.2415
         },
         {
           "x": 20.0,
-          "density": 0.1752
-        }
-      ]
-    },
-    {
-      "feature": "acute_load_7",
-      "label": "recent training load in your legs",
-      "importance": 0.0519,
-      "current_value": 36.2233,
-      "current_percentile": 0.7867,
-      "kind": "continuous",
-      "stats": {
-        "count": 1083,
-        "mean": 22.0804,
-        "std": 22.372,
-        "min": 0.0,
-        "p05": 0.0,
-        "p25": 2.8262,
-        "median": 16.6777,
-        "p75": 33.0458,
-        "p95": 65.8575,
-        "max": 144.7335
-      },
-      "density": [
-        {
-          "x": 0.0,
-          "density": 0.9305
-        },
-        {
-          "x": 2.4028,
-          "density": 1.0
-        },
-        {
-          "x": 4.8056,
-          "density": 0.9871
-        },
-        {
-          "x": 7.2084,
-          "density": 0.93
-        },
-        {
-          "x": 9.6112,
-          "density": 0.8688
-        },
-        {
-          "x": 12.014,
-          "density": 0.8234
-        },
-        {
-          "x": 14.4169,
-          "density": 0.7926
-        },
-        {
-          "x": 16.8197,
-          "density": 0.7662
-        },
-        {
-          "x": 19.2225,
-          "density": 0.7355
-        },
-        {
-          "x": 21.6253,
-          "density": 0.6981
-        },
-        {
-          "x": 24.0281,
-          "density": 0.6562
-        },
-        {
-          "x": 26.4309,
-          "density": 0.6133
-        },
-        {
-          "x": 28.8337,
-          "density": 0.571
-        },
-        {
-          "x": 31.2365,
-          "density": 0.5289
-        },
-        {
-          "x": 33.6393,
-          "density": 0.4856
-        },
-        {
-          "x": 36.0421,
-          "density": 0.4402
-        },
-        {
-          "x": 38.4449,
-          "density": 0.3937
-        },
-        {
-          "x": 40.8477,
-          "density": 0.3481
-        },
-        {
-          "x": 43.2506,
-          "density": 0.3069
-        },
-        {
-          "x": 45.6534,
-          "density": 0.2732
-        },
-        {
-          "x": 48.0562,
-          "density": 0.2486
-        },
-        {
-          "x": 50.459,
-          "density": 0.2314
-        },
-        {
-          "x": 52.8618,
-          "density": 0.218
-        },
-        {
-          "x": 55.2646,
-          "density": 0.204
-        },
-        {
-          "x": 57.6674,
-          "density": 0.1871
-        },
-        {
-          "x": 60.0702,
-          "density": 0.1678
-        },
-        {
-          "x": 62.473,
-          "density": 0.148
-        },
-        {
-          "x": 64.8758,
-          "density": 0.1301
-        },
-        {
-          "x": 67.2786,
-          "density": 0.1149
-        },
-        {
-          "x": 69.6814,
-          "density": 0.1018
-        },
-        {
-          "x": 72.0843,
-          "density": 0.0901
-        },
-        {
-          "x": 74.4871,
-          "density": 0.0791
-        },
-        {
-          "x": 76.8899,
-          "density": 0.0684
-        },
-        {
-          "x": 79.2927,
-          "density": 0.0584
-        },
-        {
-          "x": 81.6955,
-          "density": 0.0495
-        },
-        {
-          "x": 84.0983,
-          "density": 0.0422
-        },
-        {
-          "x": 86.5011,
-          "density": 0.0368
-        },
-        {
-          "x": 88.9039,
-          "density": 0.0329
-        },
-        {
-          "x": 91.3067,
-          "density": 0.03
-        },
-        {
-          "x": 93.7095,
-          "density": 0.0275
+          "density": 0.1785
         }
       ]
     },
     {
       "feature": "days_since_last_long_ride",
       "label": "time since your last really long session",
-      "importance": 0.0506,
-      "current_value": 5.0,
-      "current_percentile": 0.5073,
+      "importance": 0.0513,
+      "current_value": 6.0,
+      "current_percentile": 0.5586,
       "kind": "continuous",
       "stats": {
-        "count": 826,
-        "mean": 7.8814,
-        "std": 7.9633,
+        "count": 827,
+        "mean": 7.8779,
+        "std": 7.9591,
         "min": 0.0,
         "p05": 0.0,
         "p25": 2.0,
@@ -3328,15 +3055,15 @@
       "density": [
         {
           "x": 0.0,
-          "density": 0.7702
+          "density": 0.7691
         },
         {
           "x": 0.8718,
-          "density": 0.9117
+          "density": 0.9108
         },
         {
           "x": 1.7436,
-          "density": 0.9887
+          "density": 0.9881
         },
         {
           "x": 2.6154,
@@ -3344,143 +3071,143 @@
         },
         {
           "x": 3.4872,
-          "density": 0.9617
+          "density": 0.9624
         },
         {
           "x": 4.359,
-          "density": 0.8956
+          "density": 0.8968
         },
         {
           "x": 5.2308,
-          "density": 0.8197
+          "density": 0.821
         },
         {
           "x": 6.1026,
-          "density": 0.7444
+          "density": 0.7456
         },
         {
           "x": 6.9744,
-          "density": 0.6743
+          "density": 0.675
         },
         {
           "x": 7.8462,
-          "density": 0.6102
+          "density": 0.6103
         },
         {
           "x": 8.7179,
-          "density": 0.5518
+          "density": 0.5514
         },
         {
           "x": 9.5897,
-          "density": 0.4989
+          "density": 0.4983
         },
         {
           "x": 10.4615,
-          "density": 0.4518
+          "density": 0.451
         },
         {
           "x": 11.3333,
-          "density": 0.4102
+          "density": 0.4094
         },
         {
           "x": 12.2051,
-          "density": 0.3735
+          "density": 0.3728
         },
         {
           "x": 13.0769,
-          "density": 0.3403
+          "density": 0.3397
         },
         {
           "x": 13.9487,
-          "density": 0.3093
+          "density": 0.3087
         },
         {
           "x": 14.8205,
-          "density": 0.2793
+          "density": 0.2787
         },
         {
           "x": 15.6923,
-          "density": 0.2502
+          "density": 0.2497
         },
         {
           "x": 16.5641,
-          "density": 0.2227
+          "density": 0.2223
         },
         {
           "x": 17.4359,
-          "density": 0.1979
+          "density": 0.1976
         },
         {
           "x": 18.3077,
-          "density": 0.1768
+          "density": 0.1765
         },
         {
           "x": 19.1795,
-          "density": 0.1598
+          "density": 0.1594
         },
         {
           "x": 20.0513,
-          "density": 0.1466
+          "density": 0.1463
         },
         {
           "x": 20.9231,
-          "density": 0.1365
+          "density": 0.1362
         },
         {
           "x": 21.7949,
-          "density": 0.1284
+          "density": 0.1281
         },
         {
           "x": 22.6667,
-          "density": 0.1211
+          "density": 0.1208
         },
         {
           "x": 23.5385,
-          "density": 0.1135
+          "density": 0.1133
         },
         {
           "x": 24.4103,
-          "density": 0.1051
+          "density": 0.1049
         },
         {
           "x": 25.2821,
-          "density": 0.0958
+          "density": 0.0957
         },
         {
           "x": 26.1538,
-          "density": 0.086
+          "density": 0.0858
         },
         {
           "x": 27.0256,
-          "density": 0.0763
+          "density": 0.0762
         },
         {
           "x": 27.8974,
-          "density": 0.0674
+          "density": 0.0673
         },
         {
           "x": 28.7692,
-          "density": 0.0597
+          "density": 0.0596
         },
         {
           "x": 29.641,
-          "density": 0.053
+          "density": 0.0529
         },
         {
           "x": 30.5128,
-          "density": 0.0473
+          "density": 0.0472
         },
         {
           "x": 31.3846,
-          "density": 0.0421
+          "density": 0.042
         },
         {
           "x": 32.2564,
-          "density": 0.0372
+          "density": 0.0371
         },
         {
           "x": 33.1282,
-          "density": 0.0326
+          "density": 0.0325
         },
         {
           "x": 34.0,
@@ -3489,16 +3216,198 @@
       ]
     },
     {
-      "feature": "streak_length",
-      "label": "your current streak momentum",
-      "importance": 0.0355,
-      "current_value": 2.0,
-      "current_percentile": 0.9354,
+      "feature": "acute_load_7",
+      "label": "recent training load in your legs",
+      "importance": 0.0495,
+      "current_value": 35.4174,
+      "current_percentile": 0.7731,
       "kind": "continuous",
       "stats": {
-        "count": 1083,
-        "mean": 0.5706,
-        "std": 1.185,
+        "count": 1084,
+        "mean": 22.0935,
+        "std": 22.3658,
+        "min": 0.0,
+        "p05": 0.0,
+        "p25": 2.8265,
+        "median": 16.687,
+        "p75": 33.0803,
+        "p95": 65.8557,
+        "max": 144.7335
+      },
+      "density": [
+        {
+          "x": 0.0,
+          "density": 0.9306
+        },
+        {
+          "x": 2.4025,
+          "density": 1.0
+        },
+        {
+          "x": 4.8049,
+          "density": 0.987
+        },
+        {
+          "x": 7.2074,
+          "density": 0.9298
+        },
+        {
+          "x": 9.6099,
+          "density": 0.8686
+        },
+        {
+          "x": 12.0123,
+          "density": 0.8232
+        },
+        {
+          "x": 14.4148,
+          "density": 0.7925
+        },
+        {
+          "x": 16.8173,
+          "density": 0.7661
+        },
+        {
+          "x": 19.2197,
+          "density": 0.7355
+        },
+        {
+          "x": 21.6222,
+          "density": 0.6981
+        },
+        {
+          "x": 24.0247,
+          "density": 0.6564
+        },
+        {
+          "x": 26.4271,
+          "density": 0.6139
+        },
+        {
+          "x": 28.8296,
+          "density": 0.5722
+        },
+        {
+          "x": 31.232,
+          "density": 0.5307
+        },
+        {
+          "x": 33.6345,
+          "density": 0.488
+        },
+        {
+          "x": 36.037,
+          "density": 0.4429
+        },
+        {
+          "x": 38.4394,
+          "density": 0.3962
+        },
+        {
+          "x": 40.8419,
+          "density": 0.3501
+        },
+        {
+          "x": 43.2444,
+          "density": 0.3082
+        },
+        {
+          "x": 45.6468,
+          "density": 0.274
+        },
+        {
+          "x": 48.0493,
+          "density": 0.2489
+        },
+        {
+          "x": 50.4518,
+          "density": 0.2316
+        },
+        {
+          "x": 52.8542,
+          "density": 0.218
+        },
+        {
+          "x": 55.2567,
+          "density": 0.204
+        },
+        {
+          "x": 57.6592,
+          "density": 0.1872
+        },
+        {
+          "x": 60.0616,
+          "density": 0.1678
+        },
+        {
+          "x": 62.4641,
+          "density": 0.1481
+        },
+        {
+          "x": 64.8666,
+          "density": 0.1301
+        },
+        {
+          "x": 67.269,
+          "density": 0.1149
+        },
+        {
+          "x": 69.6715,
+          "density": 0.1019
+        },
+        {
+          "x": 72.074,
+          "density": 0.0902
+        },
+        {
+          "x": 74.4764,
+          "density": 0.0791
+        },
+        {
+          "x": 76.8789,
+          "density": 0.0685
+        },
+        {
+          "x": 79.2814,
+          "density": 0.0584
+        },
+        {
+          "x": 81.6838,
+          "density": 0.0495
+        },
+        {
+          "x": 84.0863,
+          "density": 0.0423
+        },
+        {
+          "x": 86.4888,
+          "density": 0.0368
+        },
+        {
+          "x": 88.8912,
+          "density": 0.0329
+        },
+        {
+          "x": 91.2937,
+          "density": 0.03
+        },
+        {
+          "x": 93.6961,
+          "density": 0.0275
+        }
+      ]
+    },
+    {
+      "feature": "streak_length",
+      "label": "your current streak momentum",
+      "importance": 0.036,
+      "current_value": 3.0,
+      "current_percentile": 0.9631,
+      "kind": "continuous",
+      "stats": {
+        "count": 1084,
+        "mean": 0.572,
+        "std": 1.1852,
         "min": 0.0,
         "p05": 0.0,
         "p25": 0.0,
@@ -3530,7 +3439,7 @@
         },
         {
           "x": 0.7692,
-          "density": 0.2331
+          "density": 0.2332
         },
         {
           "x": 0.9231,
@@ -3546,39 +3455,39 @@
         },
         {
           "x": 1.3846,
-          "density": 0.1267
+          "density": 0.1269
         },
         {
           "x": 1.5385,
-          "density": 0.0839
+          "density": 0.0844
         },
         {
           "x": 1.6923,
-          "density": 0.0745
+          "density": 0.0753
         },
         {
           "x": 1.8462,
-          "density": 0.084
+          "density": 0.0852
         },
         {
           "x": 2.0,
-          "density": 0.0898
+          "density": 0.0911
         },
         {
           "x": 2.1538,
-          "density": 0.0792
+          "density": 0.0803
         },
         {
           "x": 2.3077,
-          "density": 0.0573
+          "density": 0.0581
         },
         {
           "x": 2.4615,
-          "density": 0.038
+          "density": 0.0384
         },
         {
           "x": 2.6154,
-          "density": 0.0307
+          "density": 0.0309
         },
         {
           "x": 2.7692,
@@ -3673,14 +3582,14 @@
     {
       "feature": "trained_days_2",
       "label": "how much you've trained the past 2 days",
-      "importance": 0.0351,
+      "importance": 0.031,
       "current_value": 2.0,
       "current_percentile": 1.0,
       "kind": "continuous",
       "stats": {
-        "count": 1083,
-        "mean": 0.5974,
-        "std": 0.7028,
+        "count": 1084,
+        "mean": 0.5987,
+        "std": 0.7038,
         "min": 0.0,
         "p05": 0.0,
         "p25": 0.0,
@@ -3696,75 +3605,75 @@
         },
         {
           "x": 0.0513,
-          "density": 0.962
+          "density": 0.9621
         },
         {
           "x": 0.1026,
-          "density": 0.8564
+          "density": 0.8567
         },
         {
           "x": 0.1538,
-          "density": 0.7055
+          "density": 0.7061
         },
         {
           "x": 0.2051,
-          "density": 0.5379
+          "density": 0.5387
         },
         {
           "x": 0.2564,
-          "density": 0.3796
+          "density": 0.3805
         },
         {
           "x": 0.3077,
-          "density": 0.2483
+          "density": 0.2491
         },
         {
           "x": 0.359,
-          "density": 0.1512
+          "density": 0.1519
         },
         {
           "x": 0.4103,
-          "density": 0.0875
+          "density": 0.0881
         },
         {
           "x": 0.4615,
-          "density": 0.0524
+          "density": 0.0528
         },
         {
           "x": 0.5128,
-          "density": 0.0404
+          "density": 0.0408
         },
         {
           "x": 0.5641,
-          "density": 0.0487
+          "density": 0.0491
         },
         {
           "x": 0.6154,
-          "density": 0.0773
+          "density": 0.0777
         },
         {
           "x": 0.6667,
-          "density": 0.128
+          "density": 0.1285
         },
         {
           "x": 0.7179,
-          "density": 0.202
+          "density": 0.2026
         },
         {
           "x": 0.7692,
-          "density": 0.2971
+          "density": 0.2976
         },
         {
           "x": 0.8205,
-          "density": 0.4049
+          "density": 0.4054
         },
         {
           "x": 0.8718,
-          "density": 0.5109
+          "density": 0.5112
         },
         {
           "x": 0.9231,
-          "density": 0.5966
+          "density": 0.5967
         },
         {
           "x": 0.9744,
@@ -3776,98 +3685,98 @@
         },
         {
           "x": 1.0769,
-          "density": 0.5966
+          "density": 0.5967
         },
         {
           "x": 1.1282,
-          "density": 0.5109
+          "density": 0.5112
         },
         {
           "x": 1.1795,
-          "density": 0.4049
+          "density": 0.4053
         },
         {
           "x": 1.2308,
-          "density": 0.297
+          "density": 0.2975
         },
         {
           "x": 1.2821,
-          "density": 0.2016
+          "density": 0.2022
         },
         {
           "x": 1.3333,
-          "density": 0.1269
+          "density": 0.1274
         },
         {
           "x": 1.3846,
-          "density": 0.0744
+          "density": 0.0748
         },
         {
           "x": 1.4359,
-          "density": 0.0417
+          "density": 0.0421
         },
         {
           "x": 1.4872,
-          "density": 0.0246
+          "density": 0.0249
         },
         {
           "x": 1.5385,
-          "density": 0.0194
+          "density": 0.0197
         },
         {
           "x": 1.5897,
-          "density": 0.0239
+          "density": 0.0242
         },
         {
           "x": 1.641,
-          "density": 0.0373
+          "density": 0.0377
         },
         {
           "x": 1.6923,
-          "density": 0.0598
+          "density": 0.0604
         },
         {
           "x": 1.7436,
-          "density": 0.0909
+          "density": 0.0918
         },
         {
           "x": 1.7949,
-          "density": 0.1286
+          "density": 0.1298
         },
         {
           "x": 1.8462,
-          "density": 0.1687
+          "density": 0.1701
         },
         {
           "x": 1.8974,
-          "density": 0.2048
+          "density": 0.2063
         },
         {
           "x": 1.9487,
-          "density": 0.23
+          "density": 0.2317
         },
         {
           "x": 2.0,
-          "density": 0.2391
+          "density": 0.2408
         }
       ]
     }
   ],
   "model_metrics": {
     "classifier": {
-      "n_train": 718,
+      "n_train": 719,
       "n_holdout": 365,
-      "holdout_start": "2025-10-13",
-      "holdout_end": "2026-10-12",
+      "holdout_start": "2025-10-14",
+      "holdout_end": "2026-10-13",
       "positive_rate": 0.3808,
-      "accuracy": 0.6603,
+      "accuracy": 0.6685,
       "baseline_accuracy": 0.6192,
-      "auc": 0.6672,
-      "precision": 0.6596,
-      "recall": 0.223,
-      "f1": 0.3333,
-      "log_loss": 0.6247,
-      "brier": 0.2178,
+      "auc": 0.6658,
+      "precision": 0.6875,
+      "recall": 0.2374,
+      "f1": 0.3529,
+      "log_loss": 0.6251,
+      "brier": 0.2181,
       "roc_curve": [
         {
           "fpr": 0.0,
@@ -3875,214 +3784,206 @@
         },
         {
           "fpr": 0.0044,
-          "tpr": 0.0576
+          "tpr": 0.0719
         },
         {
-          "fpr": 0.0088,
-          "tpr": 0.1007
-        },
-        {
-          "fpr": 0.0221,
+          "fpr": 0.0133,
           "tpr": 0.1079
         },
         {
-          "fpr": 0.0354,
-          "tpr": 0.1583
+          "fpr": 0.0398,
+          "tpr": 0.1223
         },
         {
           "fpr": 0.0442,
-          "tpr": 0.1655
+          "tpr": 0.1367
+        },
+        {
+          "fpr": 0.0531,
+          "tpr": 0.1583
         },
         {
           "fpr": 0.0575,
-          "tpr": 0.2086
+          "tpr": 0.2374
         },
         {
-          "fpr": 0.0752,
-          "tpr": 0.2302
-        },
-        {
-          "fpr": 0.0796,
-          "tpr": 0.2446
+          "fpr": 0.0885,
+          "tpr": 0.2518
         },
         {
           "fpr": 0.0929,
-          "tpr": 0.259
+          "tpr": 0.2662
         },
         {
-          "fpr": 0.115,
+          "fpr": 0.1018,
+          "tpr": 0.2734
+        },
+        {
+          "fpr": 0.1283,
           "tpr": 0.2878
         },
         {
-          "fpr": 0.1327,
+          "fpr": 0.146,
           "tpr": 0.3022
         },
         {
-          "fpr": 0.1549,
-          "tpr": 0.3165
+          "fpr": 0.1593,
+          "tpr": 0.3237
         },
         {
           "fpr": 0.1903,
-          "tpr": 0.3309
+          "tpr": 0.3453
         },
         {
-          "fpr": 0.1991,
-          "tpr": 0.3813
+          "fpr": 0.1947,
+          "tpr": 0.3597
         },
         {
-          "fpr": 0.2212,
-          "tpr": 0.3885
+          "fpr": 0.2124,
+          "tpr": 0.3669
         },
         {
-          "fpr": 0.2345,
+          "fpr": 0.2168,
+          "tpr": 0.4101
+        },
+        {
+          "fpr": 0.2434,
           "tpr": 0.4173
         },
         {
-          "fpr": 0.2522,
-          "tpr": 0.4317
-        },
-        {
-          "fpr": 0.2566,
+          "fpr": 0.2478,
           "tpr": 0.446
         },
         {
-          "fpr": 0.2743,
-          "tpr": 0.4604
+          "fpr": 0.2655,
+          "tpr": 0.4532
         },
         {
-          "fpr": 0.2876,
+          "fpr": 0.2743,
+          "tpr": 0.4676
+        },
+        {
+          "fpr": 0.3186,
           "tpr": 0.4748
         },
         {
-          "fpr": 0.3053,
-          "tpr": 0.482
+          "fpr": 0.3274,
+          "tpr": 0.4964
         },
         {
-          "fpr": 0.3142,
+          "fpr": 0.3407,
           "tpr": 0.5036
         },
         {
-          "fpr": 0.323,
-          "tpr": 0.5108
-        },
-        {
-          "fpr": 0.3319,
-          "tpr": 0.5252
-        },
-        {
           "fpr": 0.3451,
-          "tpr": 0.5324
+          "tpr": 0.554
         },
         {
-          "fpr": 0.3496,
+          "fpr": 0.3628,
           "tpr": 0.5612
         },
         {
-          "fpr": 0.3673,
-          "tpr": 0.5755
+          "fpr": 0.3717,
+          "tpr": 0.5827
         },
         {
-          "fpr": 0.3761,
+          "fpr": 0.385,
+          "tpr": 0.5899
+        },
+        {
+          "fpr": 0.3894,
           "tpr": 0.6115
         },
         {
-          "fpr": 0.3938,
+          "fpr": 0.4336,
           "tpr": 0.6187
         },
         {
-          "fpr": 0.3982,
-          "tpr": 0.6403
-        },
-        {
-          "fpr": 0.4292,
-          "tpr": 0.6547
-        },
-        {
-          "fpr": 0.4336,
-          "tpr": 0.6691
-        },
-        {
-          "fpr": 0.4602,
-          "tpr": 0.6835
+          "fpr": 0.4425,
+          "tpr": 0.6619
         },
         {
           "fpr": 0.469,
+          "tpr": 0.6691
+        },
+        {
+          "fpr": 0.4867,
           "tpr": 0.705
         },
         {
-          "fpr": 0.5044,
-          "tpr": 0.7122
-        },
-        {
           "fpr": 0.5177,
-          "tpr": 0.741
+          "tpr": 0.7194
         },
         {
           "fpr": 0.5265,
           "tpr": 0.7482
         },
         {
-          "fpr": 0.531,
+          "fpr": 0.5442,
+          "tpr": 0.7626
+        },
+        {
+          "fpr": 0.5708,
           "tpr": 0.7842
         },
         {
-          "fpr": 0.5929,
-          "tpr": 0.7986
+          "fpr": 0.5885,
+          "tpr": 0.7914
         },
         {
-          "fpr": 0.5973,
-          "tpr": 0.8201
+          "fpr": 0.6018,
+          "tpr": 0.8058
         },
         {
           "fpr": 0.6106,
-          "tpr": 0.8345
+          "tpr": 0.8417
         },
         {
           "fpr": 0.615,
-          "tpr": 0.8489
-        },
-        {
-          "fpr": 0.6416,
           "tpr": 0.8561
         },
         {
-          "fpr": 0.646,
-          "tpr": 0.8705
+          "fpr": 0.6283,
+          "tpr": 0.8633
         },
         {
-          "fpr": 0.6947,
+          "fpr": 0.646,
           "tpr": 0.8777
         },
         {
-          "fpr": 0.7168,
-          "tpr": 0.8921
+          "fpr": 0.6903,
+          "tpr": 0.8849
         },
         {
-          "fpr": 0.7257,
+          "fpr": 0.6947,
           "tpr": 0.8993
         },
         {
-          "fpr": 0.7345,
-          "tpr": 0.9281
+          "fpr": 0.7124,
+          "tpr": 0.9065
         },
         {
-          "fpr": 0.8142,
+          "fpr": 0.7566,
+          "tpr": 0.9209
+        },
+        {
+          "fpr": 0.7655,
           "tpr": 0.9353
         },
         {
-          "fpr": 0.8363,
+          "fpr": 0.792,
+          "tpr": 0.9496
+        },
+        {
+          "fpr": 0.8186,
           "tpr": 0.9568
         },
         {
-          "fpr": 0.854,
-          "tpr": 0.9712
-        },
-        {
-          "fpr": 0.8584,
+          "fpr": 0.8407,
           "tpr": 0.9856
         },
         {
-          "fpr": 0.8982,
+          "fpr": 0.8673,
           "tpr": 0.9928
         },
         {
@@ -4092,32 +3993,32 @@
       ],
       "calibration": [
         {
-          "mean_predicted": 0.1773,
-          "observed_rate": 0.1757,
-          "n": 74
+          "mean_predicted": 0.1767,
+          "observed_rate": 0.1714,
+          "n": 70
         },
         {
-          "mean_predicted": 0.2973,
-          "observed_rate": 0.382,
-          "n": 178
+          "mean_predicted": 0.2988,
+          "observed_rate": 0.375,
+          "n": 184
         },
         {
-          "mean_predicted": 0.4732,
-          "observed_rate": 0.47,
-          "n": 100
+          "mean_predicted": 0.479,
+          "observed_rate": 0.4694,
+          "n": 98
         },
         {
-          "mean_predicted": 0.6595,
-          "observed_rate": 0.8462,
+          "mean_predicted": 0.6651,
+          "observed_rate": 0.9231,
           "n": 13
         }
       ]
     },
     "regressor": {
-      "n_train": 186,
+      "n_train": 187,
       "n_holdout": 139,
-      "mae": 35.9313,
-      "baseline_mae": 35.018
+      "mae": 35.8007,
+      "baseline_mae": 34.8849
     }
   },
   "impact_tracking": {
@@ -4164,9 +4065,9 @@
         "direction": "false_positive",
         "baseline_n": 63,
         "baseline_rate": 0.3333333333333333,
-        "live_n": 4,
-        "live_rate": 0.5,
-        "p_value": 0.4254735935706086,
+        "live_n": 5,
+        "live_rate": 0.4,
+        "p_value": 0.5540496049165934,
         "significant": false
       },
       {
@@ -4261,6 +4162,11 @@
             "date": "2026-10-10",
             "n": 4,
             "rate": 0.5
+          },
+          {
+            "date": "2026-10-14",
+            "n": 5,
+            "rate": 0.4
           }
         ]
       },
