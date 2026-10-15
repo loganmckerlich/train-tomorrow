@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "generated_at": "2026-10-15T11:21:32.953045-07:00",
+  "generated_at": "2026-10-15T11:29:35.036610-07:00",
   "will_train": true,
   "probability": 0.6355,
   "predicted_effort": 40.64,
@@ -108,7 +108,7 @@
     {
       "feature": "month_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.2328346289659058,
+      "signed_contribution": 0.23283462896590573,
       "direction": "helping",
       "phrase": "regular train rate for this month",
       "plot": {
@@ -288,13 +288,13 @@
     {
       "feature": "forecast_temp_high",
       "kind": "feature",
-      "signed_contribution": 0.15365267657706946,
+      "signed_contribution": 0.1523857264025318,
       "direction": "helping",
       "phrase": "the temp high forecast",
       "plot": {
         "kind": "continuous",
-        "current_value": 23.5,
-        "current_shap": 0.1537,
+        "current_value": 23.4,
+        "current_shap": 0.1524,
         "points": [
           {
             "feature_value": 3.5375,
@@ -397,9 +397,9 @@
       "value_context": [
         {
           "feature": "forecast_temp_high",
-          "current_value": 74.3,
+          "current_value": 74.12,
           "typical_value": 58.28,
-          "percentile": 0.8399,
+          "percentile": 0.839,
           "unit": "\u00b0F",
           "definition": "tomorrow's forecast daily high temperature"
         }
@@ -702,7 +702,7 @@
       "phrase": "how the temp high compares to normal for this time of year",
       "plot": {
         "kind": "continuous",
-        "current_value": 7.3931,
+        "current_value": 7.2931,
         "current_shap": -0.0783,
         "points": [
           {
@@ -806,7 +806,7 @@
       "value_context": [
         {
           "feature": "forecast_temp_high_vs_seasonal",
-          "current_value": 13.308,
+          "current_value": 13.128,
           "typical_value": 0.215,
           "percentile": 0.9654,
           "unit": "\u00b0F",
@@ -835,7 +835,7 @@
         },
         {
           "feature": "forecast_temp_high_vs_seasonal",
-          "current_value": 13.308,
+          "current_value": 13.128,
           "typical_value": 0.215,
           "percentile": 0.9654,
           "unit": "\u00b0F",
@@ -846,7 +846,7 @@
   ],
   "baseline_log_odds": -0.3838806135786399,
   "baseline_probability": 0.4052,
-  "other_contribution": 0.1664,
+  "other_contribution": 0.1677,
   "blurb": "Momentum check: 64% to train. regular train rate for this day of the week [value=0.361 fraction 0-1 (typical 0.182 fraction 0-1, 99% of history is at or below)] is a tailwind, your training frequency over the past month [value=20.0 active days (typical 9.0 active days, 100% of history is at or below)] is a headwind. Plan on ~41 relative-effort points.",
   "feature_summary": [
     {
@@ -1035,8 +1035,8 @@
       "feature": "forecast_temp_high",
       "label": "the temp high forecast",
       "importance": 0.0857,
-      "current_value": 23.5,
-      "current_percentile": 0.8399,
+      "current_value": 23.4,
+      "current_percentile": 0.839,
       "kind": "continuous",
       "stats": {
         "count": 1068,
@@ -2309,7 +2309,7 @@
       "feature": "forecast_temp_high_vs_seasonal",
       "label": "how the temp high compares to normal for this time of year",
       "importance": 0.057,
-      "current_value": 7.3931,
+      "current_value": 7.2931,
       "current_percentile": 0.9654,
       "kind": "continuous",
       "stats": {
