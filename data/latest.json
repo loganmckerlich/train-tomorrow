@@ -1,20 +1,20 @@
 {
   "date": "2026-10-15",
-  "generated_at": "2026-10-15T10:12:36.061163-07:00",
+  "generated_at": "2026-10-15T11:21:32.953045-07:00",
   "will_train": true,
-  "probability": 0.599,
-  "predicted_effort": 41.05,
+  "probability": 0.6355,
+  "predicted_effort": 40.64,
   "top_contributors": [
     {
       "feature": "dow_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.2955233742204177,
+      "signed_contribution": 0.29406875025799656,
       "direction": "helping",
       "phrase": "regular train rate for this day of the week",
       "plot": {
         "kind": "continuous",
         "current_value": 0.3613,
-        "current_shap": 0.2955,
+        "current_shap": 0.2941,
         "points": [
           {
             "feature_value": 0.0044,
@@ -108,13 +108,13 @@
     {
       "feature": "month_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.23330892781765264,
+      "signed_contribution": 0.2328346289659058,
       "direction": "helping",
       "phrase": "regular train rate for this month",
       "plot": {
         "kind": "continuous",
         "current_value": 0.3415,
-        "current_shap": 0.2333,
+        "current_shap": 0.2328,
         "points": [
           {
             "feature_value": 0.0006,
@@ -208,13 +208,13 @@
     {
       "feature": "forecast_precip_probability",
       "kind": "feature",
-      "signed_contribution": 0.22350345149099227,
+      "signed_contribution": 0.2230628361688365,
       "direction": "helping",
       "phrase": "rain in the forecast",
       "plot": {
         "kind": "continuous",
         "current_value": 0.0,
-        "current_shap": 0.2235,
+        "current_shap": 0.2231,
         "points": [
           {
             "feature_value": 0.3472,
@@ -288,13 +288,13 @@
     {
       "feature": "forecast_temp_high",
       "kind": "feature",
-      "signed_contribution": 0.14390633098873348,
+      "signed_contribution": 0.15365267657706946,
       "direction": "helping",
       "phrase": "the temp high forecast",
       "plot": {
         "kind": "continuous",
-        "current_value": 24.1,
-        "current_shap": 0.1439,
+        "current_value": 23.5,
+        "current_shap": 0.1537,
         "points": [
           {
             "feature_value": 3.5375,
@@ -397,144 +397,24 @@
       "value_context": [
         {
           "feature": "forecast_temp_high",
-          "current_value": 75.38,
+          "current_value": 74.3,
           "typical_value": 58.28,
-          "percentile": 0.8624,
+          "percentile": 0.8399,
           "unit": "\u00b0F",
           "definition": "tomorrow's forecast daily high temperature"
         }
       ]
     },
     {
-      "feature": "forecast_temp_low_vs_seasonal",
-      "kind": "feature",
-      "signed_contribution": -0.1378354975724922,
-      "direction": "hurting",
-      "phrase": "how the temp low compares to normal for this time of year",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 1.8131,
-        "current_shap": -0.1378,
-        "points": [
-          {
-            "feature_value": -6.2512,
-            "shap_value": 0.0893
-          },
-          {
-            "feature_value": -3.8244,
-            "shap_value": 0.0891
-          },
-          {
-            "feature_value": -2.8847,
-            "shap_value": 0.0891
-          },
-          {
-            "feature_value": -2.3599,
-            "shap_value": 0.0852
-          },
-          {
-            "feature_value": -2.0066,
-            "shap_value": 0.0812
-          },
-          {
-            "feature_value": -1.6211,
-            "shap_value": 0.0719
-          },
-          {
-            "feature_value": -1.3069,
-            "shap_value": 0.0483
-          },
-          {
-            "feature_value": -0.9871,
-            "shap_value": 0.0777
-          },
-          {
-            "feature_value": -0.6894,
-            "shap_value": 0.0959
-          },
-          {
-            "feature_value": -0.3622,
-            "shap_value": 0.0852
-          },
-          {
-            "feature_value": -0.1012,
-            "shap_value": 0.0613
-          },
-          {
-            "feature_value": 0.1563,
-            "shap_value": 0.0874
-          },
-          {
-            "feature_value": 0.4497,
-            "shap_value": 0.0216
-          },
-          {
-            "feature_value": 0.719,
-            "shap_value": -0.0196
-          },
-          {
-            "feature_value": 1.0006,
-            "shap_value": -0.0111
-          },
-          {
-            "feature_value": 1.2727,
-            "shap_value": -0.0164
-          },
-          {
-            "feature_value": 1.5759,
-            "shap_value": -0.0528
-          },
-          {
-            "feature_value": 1.8868,
-            "shap_value": -0.1337
-          },
-          {
-            "feature_value": 2.1168,
-            "shap_value": -0.1348
-          },
-          {
-            "feature_value": 2.5361,
-            "shap_value": -0.1506
-          },
-          {
-            "feature_value": 3.0009,
-            "shap_value": -0.1551
-          },
-          {
-            "feature_value": 3.4963,
-            "shap_value": -0.1538
-          },
-          {
-            "feature_value": 4.374,
-            "shap_value": -0.1543
-          },
-          {
-            "feature_value": 6.3733,
-            "shap_value": -0.1545
-          }
-        ]
-      },
-      "value_context": [
-        {
-          "feature": "forecast_temp_low_vs_seasonal",
-          "current_value": 3.264,
-          "typical_value": 0.586,
-          "percentile": 0.7172,
-          "unit": "\u00b0F",
-          "definition": "forecast low minus the historical average low for this time of year; positive = warmer than normal"
-        }
-      ]
-    },
-    {
       "feature": "chronic_load_28",
       "kind": "feature",
-      "signed_contribution": 0.12717463101356594,
+      "signed_contribution": 0.1281498890398379,
       "direction": "helping",
       "phrase": "longer-term fitness base",
       "plot": {
         "kind": "continuous",
         "current_value": 38.0799,
-        "current_shap": 0.1272,
+        "current_shap": 0.1281,
         "points": [
           {
             "feature_value": 1.0775,
@@ -626,44 +506,15 @@
       ]
     },
     {
-      "feature": "dow_train_rate \u00d7 forecast_temp_low_vs_seasonal",
-      "features": [
-        "dow_train_rate",
-        "forecast_temp_low_vs_seasonal"
-      ],
-      "kind": "interaction",
-      "signed_contribution": -0.11670114391477496,
-      "direction": "hurting",
-      "phrase": "interaction between regular train rate for this day of the week and how the temp low compares to normal for this time of year",
-      "value_context": [
-        {
-          "feature": "dow_train_rate",
-          "current_value": 0.361,
-          "typical_value": 0.182,
-          "percentile": 0.9935,
-          "unit": "fraction 0-1",
-          "definition": "share of past days with this same weekday on which the athlete trained"
-        },
-        {
-          "feature": "forecast_temp_low_vs_seasonal",
-          "current_value": 3.264,
-          "typical_value": 0.586,
-          "percentile": 0.7172,
-          "unit": "\u00b0F",
-          "definition": "forecast low minus the historical average low for this time of year; positive = warmer than normal"
-        }
-      ]
-    },
-    {
       "feature": "trained_days_30",
       "kind": "feature",
-      "signed_contribution": -0.10656065906579584,
+      "signed_contribution": -0.1065167460884073,
       "direction": "hurting",
       "phrase": "your training frequency over the past month",
       "plot": {
         "kind": "continuous",
         "current_value": 20.0,
-        "current_shap": -0.1066,
+        "current_shap": -0.1065,
         "points": [
           {
             "feature_value": 0.5092,
@@ -735,15 +586,44 @@
       ]
     },
     {
+      "feature": "dow_train_rate \u00d7 forecast_temp_low_vs_seasonal",
+      "features": [
+        "dow_train_rate",
+        "forecast_temp_low_vs_seasonal"
+      ],
+      "kind": "interaction",
+      "signed_contribution": -0.09544908322847688,
+      "direction": "hurting",
+      "phrase": "interaction between regular train rate for this day of the week and how the temp low compares to normal for this time of year",
+      "value_context": [
+        {
+          "feature": "dow_train_rate",
+          "current_value": 0.361,
+          "typical_value": 0.182,
+          "percentile": 0.9935,
+          "unit": "fraction 0-1",
+          "definition": "share of past days with this same weekday on which the athlete trained"
+        },
+        {
+          "feature": "forecast_temp_low_vs_seasonal",
+          "current_value": 2.904,
+          "typical_value": 0.586,
+          "percentile": 0.6929,
+          "unit": "\u00b0F",
+          "definition": "forecast low minus the historical average low for this time of year; positive = warmer than normal"
+        }
+      ]
+    },
+    {
       "feature": "days_since_last_hard",
       "kind": "feature",
-      "signed_contribution": 0.08631202686759541,
+      "signed_contribution": 0.08659159802558523,
       "direction": "helping",
       "phrase": "time since your last hard effort",
       "plot": {
         "kind": "continuous",
         "current_value": 1.0,
-        "current_shap": 0.0863,
+        "current_shap": 0.0866,
         "points": [
           {
             "feature_value": 0.4519,
@@ -817,13 +697,13 @@
     {
       "feature": "forecast_temp_high_vs_seasonal",
       "kind": "feature",
-      "signed_contribution": -0.07799978412676788,
+      "signed_contribution": -0.07834294011724023,
       "direction": "hurting",
       "phrase": "how the temp high compares to normal for this time of year",
       "plot": {
         "kind": "continuous",
-        "current_value": 7.9931,
-        "current_shap": -0.078,
+        "current_value": 7.3931,
+        "current_shap": -0.0783,
         "points": [
           {
             "feature_value": -6.4784,
@@ -926,9 +806,38 @@
       "value_context": [
         {
           "feature": "forecast_temp_high_vs_seasonal",
-          "current_value": 14.388,
+          "current_value": 13.308,
           "typical_value": 0.215,
-          "percentile": 0.9766,
+          "percentile": 0.9654,
+          "unit": "\u00b0F",
+          "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
+        }
+      ]
+    },
+    {
+      "feature": "dow_train_rate \u00d7 forecast_temp_high_vs_seasonal",
+      "features": [
+        "dow_train_rate",
+        "forecast_temp_high_vs_seasonal"
+      ],
+      "kind": "interaction",
+      "signed_contribution": -0.06490412909225735,
+      "direction": "hurting",
+      "phrase": "interaction between regular train rate for this day of the week and how the temp high compares to normal for this time of year",
+      "value_context": [
+        {
+          "feature": "dow_train_rate",
+          "current_value": 0.361,
+          "typical_value": 0.182,
+          "percentile": 0.9935,
+          "unit": "fraction 0-1",
+          "definition": "share of past days with this same weekday on which the athlete trained"
+        },
+        {
+          "feature": "forecast_temp_high_vs_seasonal",
+          "current_value": 13.308,
+          "typical_value": 0.215,
+          "percentile": 0.9654,
           "unit": "\u00b0F",
           "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
         }
@@ -937,8 +846,8 @@
   ],
   "baseline_log_odds": -0.3838806135786399,
   "baseline_probability": 0.4052,
-  "other_contribution": 0.1147,
-  "blurb": "**The Verdict**\nSurprise, buttercup\u2014you\u2019re likely getting off the couch. The model predicts a **59.9% chance** you\u2019ll train tomorrow, with a predicted effort of **41.0 relative-effort units**.\n\n---\n\n### **Why you're probably training:**\n\n* **Zero Excuses Weather:** There is literally a **0.0% chance of precipitation** (a 100% dry day) alongside a delightful forecast high of **75.4\u00b0F**. Mother Nature is practically handing you your running shoes.\n* **Creature of Habit:** You train on this specific day of the week **36.1%** of the time (nearly double your usual 18.2% habit), and this calendar month historically sees you active **34.1%** of the time. You just can't help yourself.\n* **Solid Fitness Base:** Your 28-day fitness base is sitting strong at **38.1 effort points/day**, and with **1.0 day** since your last hard effort, your body is primed to work.\n\n---\n\n### **What\u2019s trying to hold you back:**\n\n* **You're Overdoing It:** You've logged **20 active days out of the last 30** (your peak historical volume), so fatigue is definitely whispering in your ear. \n* **Unseasonable Heat:** Tomorrow's high is a whopping **14.4\u00b0F warmer than normal** for this time of year (and the overnight low is **3.3\u00b0F warmer than normal**). The extra heat is giving your inner couch potato something to complain about.",
+  "other_contribution": 0.1664,
+  "blurb": "Momentum check: 64% to train. regular train rate for this day of the week [value=0.361 fraction 0-1 (typical 0.182 fraction 0-1, 99% of history is at or below)] is a tailwind, your training frequency over the past month [value=20.0 active days (typical 9.0 active days, 100% of history is at or below)] is a headwind. Plan on ~41 relative-effort points.",
   "feature_summary": [
     {
       "feature": "forecast_precip_probability",
@@ -1126,8 +1035,8 @@
       "feature": "forecast_temp_high",
       "label": "the temp high forecast",
       "importance": 0.0857,
-      "current_value": 24.1,
-      "current_percentile": 0.8624,
+      "current_value": 23.5,
+      "current_percentile": 0.8399,
       "kind": "continuous",
       "stats": {
         "count": 1068,
@@ -2400,8 +2309,8 @@
       "feature": "forecast_temp_high_vs_seasonal",
       "label": "how the temp high compares to normal for this time of year",
       "importance": 0.057,
-      "current_value": 7.9931,
-      "current_percentile": 0.9766,
+      "current_value": 7.3931,
+      "current_percentile": 0.9654,
       "kind": "continuous",
       "stats": {
         "count": 1068,
@@ -2582,8 +2491,8 @@
       "feature": "forecast_temp_low_vs_seasonal",
       "label": "how the temp low compares to normal for this time of year",
       "importance": 0.0545,
-      "current_value": 1.8131,
-      "current_percentile": 0.7172,
+      "current_value": 1.6131,
+      "current_percentile": 0.6929,
       "kind": "continuous",
       "stats": {
         "count": 1068,
