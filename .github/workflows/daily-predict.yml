@@ -6,6 +6,11 @@ on:
     - cron: "45 6 * * *"
     - cron: "45 7 * * *"
   workflow_dispatch:
+    inputs:
+      predict_for_date:
+        description: "Optional date to predict for (YYYY-MM-DD); defaults to tomorrow"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -77,7 +82,7 @@ jobs:
           FORECAST_LON: ${{ vars.FORECAST_LON }}
           GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
-          TARGET_DATE: ${{ steps.pacific_time.outputs.target_date }}
+          TARGET_DATE: ${{ steps.pacific_time.outputs.target_date || inputs.predict_for_date }}
         run: python scripts/daily_predict.py ${TARGET_DATE:+--date "$TARGET_DATE"}
 
       - name: Commit latest prediction JSON
