@@ -29,6 +29,7 @@ export default function WaterfallPlot({
   probabilityDomain,
   ticks,
   height,
+  labelCount = 3,
 }: {
   rows: WaterfallRow[];
   baselineProbability: number;
@@ -38,6 +39,7 @@ export default function WaterfallPlot({
   probabilityDomain: [number, number];
   ticks: number[];
   height: number;
+  labelCount?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -60,6 +62,7 @@ export default function WaterfallPlot({
   const axisY = height - PLOT_LAYOUT.bottomMargin;
   const rowSpacing = (axisY - top) / (rows.length + 1);
   const barWidth = Math.min(PLOT_LAYOUT.maxBarWidth, rowSpacing * 0.3);
+  const visibleLabelCount = Number.isFinite(labelCount) ? Math.max(0, Math.floor(labelCount)) : 3;
   const probabilitySpan = probabilityDomain[1] - probabilityDomain[0];
   const x = (probability: number) =>
     probabilitySpan === 0
@@ -131,7 +134,7 @@ export default function WaterfallPlot({
           >
             <title>{finalLabel}</title>
           </line>
-          {rows.slice(0, 3).map((row, index) => {
+          {rows.slice(0, visibleLabelCount).map((row, index) => {
             if (row.startProbability === null || row.endProbability === null) {
               return null;
             }

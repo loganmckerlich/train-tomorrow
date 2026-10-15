@@ -1,3 +1,7 @@
+waterfall:
+  # how many top SHAP features to label directly on the waterfall chart
+  labeled_features: 3
+
 blurb:
   # Polish the templated blurb with Gemini (requires GEMINI_API_KEY). Falls back to the
   # template blurb automatically if disabled, the key is missing, or the API call fails.
