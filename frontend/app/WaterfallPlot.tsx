@@ -131,6 +131,31 @@ export default function WaterfallPlot({
           >
             <title>{finalLabel}</title>
           </line>
+          {rows.slice(0, 3).map((row, index) => {
+            if (row.startProbability === null || row.endProbability === null) {
+              return null;
+            }
+            const label = row.feature.replace(/_/g, " ");
+            const labelWidth = Math.min(right - left, label.length * 6.5);
+            const midpoint = (x(row.startProbability) + x(row.endProbability)) / 2;
+            const labelX = Math.max(left + labelWidth / 2, Math.min(midpoint, right - labelWidth / 2));
+            return (
+              <text
+                key={`label-${row.feature}-${index}`}
+                x={labelX}
+                y={rowY(index) + 4}
+                textAnchor="middle"
+                className="fill-slate-800"
+                stroke="white"
+                strokeWidth="3"
+                paintOrder="stroke"
+                fontSize="11"
+              >
+                <title>{row.feature}</title>
+                {label}
+              </text>
+            );
+          })}
           <line x1={left} x2={right} y1={axisY} y2={axisY} className="stroke-slate-500" strokeWidth="1" />
           {ticks.map((percentage) => (
             <g key={`axis-${percentage}`}>
