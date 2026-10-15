@@ -1,20 +1,20 @@
 {
   "date": "2026-10-15",
-  "generated_at": "2026-10-15T11:47:15.741916-07:00",
+  "generated_at": "2026-10-15T12:36:27.921963-07:00",
   "will_train": true,
-  "probability": 0.6333,
-  "predicted_effort": 40.76,
+  "probability": 0.633,
+  "predicted_effort": 40.64,
   "top_contributors": [
     {
       "feature": "dow_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.2941331253155324,
+      "signed_contribution": 0.294387122061807,
       "direction": "helping",
       "phrase": "regular train rate for this day of the week",
       "plot": {
         "kind": "continuous",
         "current_value": 0.3613,
-        "current_shap": 0.2941,
+        "current_shap": 0.2944,
         "points": [
           {
             "feature_value": 0.0044,
@@ -286,115 +286,15 @@
       ]
     },
     {
-      "feature": "chronic_load_28",
-      "kind": "feature",
-      "signed_contribution": 0.1281498890398379,
-      "direction": "helping",
-      "phrase": "longer-term fitness base",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 38.0799,
-        "current_shap": 0.1281,
-        "points": [
-          {
-            "feature_value": 1.0775,
-            "shap_value": -0.0924
-          },
-          {
-            "feature_value": 11.8641,
-            "shap_value": -0.0931
-          },
-          {
-            "feature_value": 13.4881,
-            "shap_value": -0.0951
-          },
-          {
-            "feature_value": 14.9239,
-            "shap_value": -0.1164
-          },
-          {
-            "feature_value": 16.4185,
-            "shap_value": -0.1571
-          },
-          {
-            "feature_value": 18.4825,
-            "shap_value": -0.1532
-          },
-          {
-            "feature_value": 21.0014,
-            "shap_value": -0.0998
-          },
-          {
-            "feature_value": 23.178,
-            "shap_value": 0.0732
-          },
-          {
-            "feature_value": 24.688,
-            "shap_value": 0.1083
-          },
-          {
-            "feature_value": 25.9802,
-            "shap_value": 0.0195
-          },
-          {
-            "feature_value": 27.5112,
-            "shap_value": 0.014
-          },
-          {
-            "feature_value": 29.3829,
-            "shap_value": 0.0389
-          },
-          {
-            "feature_value": 31.0811,
-            "shap_value": 0.0714
-          },
-          {
-            "feature_value": 33.2518,
-            "shap_value": 0.0757
-          },
-          {
-            "feature_value": 35.7816,
-            "shap_value": 0.1175
-          },
-          {
-            "feature_value": 38.8064,
-            "shap_value": 0.1258
-          },
-          {
-            "feature_value": 42.3614,
-            "shap_value": 0.1254
-          },
-          {
-            "feature_value": 47.404,
-            "shap_value": 0.1251
-          },
-          {
-            "feature_value": 58.7023,
-            "shap_value": 0.1243
-          }
-        ]
-      },
-      "value_context": [
-        {
-          "feature": "chronic_load_28",
-          "current_value": 38.08,
-          "typical_value": 22.181,
-          "percentile": 0.845,
-          "unit": "effort points/day",
-          "definition": "long-term fitness/training load: 28-day exponentially weighted average of daily total Strava Relative Effort"
-        }
-      ]
-    },
-    {
       "feature": "forecast_temp_high",
       "kind": "feature",
-      "signed_contribution": 0.11753624940363887,
+      "signed_contribution": 0.13327630169709498,
       "direction": "helping",
       "phrase": "the temp high forecast",
       "plot": {
         "kind": "continuous",
-        "current_value": 22.6,
-        "current_shap": 0.1175,
+        "current_value": 22.7,
+        "current_shap": 0.1333,
         "points": [
           {
             "feature_value": 3.5375,
@@ -497,24 +397,124 @@
       "value_context": [
         {
           "feature": "forecast_temp_high",
-          "current_value": 72.68,
+          "current_value": 72.86,
           "typical_value": 58.28,
-          "percentile": 0.8099,
+          "percentile": 0.8127,
           "unit": "\u00b0F",
           "definition": "tomorrow's forecast daily high temperature"
         }
       ]
     },
     {
+      "feature": "chronic_load_28",
+      "kind": "feature",
+      "signed_contribution": 0.1281498890398379,
+      "direction": "helping",
+      "phrase": "longer-term fitness base",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 38.0799,
+        "current_shap": 0.1281,
+        "points": [
+          {
+            "feature_value": 1.0775,
+            "shap_value": -0.0924
+          },
+          {
+            "feature_value": 11.8641,
+            "shap_value": -0.0931
+          },
+          {
+            "feature_value": 13.4881,
+            "shap_value": -0.0951
+          },
+          {
+            "feature_value": 14.9239,
+            "shap_value": -0.1164
+          },
+          {
+            "feature_value": 16.4185,
+            "shap_value": -0.1571
+          },
+          {
+            "feature_value": 18.4825,
+            "shap_value": -0.1532
+          },
+          {
+            "feature_value": 21.0014,
+            "shap_value": -0.0998
+          },
+          {
+            "feature_value": 23.178,
+            "shap_value": 0.0732
+          },
+          {
+            "feature_value": 24.688,
+            "shap_value": 0.1083
+          },
+          {
+            "feature_value": 25.9802,
+            "shap_value": 0.0195
+          },
+          {
+            "feature_value": 27.5112,
+            "shap_value": 0.014
+          },
+          {
+            "feature_value": 29.3829,
+            "shap_value": 0.0389
+          },
+          {
+            "feature_value": 31.0811,
+            "shap_value": 0.0714
+          },
+          {
+            "feature_value": 33.2518,
+            "shap_value": 0.0757
+          },
+          {
+            "feature_value": 35.7816,
+            "shap_value": 0.1175
+          },
+          {
+            "feature_value": 38.8064,
+            "shap_value": 0.1258
+          },
+          {
+            "feature_value": 42.3614,
+            "shap_value": 0.1254
+          },
+          {
+            "feature_value": 47.404,
+            "shap_value": 0.1251
+          },
+          {
+            "feature_value": 58.7023,
+            "shap_value": 0.1243
+          }
+        ]
+      },
+      "value_context": [
+        {
+          "feature": "chronic_load_28",
+          "current_value": 38.08,
+          "typical_value": 22.181,
+          "percentile": 0.845,
+          "unit": "effort points/day",
+          "definition": "long-term fitness/training load: 28-day exponentially weighted average of daily total Strava Relative Effort"
+        }
+      ]
+    },
+    {
       "feature": "trained_days_30",
       "kind": "feature",
-      "signed_contribution": -0.10601519274525413,
+      "signed_contribution": -0.10613904306309321,
       "direction": "hurting",
       "phrase": "your training frequency over the past month",
       "plot": {
         "kind": "continuous",
         "current_value": 20.0,
-        "current_shap": -0.106,
+        "current_shap": -0.1061,
         "points": [
           {
             "feature_value": 0.5092,
@@ -702,7 +702,7 @@
       "phrase": "how the temp high compares to normal for this time of year",
       "plot": {
         "kind": "continuous",
-        "current_value": 6.4931,
+        "current_value": 6.5931,
         "current_shap": -0.0783,
         "points": [
           {
@@ -806,9 +806,9 @@
       "value_context": [
         {
           "feature": "forecast_temp_high_vs_seasonal",
-          "current_value": 11.688,
+          "current_value": 11.868,
           "typical_value": 0.215,
-          "percentile": 0.9522,
+          "percentile": 0.9541,
           "unit": "\u00b0F",
           "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
         }
@@ -835,9 +835,9 @@
         },
         {
           "feature": "forecast_temp_high_vs_seasonal",
-          "current_value": 11.688,
+          "current_value": 11.868,
           "typical_value": 0.215,
-          "percentile": 0.9522,
+          "percentile": 0.9541,
           "unit": "\u00b0F",
           "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
         }
@@ -846,7 +846,7 @@
   ],
   "baseline_log_odds": -0.3838806135786399,
   "baseline_probability": 0.4052,
-  "other_contribution": 0.1946,
+  "other_contribution": 0.1776,
   "blurb": "Momentum check: 63% to train. regular train rate for this day of the week [value=0.361 fraction 0-1 (typical 0.182 fraction 0-1, 99% of history is at or below)] is a tailwind, your training frequency over the past month [value=20.0 active days (typical 9.0 active days, 100% of history is at or below)] is a headwind. Plan on ~41 relative-effort points.",
   "feature_summary": [
     {
@@ -1035,8 +1035,8 @@
       "feature": "forecast_temp_high",
       "label": "the temp high forecast",
       "importance": 0.0857,
-      "current_value": 22.6,
-      "current_percentile": 0.8099,
+      "current_value": 22.7,
+      "current_percentile": 0.8127,
       "kind": "continuous",
       "stats": {
         "count": 1068,
@@ -2309,8 +2309,8 @@
       "feature": "forecast_temp_high_vs_seasonal",
       "label": "how the temp high compares to normal for this time of year",
       "importance": 0.057,
-      "current_value": 6.4931,
-      "current_percentile": 0.9522,
+      "current_value": 6.5931,
+      "current_percentile": 0.9541,
       "kind": "continuous",
       "stats": {
         "count": 1068,
