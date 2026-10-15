@@ -1,14 +1,14 @@
 {
   "date": "2026-10-15",
-  "generated_at": "2026-10-15T11:34:14.109263-07:00",
+  "generated_at": "2026-10-15T11:47:15.741916-07:00",
   "will_train": true,
-  "probability": 0.6355,
-  "predicted_effort": 40.64,
+  "probability": 0.6333,
+  "predicted_effort": 40.76,
   "top_contributors": [
     {
       "feature": "dow_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.29406875025799656,
+      "signed_contribution": 0.2941331253155324,
       "direction": "helping",
       "phrase": "regular train rate for this day of the week",
       "plot": {
@@ -108,13 +108,13 @@
     {
       "feature": "month_train_rate",
       "kind": "feature",
-      "signed_contribution": 0.23283462896590573,
+      "signed_contribution": 0.23254050657944098,
       "direction": "helping",
       "phrase": "regular train rate for this month",
       "plot": {
         "kind": "continuous",
         "current_value": 0.3415,
-        "current_shap": 0.2328,
+        "current_shap": 0.2325,
         "points": [
           {
             "feature_value": 0.0006,
@@ -208,13 +208,13 @@
     {
       "feature": "forecast_precip_probability",
       "kind": "feature",
-      "signed_contribution": 0.2230628361688365,
+      "signed_contribution": 0.22295811824260203,
       "direction": "helping",
       "phrase": "rain in the forecast",
       "plot": {
         "kind": "continuous",
         "current_value": 0.0,
-        "current_shap": 0.2231,
+        "current_shap": 0.223,
         "points": [
           {
             "feature_value": 0.3472,
@@ -282,126 +282,6 @@
           "percentile": 0.4429,
           "unit": "% of hours",
           "definition": "share of tomorrow's 24 hours with any precipitation (0 = fully dry day, 100 = rain all day)"
-        }
-      ]
-    },
-    {
-      "feature": "forecast_temp_high",
-      "kind": "feature",
-      "signed_contribution": 0.1523857264025318,
-      "direction": "helping",
-      "phrase": "the temp high forecast",
-      "plot": {
-        "kind": "continuous",
-        "current_value": 23.4,
-        "current_shap": 0.1524,
-        "points": [
-          {
-            "feature_value": 3.5375,
-            "shap_value": -0.306
-          },
-          {
-            "feature_value": 6.007,
-            "shap_value": -0.3056
-          },
-          {
-            "feature_value": 7.1378,
-            "shap_value": -0.3065
-          },
-          {
-            "feature_value": 8.0652,
-            "shap_value": -0.3059
-          },
-          {
-            "feature_value": 8.8279,
-            "shap_value": -0.3047
-          },
-          {
-            "feature_value": 9.5349,
-            "shap_value": -0.3063
-          },
-          {
-            "feature_value": 10.2717,
-            "shap_value": -0.3087
-          },
-          {
-            "feature_value": 10.9524,
-            "shap_value": -0.3109
-          },
-          {
-            "feature_value": 11.7308,
-            "shap_value": -0.3111
-          },
-          {
-            "feature_value": 12.4256,
-            "shap_value": -0.3033
-          },
-          {
-            "feature_value": 13.2744,
-            "shap_value": -0.2878
-          },
-          {
-            "feature_value": 14.1778,
-            "shap_value": -0.1819
-          },
-          {
-            "feature_value": 15.2233,
-            "shap_value": 0.1459
-          },
-          {
-            "feature_value": 16.3292,
-            "shap_value": 0.2919
-          },
-          {
-            "feature_value": 17.3643,
-            "shap_value": 0.2537
-          },
-          {
-            "feature_value": 18.5213,
-            "shap_value": 0.1139
-          },
-          {
-            "feature_value": 19.6818,
-            "shap_value": 0.1017
-          },
-          {
-            "feature_value": 20.5535,
-            "shap_value": 0.0856
-          },
-          {
-            "feature_value": 21.6587,
-            "shap_value": 0.1241
-          },
-          {
-            "feature_value": 22.8068,
-            "shap_value": 0.131
-          },
-          {
-            "feature_value": 23.969,
-            "shap_value": 0.147
-          },
-          {
-            "feature_value": 25.6,
-            "shap_value": 0.1419
-          },
-          {
-            "feature_value": 27.4333,
-            "shap_value": 0.1411
-          },
-          {
-            "feature_value": 30.3372,
-            "shap_value": 0.1389
-          }
-        ]
-      },
-      "value_context": [
-        {
-          "feature": "forecast_temp_high",
-          "current_value": 74.12,
-          "typical_value": 58.28,
-          "percentile": 0.839,
-          "unit": "\u00b0F",
-          "definition": "tomorrow's forecast daily high temperature"
         }
       ]
     },
@@ -506,15 +386,135 @@
       ]
     },
     {
+      "feature": "forecast_temp_high",
+      "kind": "feature",
+      "signed_contribution": 0.11753624940363887,
+      "direction": "helping",
+      "phrase": "the temp high forecast",
+      "plot": {
+        "kind": "continuous",
+        "current_value": 22.6,
+        "current_shap": 0.1175,
+        "points": [
+          {
+            "feature_value": 3.5375,
+            "shap_value": -0.306
+          },
+          {
+            "feature_value": 6.007,
+            "shap_value": -0.3056
+          },
+          {
+            "feature_value": 7.1378,
+            "shap_value": -0.3065
+          },
+          {
+            "feature_value": 8.0652,
+            "shap_value": -0.3059
+          },
+          {
+            "feature_value": 8.8279,
+            "shap_value": -0.3047
+          },
+          {
+            "feature_value": 9.5349,
+            "shap_value": -0.3063
+          },
+          {
+            "feature_value": 10.2717,
+            "shap_value": -0.3087
+          },
+          {
+            "feature_value": 10.9524,
+            "shap_value": -0.3109
+          },
+          {
+            "feature_value": 11.7308,
+            "shap_value": -0.3111
+          },
+          {
+            "feature_value": 12.4256,
+            "shap_value": -0.3033
+          },
+          {
+            "feature_value": 13.2744,
+            "shap_value": -0.2878
+          },
+          {
+            "feature_value": 14.1778,
+            "shap_value": -0.1819
+          },
+          {
+            "feature_value": 15.2233,
+            "shap_value": 0.1459
+          },
+          {
+            "feature_value": 16.3292,
+            "shap_value": 0.2919
+          },
+          {
+            "feature_value": 17.3643,
+            "shap_value": 0.2537
+          },
+          {
+            "feature_value": 18.5213,
+            "shap_value": 0.1139
+          },
+          {
+            "feature_value": 19.6818,
+            "shap_value": 0.1017
+          },
+          {
+            "feature_value": 20.5535,
+            "shap_value": 0.0856
+          },
+          {
+            "feature_value": 21.6587,
+            "shap_value": 0.1241
+          },
+          {
+            "feature_value": 22.8068,
+            "shap_value": 0.131
+          },
+          {
+            "feature_value": 23.969,
+            "shap_value": 0.147
+          },
+          {
+            "feature_value": 25.6,
+            "shap_value": 0.1419
+          },
+          {
+            "feature_value": 27.4333,
+            "shap_value": 0.1411
+          },
+          {
+            "feature_value": 30.3372,
+            "shap_value": 0.1389
+          }
+        ]
+      },
+      "value_context": [
+        {
+          "feature": "forecast_temp_high",
+          "current_value": 72.68,
+          "typical_value": 58.28,
+          "percentile": 0.8099,
+          "unit": "\u00b0F",
+          "definition": "tomorrow's forecast daily high temperature"
+        }
+      ]
+    },
+    {
       "feature": "trained_days_30",
       "kind": "feature",
-      "signed_contribution": -0.1065167460884073,
+      "signed_contribution": -0.10601519274525413,
       "direction": "hurting",
       "phrase": "your training frequency over the past month",
       "plot": {
         "kind": "continuous",
         "current_value": 20.0,
-        "current_shap": -0.1065,
+        "current_shap": -0.106,
         "points": [
           {
             "feature_value": 0.5092,
@@ -592,7 +592,7 @@
         "forecast_temp_low_vs_seasonal"
       ],
       "kind": "interaction",
-      "signed_contribution": -0.09544908322847688,
+      "signed_contribution": -0.09702173616528445,
       "direction": "hurting",
       "phrase": "interaction between regular train rate for this day of the week and how the temp low compares to normal for this time of year",
       "value_context": [
@@ -702,7 +702,7 @@
       "phrase": "how the temp high compares to normal for this time of year",
       "plot": {
         "kind": "continuous",
-        "current_value": 7.2931,
+        "current_value": 6.4931,
         "current_shap": -0.0783,
         "points": [
           {
@@ -806,9 +806,9 @@
       "value_context": [
         {
           "feature": "forecast_temp_high_vs_seasonal",
-          "current_value": 13.128,
+          "current_value": 11.688,
           "typical_value": 0.215,
-          "percentile": 0.9654,
+          "percentile": 0.9522,
           "unit": "\u00b0F",
           "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
         }
@@ -835,9 +835,9 @@
         },
         {
           "feature": "forecast_temp_high_vs_seasonal",
-          "current_value": 13.128,
+          "current_value": 11.688,
           "typical_value": 0.215,
-          "percentile": 0.9654,
+          "percentile": 0.9522,
           "unit": "\u00b0F",
           "definition": "forecast high minus the historical average high for this time of year; positive = warmer than normal"
         }
@@ -846,8 +846,8 @@
   ],
   "baseline_log_odds": -0.3838806135786399,
   "baseline_probability": 0.4052,
-  "other_contribution": 0.1677,
-  "blurb": "Momentum check: 64% to train. regular train rate for this day of the week [value=0.361 fraction 0-1 (typical 0.182 fraction 0-1, 99% of history is at or below)] is a tailwind, your training frequency over the past month [value=20.0 active days (typical 9.0 active days, 100% of history is at or below)] is a headwind. Plan on ~41 relative-effort points.",
+  "other_contribution": 0.1946,
+  "blurb": "Momentum check: 63% to train. regular train rate for this day of the week [value=0.361 fraction 0-1 (typical 0.182 fraction 0-1, 99% of history is at or below)] is a tailwind, your training frequency over the past month [value=20.0 active days (typical 9.0 active days, 100% of history is at or below)] is a headwind. Plan on ~41 relative-effort points.",
   "feature_summary": [
     {
       "feature": "forecast_precip_probability",
@@ -1035,8 +1035,8 @@
       "feature": "forecast_temp_high",
       "label": "the temp high forecast",
       "importance": 0.0857,
-      "current_value": 23.4,
-      "current_percentile": 0.839,
+      "current_value": 22.6,
+      "current_percentile": 0.8099,
       "kind": "continuous",
       "stats": {
         "count": 1068,
@@ -2309,8 +2309,8 @@
       "feature": "forecast_temp_high_vs_seasonal",
       "label": "how the temp high compares to normal for this time of year",
       "importance": 0.057,
-      "current_value": 7.2931,
-      "current_percentile": 0.9654,
+      "current_value": 6.4931,
+      "current_percentile": 0.9522,
       "kind": "continuous",
       "stats": {
         "count": 1068,
