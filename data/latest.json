@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "generated_at": "2026-10-15T14:39:45.345494-07:00",
+  "generated_at": "2026-10-15T14:56:11.922935-07:00",
   "will_train": true,
   "probability": 0.6417,
   "predicted_effort": 41.34,
@@ -847,7 +847,7 @@
   "baseline_log_odds": -0.3838806135786399,
   "baseline_probability": 0.4052,
   "other_contribution": 0.1647,
-  "blurb": "Momentum check: 64% to train. regular train rate for this day of the week [value=0.361 fraction 0-1 (typical 0.182 fraction 0-1, 99% of history is at or below)] is a tailwind, how the temp high compares to normal for this time of year [value=6.288 \u00b0F (typical 0.215 \u00b0F, 83% of history is at or below)] is a headwind. Plan on ~41 relative-effort points.",
+  "blurb": "Put on your gear, because our crystal ball says you\u2019re **training tomorrow** with a 64.2% probability and a predicted effort of 41.3 relative-effort units. Try to look excited.\n\nHere is why our model thinks you'll actually lace up:\n\n*   **Weekday habit (Regular train rate for this day of the week):** It's a day of the week you historically actually show up on, sitting at a 0.361 fraction (higher than your typical 0.182). Helping your case.\n*   **Monthly mojo (Regular train rate for this month):** You tend to put in work during this calendar month, boasting a 0.341 fraction compared to your usual 0.153. \n*   **Dry skies (Rain in the forecast):** Tomorrow is completely bone-dry with 0.0 % of hours seeing precipitation\u2014a nice break from your typical 8.333 % soggy hours. \n*   **Solid fitness (Longer-term fitness base):** Your 28-day exponentially weighted average is sitting a bit high at 38.08 effort points/day (your typical is 22.181). Look at you, building a base.\n*   **Nice highs (The temp high forecast):** Tomorrow's forecast daily high temperature is a pleasant 67.28 \u00b0F, warmer than your usual 58.28 \u00b0F.\n\n**What's trying to hold you back?** \nYou're dealing with a high temperature that's 6.288 \u00b0F warmer than normal, and you've already grinded out 20.0 active days over the past month (which completely shatters your typical 9.0 active days). Plus, it's only been 1.0 day since your last hard effort, and your usual rest window is 4.0 days. But hey, don't let a little fatigue stop you\u2014get out there.",
   "feature_summary": [
     {
       "feature": "forecast_precip_probability",
