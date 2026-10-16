@@ -52,6 +52,7 @@ def run_pipeline(target_date: date | None = None) -> dict[str, object]:
     strava_params = params.get("strava", {})
     model_params = params.get("model", {})
     blurb_params = params.get("blurb", {})
+    waterfall_params = params.get("waterfall", {})
 
     activities = fetch_activities_dataframe(
         days_back=strava_params.get("days_back", 730), activity_types=strava_params.get("activity_types")
@@ -148,6 +149,7 @@ def run_pipeline(target_date: date | None = None) -> dict[str, object]:
             else None
         ),
         "top_contributors": top_contributors,
+        "waterfall_labeled_features": waterfall_params.get("labeled_features", 3),
         "baseline_log_odds": explanation["baseline_log_odds"],
         "baseline_probability": explanation["baseline_probability"],
         "other_contribution": explanation["other_contribution"],

@@ -90,6 +90,7 @@ type PredictionPayload = {
   probability: number;
   predicted_effort: number | null;
   top_contributors: Contributor[];
+  waterfall_labeled_features?: number;
   baseline_log_odds?: number;
   baseline_probability?: number;
   other_contribution?: number;
@@ -433,11 +434,13 @@ function ContributorSummary({
   baselineLogOdds,
   otherContribution,
   finalProbability,
+  waterfallLabeledFeatures,
 }: {
   topContributors: Contributor[];
   baselineLogOdds?: number;
   otherContribution?: number;
   finalProbability: number;
+  waterfallLabeledFeatures: number;
 }) {
   const steps: Contributor[] = [...topContributors];
   if (otherContribution !== undefined) {
@@ -529,6 +532,7 @@ function ContributorSummary({
               endProbability: row.endProbability,
               direction: row.direction,
             }))}
+            labelCount={waterfallLabeledFeatures}
             baselineProbability={baselineProbability}
             baselineLabel={`Model average: ${formatPercent(baselineProbability, 1)}`}
             finalProbability={finalProbability}
@@ -827,6 +831,7 @@ export default async function Home() {
                 <h2 className="text-xl font-semibold text-slate-900">How the estimate moves</h2>
                 <ContributorSummary
                   topContributors={prediction.top_contributors}
+                  waterfallLabeledFeatures={prediction.waterfall_labeled_features ?? 3}
                   baselineLogOdds={
                     prediction.baseline_log_odds ?? (
                       prediction.baseline_probability === undefined
